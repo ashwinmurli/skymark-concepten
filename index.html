@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Skymark — Creatieve Concepten & Campagnestrategie</title>
 <style>
 @font-face {
@@ -36,7 +36,7 @@
   --stone:#8B8B7E; --fog:#F1F1EB; --gold:#CAA24B; --white:#FFFFFF;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;overflow-x:hidden;}
+html{scroll-behavior:smooth;}
 body{background:var(--black);color:var(--fog);font-family:'PPMori',sans-serif;font-weight:400;line-height:1.65;overflow-x:hidden;}
 ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--black);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:1px;}
 
@@ -300,7 +300,8 @@ footer{background:var(--black);border-top:1px solid rgba(85,102,85,.2);padding:4
 /* RESPONSIVE */
 @media(max-width:960px){
   *{box-sizing:border-box;}
-  body{overflow-x:hidden;}
+  /* overflow-x op body maar niet html — anders breekt sticky nav */
+  body{overflow-x:clip;}
   .context-grid,.values-row,.fases-grid{grid-template-columns:1fr;}
   .container{padding:0 20px;}
   section{padding:48px 0;}
@@ -310,12 +311,13 @@ footer{background:var(--black);border-top:1px solid rgba(85,102,85,.2);padding:4
   .hero-footer-item:nth-child(2){display:none;}
   .nav-inner{padding:0 16px;}
   .nav-link{padding:0 10px;white-space:nowrap;}
+  /* gebruik overflow:clip ipv hidden op channel/concept — breekt sticky niet */
   .channel-header{grid-template-columns:1fr;gap:8px;padding:16px 20px;}
-  .channel-block{overflow:hidden;}
+  .channel-block{overflow-x:clip;}
   .concept-head-right{padding:12px 16px;}
   .concept-title{font-size:1.1rem;}
   .concept-body{grid-template-columns:1fr;}
-  .concept-mockup{border-left:none;border-top:1px solid rgba(85,102,85,.1);padding:24px 16px;min-height:auto;}
+  .concept-mockup{border-left:none;border-top:1px solid rgba(85,102,85,.1);padding:24px 16px;min-height:auto;overflow-x:clip;}
   .concept-section{grid-template-columns:1fr;}
   .concept-section-label{padding:10px 16px 6px;border-right:none;border-bottom:1px solid rgba(85,102,85,.1);}
   .concept-section>p{padding:12px 16px;}
