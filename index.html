@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="nl"><head><style>body {transition: opacity ease-in 0.2s; } 
 body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+
+/* ── CONCEPTEN SUBNAV ── */
+.concepten-subnav{
+  position:sticky;top:50px;z-index:90;
+  background:rgba(16,19,16,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(85,102,85,.2);
+  display:flex;overflow-x:auto;scrollbar-width:none;
+}
+.concepten-subnav::-webkit-scrollbar{display:none;}
+.subnav-link{
+  font-family:'PPMori',sans-serif;font-weight:600;
+  font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(220,235,218,.35);text-decoration:none;
+  padding:0 28px;height:40px;display:flex;align-items:center;
+  border-right:1px solid rgba(255,255,255,.04);
+  white-space:nowrap;transition:color .2s;flex-shrink:0;
+  cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+}
+.subnav-link:hover{color:rgba(220,235,218,.7);}
+.subnav-link.active{color:var(--gold);border-bottom-color:var(--gold);}
+@media(max-width:960px){
+  .concepten-subnav{top:50px;}
+  .subnav-link{padding:0 18px;font-size:.55rem;}
+}
+
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -508,6 +534,12 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
       <h2 class="section-title" style="color:var(--black)">Tien formats, vier kanalen</h2>
       <div class="section-rule" style="background:var(--pine)"></div>
       <p class="section-intro" style="color:var(--moss)">De campagneconcepten gegroepeerd op kanaal; van social media en e-mail tot redactionele content en live events.</p>
+    </div>
+    <div class="concepten-subnav">
+      <a class="subnav-link active" data-target="channel-0">01 &mdash; E-mail &amp; Leadgen</a>
+      <a class="subnav-link" data-target="channel-1">02 &mdash; Events &amp; Activatie</a>
+      <a class="subnav-link" data-target="channel-2">03 &mdash; Social Media</a>
+      <a class="subnav-link" data-target="channel-3">04 &mdash; Content &amp; Redactie</a>
     </div>
     <div class="channel-block reveal visible">
     <div class="channel-header">
@@ -1295,4 +1327,37 @@ window.addEventListener('scroll',()=>{
 })();
 </script>
 
-<veepn-lock-screen><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-lock-screen><div><span></span></div><div popover="manual" style="z-index: 2147483647 !important; padding: 0px !important; margin: 0px !important; border-radius: 8px !important; position: fixed !important; color-scheme: normal !important; box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px, rgba(0, 0, 0, 0.18) 0px 8px 15px 6px !important; border: 1px solid rgba(0, 0, 0, 0.9) !important; overflow: hidden !important; backdrop-filter: blur(20px) !important; background-color: rgba(35, 35, 35, 0.83) !important; top: 438px !important; left: -999999px !important; opacity: 0 !important; visibility: hidden !important; height: 113px !important; width: 295px !important;"></div></body></html>
+<veepn-lock-screen><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-lock-screen><div><span></span></div><div popover="manual" style="z-index: 2147483647 !important; padding: 0px !important; margin: 0px !important; border-radius: 8px !important; position: fixed !important; color-scheme: normal !important; box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px, rgba(0, 0, 0, 0.18) 0px 8px 15px 6px !important; border: 1px solid rgba(0, 0, 0, 0.9) !important; overflow: hidden !important; backdrop-filter: blur(20px) !important; background-color: rgba(35, 35, 35, 0.83) !important; top: 438px !important; left: -999999px !important; opacity: 0 !important; visibility: hidden !important; height: 113px !important; width: 295px !important;"></div><script>
+// ── CONCEPTEN SUBNAV ──
+(function(){
+  const channels = document.querySelectorAll('.channel-block');
+  const links = document.querySelectorAll('.subnav-link');
+
+  // Voeg IDs toe aan kanalen
+  channels.forEach((ch, i) => ch.id = 'channel-' + i);
+
+  // Klik: scroll naar kanaal
+  links.forEach(link => {
+    link.addEventListener('click', () => {
+      const target = document.getElementById(link.dataset.target);
+      if (!target) return;
+      const offset = 50 + 40 + 8; // nav + subnav + extra
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({top, behavior:'smooth'});
+    });
+  });
+
+  // Scroll-spy: markeer actief kanaal
+  function updateActive() {
+    const offset = 50 + 40 + 20;
+    let current = 0;
+    channels.forEach((ch, i) => {
+      if (ch.getBoundingClientRect().top <= offset) current = i;
+    });
+    links.forEach((l, i) => l.classList.toggle('active', i === current));
+  }
+  window.addEventListener('scroll', updateActive, {passive:true});
+  updateActive();
+})();
+</script>
+</body></html>
