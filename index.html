@@ -1229,11 +1229,15 @@ window.addEventListener('scroll',()=>{
   `;
   document.body.appendChild(pwOverlay);
 
-  markEditable();
+  // Only mark elements as editable in edit sessions
+  if (sessionStorage.getItem('skymark_auth') === 'edit') {
+    markEditable();
+  }
 
-  // Check if already editor-authed
-  if (sessionStorage.getItem('skymark_editor') === '1') {
-    // Don't auto-enable, just show button
+  // Only show editor button if logged in with edit password
+  const isEditSession = sessionStorage.getItem('skymark_auth') === 'edit';
+  if (!isEditSession) {
+    editorBtn.style.display = 'none';
   }
 
   editorBtn.addEventListener('click', () => {
