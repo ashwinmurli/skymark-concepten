@@ -1134,6 +1134,7 @@ window.addEventListener('scroll',()=>{
 
   // Enable editing
   function enableEditing() {
+    markEditable();
     document.body.classList.add('editing');
     document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'true');
@@ -1146,7 +1147,8 @@ window.addEventListener('scroll',()=>{
   function disableEditing() {
     document.body.classList.remove('editing');
     document.querySelectorAll('[data-editable]').forEach(el => {
-      el.setAttribute('contenteditable', 'false');
+      el.removeAttribute('data-editable');
+      el.removeAttribute('contenteditable');
     });
     toolbar.classList.remove('active');
     editorBtn.style.display = '';
@@ -1245,7 +1247,6 @@ window.addEventListener('scroll',()=>{
 
   function initEditor(authType) {
     if (authType === 'edit') {
-      markEditable();
       editorBtn.style.display = '';
     } else {
       editorBtn.style.display = 'none';
