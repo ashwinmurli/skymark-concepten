@@ -1018,7 +1018,9 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba
   const btn=document.getElementById('pw-btn');
   const err=document.getElementById('pw-error');
   const saved=sessionStorage.getItem('skymark_auth');
-  if(saved==='view'||saved==='edit'){screen.style.display='none';}
+  // Migrate old auth value ('1') — force re-login
+  if(saved==='1'){sessionStorage.removeItem('skymark_auth');sessionStorage.removeItem('skymark_editor');}
+  else if(saved==='view'||saved==='edit'){screen.style.display='none';}
   if(saved==='edit'){sessionStorage.setItem('skymark_editor','1');}
   function attempt(){
     const val=field.value;
