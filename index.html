@@ -1128,29 +1128,49 @@ window.addEventListener('scroll',()=>{
     editorBtn.style.display = '';
   }
 
-  // Export HTML
-  function exportHTML() {
-    // Disable editing first, then clone
+  // Publish to GitHub via API
+  async function publishHTML() {
+    const statusEl = document.getElementById('editor-status');
+    statusEl.textContent = 'Publiceren...';
+
+    // Clone and clean DOM
     document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'false');
     });
     const clone = document.documentElement.cloneNode(true);
-    // Remove editor UI from clone
     ['editor-btn','editor-toolbar','editor-pw-overlay'].forEach(id => {
       const el = clone.querySelector('#' + id);
       if (el) el.remove();
     });
-    // Remove editor CSS and JS markers
-    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
-    const blob = new Blob([html], {type: 'text/html'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'index.html';
-    a.click();
-    // Re-enable
+    const htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML;
+
+    // Re-enable editing
     document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'true');
     });
+
+    try {
+      const resp = await fetch('/api/save', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          html: htmlContent,
+          secret: 'skymark-edit-2025'
+        })
+      });
+      if (resp.ok) {
+        statusEl.textContent = '✓ Gepubliceerd — Vercel deployt automatisch';
+        statusEl.style.color = '#7db87d';
+        setTimeout(() => { statusEl.textContent = ''; statusEl.style.color = ''; }, 5000);
+      } else {
+        const err = await resp.text();
+        statusEl.textContent = '✗ Fout: ' + err;
+        statusEl.style.color = '#c97070';
+      }
+    } catch(e) {
+      statusEl.textContent = '✗ Netwerkfout: ' + e.message;
+      statusEl.style.color = '#c97070';
+    }
   }
 
   // Build editor button
@@ -1164,9 +1184,10 @@ window.addEventListener('scroll',()=>{
   toolbar.id = 'editor-toolbar';
   toolbar.innerHTML = `
     <span class="editor-toolbar-label">✏ Bewerkingsmodus</span>
-    <button class="editor-toolbar-btn editor-toolbar-btn--save" id="editor-export">Exporteer HTML</button>
+    <button class="editor-toolbar-btn editor-toolbar-btn--save" id="editor-export">Publiceer</button>
     <button class="editor-toolbar-btn" id="editor-cancel">Annuleer</button>
-    <span class="editor-toolbar-hint">Klik op tekst om te bewerken &mdash; exporteer daarna en deploy via deploy.sh</span>
+    <span class="editor-toolbar-hint">Klik op tekst om te bewerken — druk op Publiceer om live te zetten</span>
+    <span id="editor-status" style="margin-left:8px;font-family:'PPMori',sans-serif;font-size:.6rem;color:rgba(220,235,218,.6);"></span>
   `;
   document.body.appendChild(toolbar);
 
@@ -1199,7 +1220,7 @@ window.addEventListener('scroll',()=>{
     }
   });
 
-  document.getElementById('editor-export').addEventListener('click', exportHTML);
+  document.getElementById('editor-export').addEventListener('click', publishHTML);
   document.getElementById('editor-cancel').addEventListener('click', disableEditing);
 
   function attemptEditorLogin() {
