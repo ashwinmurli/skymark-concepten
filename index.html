@@ -380,7 +380,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba
 </style><style data-emotion="cosmos-global-global" data-s=""></style><style data-emotion="cosmos-global-global" data-s=""></style><style data-emotion="cosmos-global-global" data-s=""></style></head>
 <body class="editing">
 
-<div id="password-screen" style="opacity: 0; transition: opacity 0.4s; display: none;">
+<div id="password-screen">
   <div class="pw-box">
     <div class="pw-logo"><svg id="Layer_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 321.22 48.26">
   <defs>
@@ -1155,7 +1155,14 @@ window.addEventListener('scroll',()=>{
     document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'false');
     });
+    // Reset password-screen to visible before snapshot
+    const pwScreen = document.getElementById('password-screen');
+    const prevStyle = pwScreen ? pwScreen.getAttribute('style') : null;
+    if (pwScreen) pwScreen.setAttribute('style', '');
     const clone = document.documentElement.cloneNode(true);
+    // Restore
+    if (pwScreen && prevStyle !== null) pwScreen.setAttribute('style', prevStyle);
+    else if (pwScreen) pwScreen.removeAttribute('style');
     ['editor-btn','editor-toolbar','editor-pw-overlay'].forEach(id => {
       const el = clone.querySelector('#' + id);
       if (el) el.remove();
