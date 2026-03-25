@@ -360,7 +360,7 @@ footer{background:var(--black);border-top:1px solid rgba(85,102,85,.2);padding:4
 .editor-toolbar-btn--save{background:var(--gold);border-color:var(--gold);color:var(--black);}
 .editor-toolbar-btn--save:hover{background:#d4aa55;}
 .editor-toolbar-hint{font-family:'PPMori',sans-serif;font-size:.58rem;color:rgba(220,235,218,.35);margin-left:auto;}
-[]{outline:none;cursor:default;}body.editing []{outline:1px dashed rgba(202,162,75,.4);cursor:text;transition:outline .15s;}
+[data-editable]{outline:none;cursor:default;}body.editing [data-editable]{outline:1px dashed rgba(202,162,75,.4);cursor:text;transition:outline .15s;}
 body.editing []:hover{outline:1px solid rgba(202,162,75,.8);background:rgba(202,162,75,.04);}
 body.editing []:focus{outline:2px solid var(--gold);background:rgba(202,162,75,.06);color:inherit;}
 #editor-pw-overlay{position:fixed;inset:0;z-index:10001;background:rgba(16,19,16,.92);display:none;align-items:center;justify-content:center;}
@@ -1126,7 +1126,7 @@ window.addEventListener('scroll',()=>{
   function markEditable() {
     EDITABLE_SELECTORS.forEach(sel => {
       document.querySelectorAll(sel).forEach(el => {
-        el.setAttribute('', '');
+        el.setAttribute('data-editable', '');
         el.setAttribute('contenteditable', 'false');
       });
     });
@@ -1135,7 +1135,7 @@ window.addEventListener('scroll',()=>{
   // Enable editing
   function enableEditing() {
     document.body.classList.add('editing');
-    document.querySelectorAll('[]').forEach(el => {
+    document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'true');
     });
     toolbar.classList.add('active');
@@ -1145,7 +1145,7 @@ window.addEventListener('scroll',()=>{
   // Disable editing
   function disableEditing() {
     document.body.classList.remove('editing');
-    document.querySelectorAll('[]').forEach(el => {
+    document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'false');
     });
     toolbar.classList.remove('active');
@@ -1158,7 +1158,7 @@ window.addEventListener('scroll',()=>{
     statusEl.textContent = 'Publiceren...';
 
     // Clone and clean DOM
-    document.querySelectorAll('[]').forEach(el => {
+    document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'false');
     });
     // Reset password-screen to visible before snapshot
@@ -1181,7 +1181,7 @@ window.addEventListener('scroll',()=>{
     const htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML;
 
     // Re-enable editing
-    document.querySelectorAll('[]').forEach(el => {
+    document.querySelectorAll('[data-editable]').forEach(el => {
       el.setAttribute('contenteditable', 'true');
     });
 
