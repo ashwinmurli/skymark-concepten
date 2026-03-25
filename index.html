@@ -350,7 +350,7 @@ footer{background:var(--black);border-top:1px solid rgba(85,102,85,.2);padding:4
 }
 
 /* ── INLINE EDITOR ── */
-#editor-btn{position:fixed;bottom:24px;right:24px;z-index:10000;background:var(--gold);border:none;color:var(--black);font-family:'PPMori',sans-serif;font-weight:600;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;padding:10px 18px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:background .2s;}
+#editor-btn{position:fixed;bottom:24px;right:24px;z-index:10000;pointer-events:all;background:var(--gold);border:none;color:var(--black);font-family:'PPMori',sans-serif;font-weight:600;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;padding:10px 18px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:background .2s;}
 #editor-btn:hover{background:#d4aa55;}
 #editor-toolbar{position:fixed;bottom:0;left:0;right:0;z-index:10000;background:rgba(16,19,16,.97);backdrop-filter:blur(20px);border-top:1px solid rgba(202,162,75,.3);padding:12px 24px;display:none;align-items:center;gap:12px;flex-wrap:wrap;}
 #editor-toolbar.active{display:flex;}
@@ -1020,7 +1020,13 @@ body.editing []:focus{outline:2px solid var(--gold);background:rgba(202,162,75,.
   const saved=sessionStorage.getItem('skymark_auth');
   // Migrate old auth value ('1') — force re-login
   if(saved==='1'){sessionStorage.removeItem('skymark_auth');sessionStorage.removeItem('skymark_editor');}
-  else if(saved==='view'||saved==='edit'){screen.style.display='none';}
+  else if(saved==='view'||saved==='edit'){
+    screen.style.display='none';
+    // Fire auth event so editor can init immediately on page load
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.dispatchEvent(new CustomEvent('skymark-auth',{detail:{type:saved}}));
+    });
+  }
   if(saved==='edit'){sessionStorage.setItem('skymark_editor','1');}
   function attempt(){
     const val=field.value;
@@ -1028,12 +1034,12 @@ body.editing []:focus{outline:2px solid var(--gold);background:rgba(202,162,75,.
       sessionStorage.setItem('skymark_auth','edit');
       sessionStorage.setItem('skymark_editor','1');
       screen.style.opacity='0';screen.style.transition='opacity .4s ease';
-      setTimeout(()=>screen.style.display='none',400);
+      setTimeout(()=>{screen.style.display='none';document.dispatchEvent(new CustomEvent('skymark-auth',{detail:{type:'edit'}}));},400);
     }else if(val===PW_VIEW){
       sessionStorage.setItem('skymark_auth','view');
       sessionStorage.removeItem('skymark_editor');
       screen.style.opacity='0';screen.style.transition='opacity .4s ease';
-      setTimeout(()=>screen.style.display='none',400);
+      setTimeout(()=>{screen.style.display='none';document.dispatchEvent(new CustomEvent('skymark-auth',{detail:{type:'view'}}));},400);
     }else{
       err.textContent='Incorrect wachtwoord. Probeer opnieuw.';
       field.value='';field.focus();field.style.borderColor='#c97070';
@@ -1234,16 +1240,22 @@ window.addEventListener('scroll',()=>{
   `;
   document.body.appendChild(pwOverlay);
 
-  // Only mark elements as editable in edit sessions
-  if (sessionStorage.getItem('skymark_auth') === 'edit') {
-    markEditable();
+  // Hide button by default — show only after confirmed edit login
+  editorBtn.style.display = 'none';
+
+  function initEditor(authType) {
+    if (authType === 'edit') {
+      markEditable();
+      editorBtn.style.display = '';
+    } else {
+      editorBtn.style.display = 'none';
+    }
   }
 
-  // Only show editor button if logged in with edit password
-  const isEditSession = sessionStorage.getItem('skymark_auth') === 'edit';
-  if (!isEditSession) {
-    editorBtn.style.display = 'none';
-  }
+  // Listen for auth event (fired after login or on page load if session exists)
+  document.addEventListener('skymark-auth', (e) => {
+    initEditor(e.detail.type);
+  });
 
   editorBtn.addEventListener('click', () => {
     if (sessionStorage.getItem('skymark_editor') === '1') {
