@@ -359,7 +359,7 @@ footer{background:var(--black);border-top:1px solid rgba(85,102,85,.2);padding:4
 .editor-toolbar-btn--save{background:var(--gold);border-color:var(--gold);color:var(--black);}
 .editor-toolbar-btn--save:hover{background:#d4aa55;}
 .editor-toolbar-hint{font-family:'PPMori',sans-serif;font-size:.58rem;color:rgba(220,235,218,.35);margin-left:auto;}
-body.editing [data-editable]{outline:1px dashed rgba(202,162,75,.4);cursor:text;transition:outline .15s;}
+[data-editable]{outline:none;cursor:default;}body.editing [data-editable]{outline:1px dashed rgba(202,162,75,.4);cursor:text;transition:outline .15s;}
 body.editing [data-editable]:hover{outline:1px solid rgba(202,162,75,.8);background:rgba(202,162,75,.04);}
 body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba(202,162,75,.06);color:inherit;}
 #editor-pw-overlay{position:fixed;inset:0;z-index:10001;background:rgba(16,19,16,.92);display:none;align-items:center;justify-content:center;}
@@ -504,7 +504,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba
     </div>
     <div class="channel-block reveal">
     <div class="channel-header">
-      <span class="channel-num">02</span>
+      <span class="channel-num">01</span>
       <div><h3 class="channel-title">E-mail & Leadnurturing</h3><p class="channel-intro">Formats die ingeschreven geïnteresseerden warm houden en dieper verbinden met Skymark en de buurt.</p></div>
     </div>
     <div class="concepts-stack"><div class="concept-card reveal">
@@ -542,7 +542,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba
   </div>
 <div class="channel-block reveal">
     <div class="channel-header">
-      <span class="channel-num">03</span>
+      <span class="channel-num">02</span>
       <div><h3 class="channel-title">Events & Activatie</h3><p class="channel-intro">Fysieke ervaringen die de abstracte belofte van Skymark concreet en onvergetelijk maken.</p></div>
     </div>
     <div class="concepts-stack"><div class="concept-card reveal">
@@ -616,7 +616,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba
   </div>
 <div class="channel-block reveal">
     <div class="channel-header">
-      <span class="channel-num">04</span>
+      <span class="channel-num">03</span>
       <div><h3 class="channel-title">Social Media</h3><p class="channel-intro">Content die gebouwd is voor organisch bereik, deelbaarheid en doorlopende betrokkenheid tijdens de bouw.</p></div>
     </div>
     <div class="concepts-stack"><div class="concept-card reveal">
@@ -821,7 +821,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba
   </div>
 <div class="channel-block reveal">
     <div class="channel-header">
-      <span class="channel-num">05</span>
+      <span class="channel-num">04</span>
       <div><h3 class="channel-title">Content & Redactie</h3><p class="channel-intro">Verhaalgedreven content die de buurt, de bouw en de toekomstige bewoners tot leven brengt.</p></div>
     </div>
     <div class="concepts-stack"><div class="concept-card reveal">
@@ -1005,15 +1005,26 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold);background:rgba
 
 <script>
 (function(){
-  const CORRECT='girxy6-nidzyn-wUknir';
+  const PW_VIEW='girxy6-nidzyn-wUknir';
+  const PW_EDIT='skymark-edit-2025';
   const screen=document.getElementById('password-screen');
   const field=document.getElementById('pw-field');
   const btn=document.getElementById('pw-btn');
   const err=document.getElementById('pw-error');
-  if(sessionStorage.getItem('skymark_auth')==='1'){screen.style.display='none';}
+  // Restore session
+  const saved=sessionStorage.getItem('skymark_auth');
+  if(saved==='view'||saved==='edit'){screen.style.display='none';}
+  if(saved==='edit'){sessionStorage.setItem('skymark_editor','1');}
   function attempt(){
-    if(field.value===CORRECT){
-      sessionStorage.setItem('skymark_auth','1');
+    const val=field.value;
+    if(val===PW_EDIT){
+      sessionStorage.setItem('skymark_auth','edit');
+      sessionStorage.setItem('skymark_editor','1');
+      screen.style.opacity='0';screen.style.transition='opacity .4s ease';
+      setTimeout(()=>screen.style.display='none',400);
+    }else if(val===PW_VIEW){
+      sessionStorage.setItem('skymark_auth','view');
+      sessionStorage.removeItem('skymark_editor');
       screen.style.opacity='0';screen.style.transition='opacity .4s ease';
       setTimeout(()=>screen.style.display='none',400);
     }else{
