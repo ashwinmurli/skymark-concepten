@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="nl"><head><style>body {transition: opacity ease-in 0.2s; } 
 body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
 
 /* ── CONCEPTEN SUBNAV ── */
 .concepten-subnav{
@@ -404,10 +406,15 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
     outline: 2px solid black !important;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
   }
+</style><style data-emotion="cosmos-global-global" data-s=""></style><style data-emotion="cosmos-global-global" data-s=""></style><style data-emotion="cosmos-global-global" data-s=""></style><style>
+  .imageye-selected {
+    outline: 2px solid black !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+  }
 </style><style data-emotion="cosmos-global-global" data-s=""></style><style data-emotion="cosmos-global-global" data-s=""></style><style data-emotion="cosmos-global-global" data-s=""></style></head>
 <body class="editing">
 
-<div id="password-screen">
+<div id="password-screen" style="">
   <div class="pw-box">
     <div class="pw-logo"><svg id="Layer_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 321.22 48.26">
   <defs>
@@ -501,8 +508,8 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
   <div class="nav-inner">
     <a href="#" class="nav-link nav-brand">Skymark</a>
     <a href="#context" class="nav-link">01&nbsp;&nbsp;Context</a>
-    <a href="#concepten" class="nav-link">02&nbsp;&nbsp;Concepten</a>
-    <a href="#fases" class="nav-link active">03&nbsp;&nbsp;Campagnefases</a>
+    <a href="#concepten" class="nav-link active">02&nbsp;&nbsp;Concepten</a>
+    <a href="#fases" class="nav-link">03&nbsp;&nbsp;Campagnefases</a>
   </div>
 </nav>
 
@@ -536,12 +543,12 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
       <p class="section-intro" style="color:var(--moss)">De campagneconcepten gegroepeerd op kanaal; van social media en e-mail tot redactionele content en live events.</p>
     </div>
     <div class="concepten-subnav">
-      <a class="subnav-link active" data-target="channel-0">01 &mdash; E-mail &amp; Leadgen</a>
-      <a class="subnav-link" data-target="channel-1">02 &mdash; Events &amp; Activatie</a>
-      <a class="subnav-link" data-target="channel-2">03 &mdash; Social Media</a>
-      <a class="subnav-link" data-target="channel-3">04 &mdash; Content &amp; Redactie</a>
+      <a class="subnav-link" data-target="channel-0">01 — E-mail &amp; Leadgen</a>
+      <a class="subnav-link" data-target="channel-1">02 — Events &amp; Activatie</a>
+      <a class="subnav-link" data-target="channel-2">03 — Social Media</a>
+      <a class="subnav-link active" data-target="channel-3">04 — Content &amp; Redactie</a>
     </div>
-    <div class="channel-block reveal visible">
+    <div class="channel-block reveal visible" id="channel-0">
     <div class="channel-header">
       <span class="channel-num">01</span>
       <div><h3 class="channel-title">E-mail &amp; Leadgen</h3><p class="channel-intro">Formats die ingeschreven geïnteresseerden warm houden en dieper verbinden met Skymark en de buurt.</p></div>
@@ -579,7 +586,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
         </div>
       </div></div>
   </div>
-<div class="channel-block reveal visible">
+<div class="channel-block reveal visible" id="channel-1">
     <div class="channel-header">
       <span class="channel-num">02</span>
       <div><h3 class="channel-title">Events &amp; Activatie</h3><p class="channel-intro">Fysieke ervaringen die de abstracte belofte van Skymark concreet en onvergetelijk maken.</p></div>
@@ -653,7 +660,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
         </div>
       </div></div>
   </div>
-<div class="channel-block reveal visible">
+<div class="channel-block reveal visible" id="channel-2">
     <div class="channel-header">
       <span class="channel-num">03</span>
       <div><h3 class="channel-title">Social Media</h3><p class="channel-intro">Content die gebouwd is voor organisch bereik, deelbaarheid en doorlopende betrokkenheid tijdens de bouw.</p></div>
@@ -858,7 +865,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
         </div>
       </div></div>
   </div>
-<div class="channel-block reveal visible">
+<div class="channel-block reveal visible" id="channel-3">
     <div class="channel-header">
       <span class="channel-num">04</span>
       <div><h3 class="channel-title">Content &amp; Redactie</h3><p class="channel-intro">Verhaalgedreven content die de buurt, de bouw en de toekomstige bewoners tot leven brengt.</p></div>
@@ -872,7 +879,7 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
         </div>
         <div class="concept-body">
           <div class="concept-main">
-            <div class="concept-section"><span class="concept-section-label">Doel</span><p>De buurt tastbaar maken voor een breed publiek én inschrijvingen voor de exclusieve Hotspot Guide stimuleren. Deze social serie is de publieke voorkant van de Hotspot Guide — hij wekt nieuwsgierigheid, de guide geeft de verdieping.</p></div>
+            <div class="concept-section"><span class="concept-section-label">Doel</span><p>De buurt tastbaar maken voor een breed publiek én inschrijvingen voor de exclusieve Hotspot Guide stimuleren. Deze social serie is de publieke voorkant van de Hotspot Guide. Hij wekt nieuwsgierigheid, de guide geeft de verdieping.</p></div>
             <div class="concept-section"><span class="concept-section-label">Concept</span><p>Een doorlopende social serie die de Binckhorst en omgeving in beeld brengt via concrete hotspots. Elke post introduceert één plek en sluit af met een call-to-action naar de exclusieve Hotspot Guide — die alleen beschikbaar is voor Skymark-inschrijvers. De serie fungeert zo als leadgenerator voor de e-mailcampagne.</p></div>
             <div class="concept-section concept-section--uitwerking">
               <span class="concept-section-label">Uitwerking</span>
@@ -1360,4 +1367,4 @@ window.addEventListener('scroll',()=>{
   updateActive();
 })();
 </script>
-</body></html>
+<div><span></span></div><div popover="manual" style="z-index: 2147483647 !important; padding: 0px !important; margin: 0px !important; border-radius: 8px !important; position: fixed !important; color-scheme: normal !important; box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px 0px, rgba(0, 0, 0, 0.18) 0px 8px 15px 6px !important; border: 1px solid rgba(0, 0, 0, 0.9) !important; overflow: hidden !important; backdrop-filter: blur(20px) !important; background-color: rgba(35, 35, 35, 0.83) !important; top: 508px !important; left: -999999px !important; opacity: 0 !important; visibility: hidden !important; height: 113px !important; width: 295px !important;"></div></body></html>
