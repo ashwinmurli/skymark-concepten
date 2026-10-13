@@ -19,7 +19,7 @@ export default async function handler(req) {
   const token = process.env.GITHUB_TOKEN;
   const repo = 'ashwinmurli/skymark-concepten';
   const branch = 'main';
-  const filePath = 'index.html';
+  const filePath = 'formats/index.html';
 
   // Get current file SHA (needed for update)
   const getResp = await fetch(
