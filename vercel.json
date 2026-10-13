@@ -1,7 +1,11 @@
 {
   "version": 2,
+  "git": {
+    "deploymentEnabled": { "feedback": false }
+  },
   "routes": [
     { "src": "/api/save", "dest": "/api/save.js" },
+    { "src": "/api/review", "dest": "/api/review.js" },
     { "handle": "filesystem" },
     { "src": "/formats/?", "dest": "/formats/index.html" },
     { "src": "/fotoselectie/?", "dest": "/fotoselectie/index.html" },
