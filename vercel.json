@@ -5,6 +5,7 @@
     { "handle": "filesystem" },
     { "src": "/formats/?", "dest": "/formats/index.html" },
     { "src": "/fotoselectie/?", "dest": "/fotoselectie/index.html" },
+    { "src": "/brandbook/?", "dest": "/brandbook/index.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
