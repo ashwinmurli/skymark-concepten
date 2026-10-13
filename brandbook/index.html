@@ -118,6 +118,42 @@ footer{padding:56px 24px 40px;text-align:left;font-size:.6rem;letter-spacing:.12
 
 <div class="wrap">
 
+
+<style>
+.leadlines{margin:30px 0 8px;display:grid;gap:6px;}
+.leadlines .line{font-family:'PPTalisman',sans-serif;font-weight:300;font-size:clamp(26px,4.4vw,42px);color:var(--mist);line-height:1.15;}
+.leadlines .tag{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;font-family:'PPMori',sans-serif;}
+.story{border:1px solid rgba(220,235,218,.16);background:rgba(220,235,218,.03);padding:34px 30px;margin-top:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;}
+.story p{font-size:.98rem;line-height:1.75;color:var(--fog);max-width:52ch;}
+.fw{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:24px;}
+.fw .panel h3{margin-bottom:10px;}
+.fw .panel ol{margin:0;padding-left:18px;display:grid;gap:6px;}
+.fw .panel ol li::marker{color:var(--gold);}
+.fw .panel ol b{color:var(--mist);font-weight:500;}
+ul.avoid{list-style:none;margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;}
+ul.avoid li{padding-left:22px;position:relative;color:var(--fog);}
+ul.avoid li::before{content:"\00d7";position:absolute;left:0;top:0;color:var(--gold);}
+.scale{margin-top:20px;border:1px solid rgba(220,235,218,.16);}
+.scale .row{display:flex;justify-content:space-between;gap:16px;padding:12px 18px;border-top:1px solid rgba(220,235,218,.1);font-size:.85rem;}
+.scale .row:first-child{border-top:0;}
+.scale .row b{color:var(--mist);font-weight:500;}
+.scale .row span{color:var(--stone);font-variant-numeric:tabular-nums;}
+.shapes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:24px;}
+.shape{border:1px solid rgba(220,235,218,.16);background:rgba(220,235,218,.03);min-height:200px;display:flex;align-items:center;justify-content:center;color:var(--mist);padding:28px;}
+.shape svg{height:120px;width:auto;}
+.pairs{margin-top:24px;border:1px solid rgba(220,235,218,.16);max-width:560px;}
+.pairs .pr{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(220,235,218,.1);}
+.pairs .pr:first-child{border-top:0;}
+.pairs .pr span{padding:10px 18px;}
+.pairs .pr .do{color:var(--mist);font-weight:500;border-right:1px solid rgba(220,235,218,.1);}
+.pairs .pr .dont{color:var(--stone);text-decoration:line-through;text-decoration-color:rgba(202,162,75,.6);}
+.pairs .hd span{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;}
+.campagne{list-style:none;margin-top:14px;display:grid;gap:8px;}
+.campagne li{font-family:'PPTalisman',sans-serif;font-weight:300;font-size:1.25rem;color:var(--fog);}
+.campagne li.lead-line{color:var(--mist);font-size:1.6rem;}
+.campagne li.lead-line::after{content:"leidend";font-family:'PPMori',sans-serif;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-left:12px;vertical-align:middle;}
+</style>
+
 <section class="hero">
   <div class="bm"><svg id="Mark_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 153.48 177.74">
   <defs>
@@ -150,36 +186,69 @@ footer{padding:56px 24px 40px;text-align:left;font-size:.6rem;letter-spacing:.12
     </g>
   </g>
 </svg></div>
-  <p class="eyebrow">Amvest &middot; De Binckhorst &middot; Versie 1.0</p>
+  <p class="eyebrow">Amvest &middot; De Binckhorst &middot; op basis van Brand Book V3</p>
   <h1>Skymark Brandbook</h1>
   <p class="lead muted">De merkgids van Skymark: het verhaal, het logo, de kleuren, de typografie, de toon en het beeld. Alles wat je nodig hebt om Skymark consequent te laden, van social post tot geveldoek.</p>
-  <p class="hero payoff">Stadse energie.<br>Hemelse rust.</p>
+  <div class="leadlines">
+    <p class="tag">Leidende campagneregels</p>
+    <p class="line">A quiet place above the noise.</p>
+    <p class="line">Under construction, above expectations.</p>
+  </div>
+</section>
+
+<hr class="rule">
+<section id="introductie">
+  <p class="eyebrow">01 &middot; Introductie</p>
+  <h2>Voorwoord</h2>
+  <blockquote>Skymark is meer dan een gebouw. Een plek waar twee werelden samenkomen: de levendige energie van de stad beneden en de serene rust van wonen boven de skyline.</blockquote>
+  <p class="muted">Dit brandbook is de leidraad om &eacute;&eacute;n herkenbaar en krachtig merk neer te zetten. Je vindt hier de merkessentie, de tone of voice, de visuele identiteit en de richtlijnen voor communicatie. Alles wat je nodig hebt om Skymark consistent en inspirerend tot leven te brengen, van social post tot bouwhek, van brochure tot website.</p>
 </section>
 
 <hr class="rule">
 <section id="verhaal">
-  <p class="eyebrow">01 &middot; Het merk</p>
-  <h2>Een statement in de skyline</h2>
-  <p>Waar vroeger werd gewerkt, groeit nu een nieuwe stadswijk. In het hart daarvan komt Skymark: uitgesproken architectuur, 340 koop- en huurappartementen en een kroon die de skyline siert. Beneden bruist de Binckhorst met horeca, makers en een buurt in beweging. Zodra je de lift instapt, laat je de reuring achter je en kom je thuis in rust en ruimte.</p>
-  <p style="margin-top:14px;">Die spanning is het merk. Skymark belooft allebei: midden in de energie van de stad wonen, en er tegelijk boven staan. Elke uiting kiest bewust positie op die as, en de beste uitingen laten beide kanten voelen.</p>
-  <blockquote>Skymark gaat niet alleen zelf de hoogte in; het tilt de nieuwe Binckhorst naar een hoger niveau.</blockquote>
-  <div class="grid2">
+  <p class="eyebrow">02 &middot; Merkfundament</p>
+  <h2>Merkverhaal</h2>
+  <div class="story">
+    <p>Den Haag kent statige lanen.<br>Maar de Binckhorst? Die kent vuile handen.<br>Hier word niet gepraat, hier word gemaakt.<br>Een plek waar oude fabriekshallen ruimte geven aan nieuwe ontmoetingen.<br><br>En boven alles torent straks Skymark.<br>Met 340 appartementen die niet verdwijnen in de massa, maar hun plek opeisen in de skyline van Den Haag.<br>Met uitgesproken lijnen en een echte kroon aan de top.</p>
+    <p>Hier wonen mensen die hun eigen keuzes maken.<br>Die midden in de reuring van de stad willen leven, maar zich ook willen terugtrekken in de rust van hun eigen oase in de wolken.<br><br>Hier is de stad bij j&oacute;u in de buurt.<br><br>Skymark<br>A quiet place above the noise.</p>
+  </div>
+  <div class="fw">
     <div class="panel">
-      <h3>Stadse energie</h3>
-      <p class="small">De Binckhorst als maakplek: horeca, ateliers, kades en een wijk die elke dag verandert. Dit is de laag van De Binckhorst Maakt en de Hotspot Guide.</p>
+      <h3>Essentie</h3>
+      <p class="small">Skymark brengt twee werelden samen: de levendigheid van de stad en de rust van het uitzicht. Voor wie houdt van reuring, maar kiest voor ruimte.</p>
     </div>
     <div class="panel">
-      <h3>Hemelse rust</h3>
-      <p class="small">Licht, lucht en uitzicht. Hoge ramen, slimme plattegronden en een thuis boven de stad. A quiet place above the noise.</p>
+      <h3>Belofte</h3>
+      <ol>
+        <li><b>A quiet place above the noise.</b></li>
+        <li>Elevate your everyday.</li>
+        <li>One tower. Infinite possibilities.</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>Doelgroep</h3>
+      <p class="small">Kosmopolieten (Motivaction): hoogopgeleid, internationaal geori&euml;nteerd, stedelijk en progressief. Vrijheid, authenticiteit, kwaliteit en duurzaamheid. Beleving boven bezit, op zoek naar contrast, esthetiek en een unieke woonervaring.</p>
+    </div>
+    <div class="panel">
+      <h3>Waarden</h3>
+      <p class="small"><b style="color:var(--mist)">Vrijheid.</b> Jij kiest hoe je leeft: midden in de stad of boven het rumoer.<br><b style="color:var(--mist)">Authenticiteit.</b> Geen fa&ccedil;ade, maar een gebouw met karakter en een buurt vol verhalen.<br><b style="color:var(--mist)">Kwaliteit.</b> Hoogwaardig wonen, met aandacht voor details en duurzaamheid.</p>
+    </div>
+    <div class="panel">
+      <h3>USP's</h3>
+      <p class="small"><b style="color:var(--mist)">Twee werelden in &eacute;&eacute;n gebouw.</b> Stadse levendigheid op straatniveau, serene rust in de lucht. Koop en huur.<br><b style="color:var(--mist)">Verbonden met de stad.</b> In de creatieve Binckhorst, met horeca, makers en ondernemers om de hoek.<br><b style="color:var(--mist)">Architectuur met karakter.</b> Uitgesproken vormen, een kroon aan de top, een landmark in Den Haag.</p>
+    </div>
+    <div class="panel">
+      <h3>Positionering</h3>
+      <p class="small">Voor stedelijke pioniers en wereldburgers die zich thuis voelen in contrasten: leven waar het gebeurt en wonen in de rust. Niet voor &eacute;&eacute;n soort portemonnee.</p>
     </div>
   </div>
 </section>
 
 <hr class="rule">
 <section id="logo">
-  <p class="eyebrow">02 &middot; Logo</p>
-  <h2>Wordmark en beeldmerk</h2>
-  <p class="muted">Het wordmark is de primaire handtekening. Het beeldmerk (het monogram met de kroonlijn) is voor kleine formaten: avatars, favicons en stempels op beeld.</p>
+  <p class="eyebrow">03 &middot; Logo</p>
+  <h2>Wordmark en kroon</h2>
+  <p class="muted">Het wordmark is het primaire logo van Skymark: een strak, geometrisch woordmerk in kapitalen met een monoline-structuur. Het secundaire logo is de gestileerde kroon, opgebouwd uit strakke geometrische vormen. De kroon is een ondersteunend element voor kleine formaten, zoals avatars, favicons en stempels op beeld.</p>
   <div class="logoshow">
     <div>
       <div class="logocard on-black"><svg id="Layer_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 321.22 48.26">
@@ -198,7 +267,7 @@ footer{padding:56px 24px 40px;text-align:left;font-size:.6rem;letter-spacing:.12
     <path class="cls-1" d="M129.19.33v12.46c0,6.33-3.23,9.66-8.07,9.66-.01,0-.02,0-.03,0h-13.96c-4.86-.01-8.07-3.34-8.07-9.65V.33h-5.35v11.35c0,8.66,5.34,13.38,13.42,13.39h4.4v22.81h5.19v-22.81h4.37s.02,0,.03,0c8.07,0,13.39-4.72,13.39-13.39V.33h-5.32Z"></path>
   </g>
 </svg></div>
-      <p class="caption">Wordmark &middot; mist op black</p>
+      <p class="caption">Wordmark &middot; primair &middot; op Binck Black</p>
     </div>
     <div>
       <div class="logocard on-pine"><svg id="Layer_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 321.22 48.26">
@@ -217,7 +286,7 @@ footer{padding:56px 24px 40px;text-align:left;font-size:.6rem;letter-spacing:.12
     <path class="cls-1" d="M129.19.33v12.46c0,6.33-3.23,9.66-8.07,9.66-.01,0-.02,0-.03,0h-13.96c-4.86-.01-8.07-3.34-8.07-9.65V.33h-5.35v11.35c0,8.66,5.34,13.38,13.42,13.39h4.4v22.81h5.19v-22.81h4.37s.02,0,.03,0c8.07,0,13.39-4.72,13.39-13.39V.33h-5.32Z"></path>
   </g>
 </svg></div>
-      <p class="caption">Wordmark &middot; mist op pine</p>
+      <p class="caption">Wordmark &middot; op Urban Pine</p>
     </div>
     <div>
       <div class="logocard on-mist"><svg id="Layer_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 321.22 48.26">
@@ -236,7 +305,7 @@ footer{padding:56px 24px 40px;text-align:left;font-size:.6rem;letter-spacing:.12
     <path class="cls-1" d="M129.19.33v12.46c0,6.33-3.23,9.66-8.07,9.66-.01,0-.02,0-.03,0h-13.96c-4.86-.01-8.07-3.34-8.07-9.65V.33h-5.35v11.35c0,8.66,5.34,13.38,13.42,13.39h4.4v22.81h5.19v-22.81h4.37s.02,0,.03,0c8.07,0,13.39-4.72,13.39-13.39V.33h-5.32Z"></path>
   </g>
 </svg></div>
-      <p class="caption">Wordmark &middot; black op mist</p>
+      <p class="caption">Wordmark &middot; op Mist Green</p>
     </div>
     <div>
       <div class="logocard mark on-black" style="color:var(--gold)"><svg id="Mark_3" data-name="Layer 3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 153.48 177.74">
@@ -270,85 +339,99 @@ footer{padding:56px 24px 40px;text-align:left;font-size:.6rem;letter-spacing:.12
     </g>
   </g>
 </svg></div>
-      <p class="caption">Beeldmerk &middot; gold op black</p>
+      <p class="caption">Kroon &middot; secundair &middot; Golden Yellow op Binck Black</p>
     </div>
   </div>
   <ul class="rules">
-    <li><b>Vrije ruimte:</b> houd rondom het wordmark minimaal de hoogte van de letter S vrij.</li>
-    <li><b>Minimale breedte:</b> wordmark 120 px digitaal, 30 mm in druk; daaronder gebruik je het beeldmerk.</li>
-    <li><b>Kleur:</b> altijd in een kleur uit het palet, op rustige delen van het beeld. Nooit in vol wit op een licht beeld, nooit in outline, nooit schuin of met schaduw.</li>
+    <li><b>Positionering:</b> het logo kan in hoeken en in het horizontale en verticale midden gebruikt worden.</li>
+    <li><b>Kleur:</b> altijd in &eacute;&eacute;n kleur uit het palet, op rustige delen van het beeld.</li>
+  </ul>
+  <h3 style="margin-top:28px;">Vermijden</h3>
+  <ul class="avoid">
+    <li>Geen verschil in kleur of transparantie</li>
+    <li>Geen kleuren buiten de merkkleuren</li>
+    <li>Geen proporties veranderen</li>
+    <li>Geen gradients toepassen</li>
+    <li>Draai het logo niet</li>
+    <li>Geen spatiering veranderen</li>
   </ul>
 </section>
 
 <hr class="rule">
 <section id="kleur">
-  <p class="eyebrow">03 &middot; Kleur</p>
-  <h2>Donkere basis, goud als accent</h2>
-  <p class="muted">Het palet komt uit het gebied: industrieel groen, avondlicht en beton. Black of pine draagt de omgeving, mist en fog doen het woord, gold markeert. Hoe minder goud, hoe duurder het voelt; gebruik het alleen voor accenten en nooit als vlakvulling.</p>
+  <p class="eyebrow">04 &middot; Kleuren</p>
+  <h2>Stoer &eacute;n verfijnd</h2>
+  <p class="muted">Het palet vangt het contrast tussen stedelijke kracht en serene elegantie. Donkere tonen zorgen voor karakter en diepte, lichte tinten brengen balans en rust, terwijl accenten energie en warmte toevoegen. Samen vormen ze een visuele taal die stoer &eacute;n verfijnd is, precies wat Skymark wil uitstralen.</p>
   <div class="swatches">
-    <div class="sw"><div class="chip" style="background:#101310"></div><div class="info"><b>Black</b><span>#101310</span></div></div>
-    <div class="sw"><div class="chip" style="background:#556655"></div><div class="info"><b>Pine</b><span>#556655</span></div></div>
-    <div class="sw"><div class="chip" style="background:#758370"></div><div class="info"><b>Moss</b><span>#758370</span></div></div>
-    <div class="sw"><div class="chip" style="background:#DCEBDA"></div><div class="info"><b>Mist</b><span>#DCEBDA</span></div></div>
-    <div class="sw"><div class="chip" style="background:#F1F1EB"></div><div class="info"><b>Fog</b><span>#F1F1EB</span></div></div>
-    <div class="sw"><div class="chip" style="background:#8B8B7E"></div><div class="info"><b>Stone</b><span>#8B8B7E</span></div></div>
-    <div class="sw"><div class="chip" style="background:#CAA24B"></div><div class="info"><b>Gold</b><span>#CAA24B</span></div></div>
-    <div class="sw"><div class="chip" style="background:#FFFFFF"></div><div class="info"><b>White</b><span>#FFFFFF</span></div></div>
-  </div>
-</section>
-
-<hr class="rule">
-<section id="typografie">
-  <p class="eyebrow">04 &middot; Typografie</p>
-  <h2>Talisman spreekt, Mori legt uit</h2>
-  <div class="typespec">
-    <p class="spec">PP Talisman &middot; Light &middot; koppen en campagneregels</p>
-    <p class="demo-talisman">Wonen op hoogte, in het hart van de Binckhorst</p>
-  </div>
-  <div class="typespec">
-    <p class="spec">PP Mori &middot; Regular en Semibold &middot; lopende tekst en interface</p>
-    <p class="demo-mori">Licht, lucht en uitzicht vormen de basis van elk appartement. Dankzij de slimme plattegronden en royale ramen voelt elke ruimte open en rustig. Hier vind je ruimte voor wat ertoe doet.</p>
+    <div class="sw"><div class="chip" style="background:#101310"></div><div class="info"><b>Binck Black</b><span>#101310</span></div></div>
+    <div class="sw"><div class="chip" style="background:#556655"></div><div class="info"><b>Urban Pine</b><span>#556655</span></div></div>
+    <div class="sw"><div class="chip" style="background:#758370"></div><div class="info"><b>Concrete Moss</b><span>#758370</span></div></div>
+    <div class="sw"><div class="chip" style="background:#DCEBDA"></div><div class="info"><b>Mist Green</b><span>#DCEBDA</span></div></div>
+    <div class="sw"><div class="chip" style="background:#8B8B7E"></div><div class="info"><b>Sage Stone</b><span>#8B8B7E</span></div></div>
+    <div class="sw"><div class="chip" style="background:#D4D4CF"></div><div class="info"><b>Cement Grey</b><span>#D4D4CF</span></div></div>
+    <div class="sw"><div class="chip" style="background:#F1F1EB"></div><div class="info"><b>Cloud White</b><span>#F1F1EB</span></div></div>
+    <div class="sw"><div class="chip" style="background:#763232"></div><div class="info"><b>Brick Red</b><span>#763232</span></div></div>
+    <div class="sw"><div class="chip" style="background:#CAA24B"></div><div class="info"><b>Golden Yellow</b><span>#CAA24B</span></div></div>
+    <div class="sw"><div class="chip" style="background:#47324F"></div><div class="info"><b>Midnight Plum</b><span>#47324F</span></div></div>
   </div>
   <ul class="rules">
-    <li><b>Koppen</b> in Talisman Light, zinskapitaal, krap gespatieerd (-0.01em), nooit vet en nooit in kleinkapitaal.</li>
-    <li><b>Eyebrows en labels</b> in Mori Semibold, kapitalen, ruime letterspatiëring (.14em tot .22em), klein corps.</li>
-    <li><b>Lopende tekst</b> in Mori Regular, regelafstand 1.6, maximaal 66 tekens per regel.</li>
-    <li><b>Talisman Compressed</b> alleen voor grote decoratieve cijfers en korte stempels, nooit voor zinnen.</li>
+    <li><b>Combinaties:</b> lichte tekst (Mist Green of Cloud White) op donkere vlakken, Binck Black op lichte vlakken.</li>
+    <li><b>Accenten:</b> Brick Red, Golden Yellow en Midnight Plum zijn accent- en campagnekleuren; combineer ze met Cloud White of Binck Black.</li>
   </ul>
 </section>
 
 <hr class="rule">
-<section id="tone">
-  <p class="eyebrow">05 &middot; Tone of voice</p>
-  <h2>Direct, warm en zonder opsmuk</h2>
-  <p class="muted">Skymark schrijft zoals de Binckhorst praat: concreet, nuchter en met een knipoog naar boven. Nederlands is de voertaal; Engels mag alleen in korte campagneregels die het concept dragen.</p>
-  <div class="voicepair">
-    <div class="panel">
-      <h3>Zo wel</h3>
-      <p class="small">&ldquo;Skymark: a quiet place above the noise&rdquo;<br>&ldquo;Under construction, above expectations&rdquo;<br>&ldquo;Beneden beweegt de stad snel, boven bepaal jij het tempo.&rdquo;<br>&ldquo;Van koffietent tot kade. Dit ligt straks om de hoek.&rdquo;</p>
-    </div>
-    <div class="panel">
-      <h3>Zo niet</h3>
-      <p class="small">Geen makelaarsjargon (&ldquo;riant&rdquo;, &ldquo;parel&rdquo;, &ldquo;unieke kans&rdquo;). Geen uitroeptekens stapelen. Geen beloftes over planning of prijs buiten de vastgestelde communicatie. Geen Engels in lopende tekst.</p>
-    </div>
+<section id="typografie">
+  <p class="eyebrow">05 &middot; Typografie</p>
+  <h2>Mori draagt, Talisman accentueert</h2>
+  <div class="typespec">
+    <p class="spec">PP Mori &middot; primair &middot; Book en Semibold</p>
+    <p class="demo-mori" style="font-size:1.35rem;max-width:44ch;color:var(--fog);">Licht, lucht en uitzicht vormen de basis van elk appartement. Dankzij de slimme plattegronden en royale ramen voelt elke ruimte open en rustig.</p>
+    <p class="demo-mori muted" style="margin-top:14px;">PP Mori is een eigentijds grotesk lettertype dat vertrouwen, helderheid en verfijning uitstraalt. Perfect voor titels, navigatie en informatieve teksten. De strakke lijnen zorgen voor een stedelijke, minimalistische basis die aansluit bij de moderne architectuur van Skymark.</p>
+  </div>
+  <div class="typespec">
+    <p class="spec">PP Talisman &middot; secundair &middot; Light, Medium en Compressed</p>
+    <p class="demo-talisman">Wonen op hoogte, in het hart van de Binckhorst</p>
+    <p class="demo-mori muted" style="margin-top:14px;">PP Talisman voegt expressiviteit en warmte toe. Gebruik Talisman spaarzaam, voor nadruk en persoonlijkheid in quotes, campagnes en statements. Het vangt het dromerige, creatieve aspect van Skymark. Compressed is er alleen voor grote decoratieve cijfers en korte stempels.</p>
+  </div>
+  <div class="scale">
+    <div class="row"><b>Display title</b><span>150 px &middot; tracking -3%</span></div>
+    <div class="row"><b>H1 headline</b><span>100 px &middot; tracking -3%</span></div>
+    <div class="row"><b>H2 headline</b><span>75 px &middot; tracking -3%</span></div>
+    <div class="row"><b>H3 headline</b><span>60 px &middot; tracking -3%</span></div>
+    <div class="row"><b>H4 headline</b><span>36 px &middot; tracking -3%</span></div>
+    <div class="row"><b>Paragraphs &amp; running text</b><span>24 px &middot; tracking -2%</span></div>
+    <div class="row"><b>Captions</b><span>20 px &middot; tracking 0%</span></div>
+  </div>
+</section>
+
+<hr class="rule">
+<section id="grafisch">
+  <p class="eyebrow">06 &middot; Grafisch</p>
+  <h2>Vormen en patronen</h2>
+  <p class="muted">De vormen verwijzen naar de kroon op de skyline en het spel van lijnen en hoeken in de gevel. Ze geven flexibiliteit in toepassing: van patronen tot subtiele accenten. Door de combinatie van scherpe hoeken en afgeronde details ontstaat een visuele taal die stoer oogt, maar toegankelijk blijft.</p>
+  <div class="shapes">
+    <div class="shape"><svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="108" height="138" rx="54" ry="60" fill="none" stroke="currentColor" stroke-width="7"/></svg></div>
+    <div class="shape"><svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M24 38 q36 26 72 0" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><g><circle cx="24" cy="30" r="3.4"/><circle cx="36" cy="36" r="3.4"/><circle cx="48" cy="40" r="3.4"/><circle cx="60" cy="41.5" r="3.4"/><circle cx="72" cy="40" r="3.4"/><circle cx="84" cy="36" r="3.4"/><circle cx="96" cy="30" r="3.4"/></g><path d="M24 112 q36 -26 72 0" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><g><circle cx="24" cy="120" r="3.4"/><circle cx="36" cy="114" r="3.4"/><circle cx="48" cy="110" r="3.4"/><circle cx="60" cy="108.5" r="3.4"/><circle cx="72" cy="110" r="3.4"/><circle cx="84" cy="114" r="3.4"/><circle cx="96" cy="120" r="3.4"/></g></svg></div>
+    <div class="shape"><svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="75" rx="52" ry="66" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="0.1 11"/></svg></div>
   </div>
   <ul class="rules">
-    <li><b>Begin bij de lezer:</b> schrijf wat iemand er ziet, voelt of aan heeft, niet wat het project is.</li>
-    <li><b>Kort en actief:</b> zinnen onder de 20 woorden, werkwoorden vooraan.</li>
-    <li><b>De buurt is hoofdpersoon</b> in de See-fase; het gebouw neemt het over richting verkoop.</li>
+    <li><b>Toepassing:</b> in patronen, achtergronden, iconografie of als opvallend designelement in campagnes en drukwerk.</li>
+    <li><b>Patronen:</b> het S-golfpatroon (afgeleid van de S uit het wordmark) werkt toon-op-toon, als subtiele vulling op merkkleurvlakken.</li>
+    <li><b>Variatie:</b> speel met kleur, schaal en compositie, zonder dat de herkenbaarheid verloren gaat.</li>
   </ul>
 </section>
 
 <hr class="rule">
 <section id="fotografie">
-  <p class="eyebrow">06 &middot; Fotografie</p>
-  <h2>Documentair, warm en echt</h2>
-  <p class="muted">We fotograferen de Binckhorst zoals hij is: echte mensen, echte plekken, niets geposeerd. De warmte komt uit licht, mensen en activiteit, niet uit styling. Grade: warm wit, lucht in de schaduwen; de rauwheid van het gebied mag blijven, somberheid niet.</p>
+  <p class="eyebrow">07 &middot; Beeldtaal</p>
+  <h2>Open, natuurlijk en dichtbij</h2>
+  <p class="muted">De beelden zijn open, natuurlijk en dichtbij, alsof je een moment in iemands dag meebeleeft. Licht speelt een hoofdrol: veelal zacht en warm, met een focus op schaduw en textuur. De composities zijn rustig, maar nooit steriel; altijd met een menselijk detail of een subtiele imperfectie die authenticiteit toevoegt. Realistische kleuren, geen harde filters, en een stijl die balans vindt tussen rauwe stedelijkheid en verfijnde elegantie.</p>
   <div class="fotogrid">
-    <figure><img src="../fotoselectie/img/10-b.jpg" alt="Binckhorst-letters op een bakstenen muur"><figcaption>De plek</figcaption></figure>
-    <figure><img src="../fotoselectie/img/06-b.jpg" alt="Caf&eacute; met lichtsnoeren en gasten"><figcaption>Stadse energie</figcaption></figure>
-    <figure><img src="../fotoselectie/img/11-b.jpg" alt="Kade met terras en woontorens"><figcaption>De stad aan het water</figcaption></figure>
-    <figure><img src="../fotoselectie/img/15-b.jpg" alt="Water en groen in avondlicht"><figcaption>Hemelse rust</figcaption></figure>
+    <figure><img src="../fotoselectie/img/10-b.jpg" alt="De Binckhorst, muuropschrift Binckhaven" loading="lazy"><figcaption>De plek</figcaption></figure>
+    <figure><img src="../fotoselectie/img/06-b.jpg" alt="Horeca in de Binckhorst" loading="lazy"><figcaption>Stadse energie</figcaption></figure>
+    <figure><img src="../fotoselectie/img/11-b.jpg" alt="De stad aan het water" loading="lazy"><figcaption>De stad aan het water</figcaption></figure>
+    <figure><img src="../fotoselectie/img/15-b.jpg" alt="Groen en rust in de stad" loading="lazy"><figcaption>Hemelse rust</figcaption></figure>
   </div>
   <ul class="rules">
     <li><b>Mensen:</b> aan het werk of in beweging, nooit poserend naar de camera; herkenbare personen alleen met vastgelegde toestemming.</li>
@@ -359,14 +442,70 @@ footer{padding:56px 24px 40px;text-align:left;font-size:.6rem;letter-spacing:.12
 </section>
 
 <hr class="rule">
-<section id="toepassing">
-  <p class="eyebrow">07 &middot; Toepassingen</p>
-  <h2>Van format tot gevel</h2>
-  <p class="muted">De contentformats (De Binckhorst Maakt, de Hotspot Guide en het fasegebonden templatesysteem) zijn uitgewerkt op de <a href="/formats/" style="color:var(--gold)">formats-pagina</a>. Nieuwe toepassingen volgen dit brandbook: donkere basis, Talisman voor de kop, &eacute;&eacute;n gouden accent en beeld uit de eigen beeldbank.</p>
+<section id="tone">
+  <p class="eyebrow">08 &middot; Tone of voice</p>
+  <h2>Skymark is meer dan een gebouw</h2>
+  <p class="muted">Het is een plek waar stedelijke energie en serene hoogte samenkomen. Waar makers beneden cre&euml;ren en bewoners boven hun rust vinden. Hier wonen mensen die durven kiezen, die niet oplossen in de massa maar een stempel drukken. Skymark is een landmark voor lef, verbondenheid en stijl. Nederlands is de voertaal; Engels mag alleen in korte campagneregels die het concept dragen.</p>
+  <h3 style="margin-top:28px;">Campagneregels</h3>
+  <ul class="campagne">
+    <li class="lead-line">A quiet place above the noise.</li>
+    <li class="lead-line">Under construction, above expectations.</li>
+    <li>Make your (sky)mark.</li>
+    <li>High building, higher standards.</li>
+    <li>Move in. Move up.</li>
+    <li>Elevate your everyday.</li>
+    <li>One tower. Infinite possibilities.</li>
+    <li>Understated. Elevated.</li>
+    <li>Space for what matters.</li>
+    <li>From streetlight to starlight.</li>
+  </ul>
+  <h3 style="margin-top:34px;">Hoe we klinken</h3>
+  <div class="voicepair">
+    <div class="panel">
+      <h3>Website header</h3>
+      <p class="small">A quiet place above the noise.</p>
+    </div>
+    <div class="panel">
+      <h3>Social</h3>
+      <p class="small">Stel je voor: ontbijten met uitzicht over de stad, dineren in een nieuwe hotspot beneden. Dit is wonen in Skymark.</p>
+    </div>
+    <div class="panel">
+      <h3>Brochure</h3>
+      <p class="small">340 koop- en huurappartementen in een toren die de skyline van Den Haag markeert.</p>
+    </div>
+    <div class="panel">
+      <h3>Nieuwsbrief</h3>
+      <p class="small">Het aftellen is begonnen. Binnenkort gaat de verkoop van start. Markeer jij straks de skyline van Den Haag?</p>
+    </div>
+  </div>
+  <h3 style="margin-top:34px;">Do's en don'ts</h3>
+  <div class="pairs">
+    <div class="pr hd"><span class="do" style="text-decoration:none;">Zo wel</span><span>Zo niet</span></div>
+    <div class="pr"><span class="do">Vrijheid</span><span class="dont">Ruimte</span></div>
+    <div class="pr"><span class="do">Ruim</span><span class="dont">Groots</span></div>
+    <div class="pr"><span class="do">Karakter</span><span class="dont">Luxe</span></div>
+    <div class="pr"><span class="do">Eigen</span><span class="dont">Uniek</span></div>
+    <div class="pr"><span class="do">Verfijnd</span><span class="dont">Chic</span></div>
+    <div class="pr"><span class="do">Tijdloos</span><span class="dont">Trendy</span></div>
+    <div class="pr"><span class="do">Buren</span><span class="dont">Community</span></div>
+    <div class="pr"><span class="do">Iconisch</span><span class="dont">Revolutionair</span></div>
+    <div class="pr"><span class="do">Luchtkasteel</span><span class="dont">Droomhuis</span></div>
+  </div>
+  <ul class="rules" style="margin-top:28px;">
+    <li><b>Begin bij de lezer:</b> schrijf wat iemand er ziet, voelt of aan heeft, niet wat het project is.</li>
+    <li><b>Kort en actief:</b> zinnen onder de 20 woorden, werkwoorden vooraan.</li>
+    <li><b>Geen makelaarsjargon:</b> geen riant, parel of unieke kans, geen uitroeptekens stapelen, geen beloftes over planning of prijs buiten de vastgestelde communicatie.</li>
+  </ul>
 </section>
 
-</div>
-<footer>Skymark &middot; Amvest &nbsp;&middot;&nbsp; Brandbook v1.0 &middot; oktober 2026 &nbsp;&middot;&nbsp; Connecting the Polkadots</footer>
+<hr class="rule">
+<section id="toepassing">
+  <p class="eyebrow">Verder</p>
+  <h2>Van format tot gevel</h2>
+  <p class="muted">De contentformats (De Binckhorst Maakt, de Hotspot Guide en het fasegebonden templatesysteem) zijn uitgewerkt op de <a href="/formats/" style="color:var(--gold)">formats-pagina</a>. Nieuwe toepassingen volgen dit brandbook: donkere basis, Mori voor de opbouw, Talisman voor het accent, &eacute;&eacute;n gouden accent en beeld uit de eigen beeldbank.</p>
+</section>
+
+<footer>Skymark &middot; Amvest &middot; Webversie op basis van Brand Book V3 (14-11-2025) &middot; Connecting the Polkadots</footer>
 <script>
 (function(){
   var PW_EDIT='skymark-edit-2025', PW_VIEW='girxy6-nidzyn-wUknir';
