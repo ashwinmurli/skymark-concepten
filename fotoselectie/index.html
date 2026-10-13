@@ -75,6 +75,10 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 /* Toolbar */
 .toolbar{display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between; padding-block:18px}
 .progress{font-size:13px; color:var(--muted)}
+.savestate{margin-left:10px; font-size:12px; color:var(--muted); transition:color .2s}
+.savestate.ok{color:#8fae8a}
+.savestate.busy{color:var(--accent)}
+.savestate.err{color:#c97070}
 .progress b{color:var(--fg); font-weight:700; font-variant-numeric:tabular-nums}
 .namefield{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted)}
 .namefield input{
@@ -218,9 +222,9 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   <header class="page">
     <p class="eyebrow">Skymark · De Binckhorst</p>
     <h1>Fotoselectie</h1>
-    <p class="lede">Elke foto staat er twee keer: het <strong>origineel</strong> en de <strong>warmere bewerking</strong>. Open een beeld, sleep de lijn om te vergelijken of wissel met één tik, en geef per foto je voorkeur. Aan het eind bundel je alles met één knop en mail je het naar Ash.</p>
+    <p class="lede">Elke foto staat er twee keer: het <strong>origineel</strong> en de <strong>warmere bewerking</strong>. Open een beeld, sleep de lijn om te vergelijken of wissel met één tik, en geef per foto je voorkeur. Alles wat je invult wordt automatisch opgeslagen.</p>
     <div class="intro">
-    <p>Dit is de selectie uit de eerste shootronde in de Binckhorst. Naar aanleiding van jullie feedback is de bewerking warmer gemaakt; daarom staat elk beeld er twee keer, zodat je het origineel en de nieuwe bewerking direct naast elkaar ziet. Geef per beeld je voorkeur en laat gerust opmerkingen achter. Onderaan bundel je alles met een knop en mail je het in een keer naar mij. Groet, Ash</p>
+    <p>Dit is de selectie uit de eerste shootronde in de Binckhorst. Naar aanleiding van jullie feedback is de bewerking warmer gemaakt; daarom staat elk beeld er twee keer, zodat je het origineel en de nieuwe bewerking direct naast elkaar ziet. Geef per beeld je voorkeur en laat gerust opmerkingen achter. Alles wordt direct in deze tool opgeslagen, je hoeft niets te mailen; ik kijk hier mee. Groet, Ash</p>
   </div>
 </header>
 
@@ -228,7 +232,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     <label class="namefield" for="reviewer">Je naam
       <input id="reviewer" type="text" autocomplete="name" placeholder="Bijv. Esmée">
     </label>
-    <p class="progress"><b id="done-count">0</b> van <b id="total-count">0</b> beoordeeld</p>
+    <p class="progress"><b id="done-count">0</b> van <b id="total-count">0</b> beoordeeld <span class="savestate" id="savestate" role="status"></span></p>
   </div>
 
   <div class="empty" id="empty" hidden>
@@ -240,8 +244,8 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
 
   <section class="finish" id="finish" hidden>
     <h2>Klaar met kijken?</h2>
-    <p>Bundel je voorkeuren en opmerkingen hieronder en plak ze in een mail aan Ash (ash@connectingthepolkadots.com). Je keuzes worden op dit apparaat onthouden, dus je kunt ook later verdergaan.</p>
-    <button class="primary" id="make-summary" type="button">Bundel mijn bevindingen</button>
+    <p>Je voorkeuren en opmerkingen worden automatisch opgeslagen en zijn direct zichtbaar voor Ash; mailen is niet nodig. Je kunt ook later verdergaan, op elk apparaat. Wil je toch een overzicht voor jezelf? Bundel het hieronder.</p>
+    <button class="primary" id="make-summary" type="button">Bundel de bevindingen</button>
     <div class="summarybox" id="summarybox">
       <textarea id="summary" readonly aria-label="Samenvatting van je bevindingen"></textarea>
       <button class="primary" id="copy-summary" type="button">Kopieer naar klembord</button>
@@ -418,14 +422,19 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       var p = pairs[current]; if (!p) return;
       var it = itemState(p.id);
       it.choice = (it.choice === b.dataset.choice) ? null : b.dataset.choice;
+      touch(it);
       syncChoiceButtons(it);
       saveState();
+      scheduleSync();
     });
   });
   noteEl.addEventListener("input", function(){
     var p = pairs[current]; if (!p) return;
-    itemState(p.id).note = noteEl.value;
+    var it = itemState(p.id);
+    it.note = noteEl.value;
+    touch(it);
     saveState();
+    scheduleSync();
   });
 
   document.querySelectorAll(".modes button").forEach(function(b){
@@ -485,6 +494,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       else if (it.choice === "origineel") parts.push("voorkeur: origineel");
       else if (it.choice === "geen") parts.push("geen voorkeur");
       if (it.note && it.note.trim()) parts.push('"' + it.note.trim() + '"');
+      if (it.name && it.name.trim()) parts.push("door " + it.name.trim());
       if (parts.length) lines.push(String(i+1).padStart(2,"0") + " · " + (p.title || p.id) + " - " + parts.join(" - "));
     });
     return lines.join("\n");
@@ -497,17 +507,94 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     var t = $("summary");
     t.value = buildSummary();
     navigator.clipboard.writeText(t.value).then(function(){
-      $("copystate").textContent = "Gekopieerd. Plak het in je mail aan Ash.";
+      $("copystate").textContent = "Gekopieerd.";
     }).catch(function(){
       t.focus(); t.select();
       $("copystate").textContent = "Selecteren gelukt: kopieer met Ctrl+C of Cmd+C.";
     });
   });
 
+  // Gedeelde opslag: alles wat je invult gaat automatisch naar de server,
+  // zodat Ash en het team dezelfde stand zien. localStorage blijft de
+  // offline-cache; bij conflicten wint per foto de laatste wijziging.
+  var SYNC_API = "/api/review";
+  var SYNC_SECRET = "girxy6-nidzyn-wUknir";
+  var syncTimer = null, dirty = false, pushing = false;
+  var saveEl = $("savestate");
+
+  function setSave(msg, cls){
+    if (!saveEl) return;
+    saveEl.textContent = msg;
+    saveEl.className = "savestate" + (cls ? " " + cls : "");
+  }
+  function touch(it){
+    it.updated = Date.now();
+    it.name = (state.name || "").trim();
+  }
+  function mergeRemote(remote){
+    if (!remote || typeof remote !== "object") return;
+    Object.keys(remote).forEach(function(id){
+      var r = remote[id], l = state.items[id];
+      if (!l || (r.updated || 0) > (l.updated || 0)) state.items[id] = r;
+    });
+  }
+  function apiCall(body){
+    body.secret = SYNC_SECRET;
+    return fetch(SYNC_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function(r){
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+  function pullRemote(){
+    return apiCall({ action: "get" }).then(function(data){
+      mergeRemote(data.items);
+      saveState();
+      renderGrid();
+      setSave("", "");
+    }).catch(function(){ /* offline of API niet bereikbaar: lokaal werkt gewoon */ });
+  }
+  function pushRemote(){
+    if (pushing) { dirty = true; return; }
+    pushing = true; dirty = false;
+    setSave("Opslaan…", "busy");
+    apiCall({ action: "set", items: state.items }).then(function(data){
+      mergeRemote(data.items);
+      saveState();
+      renderGrid();
+      setSave("Opgeslagen", "ok");
+    }).catch(function(){
+      dirty = true;
+      setSave("Nog niet opgeslagen, opnieuw proberen…", "err");
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(pushRemote, 5000);
+    }).finally(function(){
+      pushing = false;
+      if (dirty) scheduleSync();
+    });
+  }
+  function scheduleSync(){
+    dirty = true;
+    setSave("Opslaan…", "busy");
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(pushRemote, 1200);
+  }
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "hidden" && dirty && navigator.sendBeacon){
+      var payload = JSON.stringify({ secret: SYNC_SECRET, action: "set", items: state.items });
+      navigator.sendBeacon(SYNC_API, new Blob([payload], { type: "application/json" }));
+      dirty = false;
+    }
+  });
+
   // Laad de paren
   fetch("pairs.json").then(function(r){ return r.json(); }).then(function(data){
     pairs = (data && data.pairs) || [];
     renderGrid();
+    pullRemote();
   }).catch(function(){
     pairs = [];
     renderGrid();
