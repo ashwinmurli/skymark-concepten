@@ -56,9 +56,9 @@ async function readRemote(token) {
 function sanitizeItems(raw) {
   const out = {};
   if (!raw || typeof raw !== 'object') return out;
-  const ids = Object.keys(raw).slice(0, 500);
+  const ids = Object.keys(raw).slice(0, 5000);
   for (const id of ids) {
-    if (!/^[\w-]{1,40}$/.test(id)) continue;
+    if (!/^[\w-]{1,90}$/.test(id)) continue;
     const it = raw[id];
     if (!it || typeof it !== 'object') continue;
     const choice = CHOICES.includes(it.choice) ? it.choice : null;
