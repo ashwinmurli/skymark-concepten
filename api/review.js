@@ -18,7 +18,7 @@ const SECRET_HASHES = [
   '7b132e77d40b11d72715ae2687f63b7a142a379228e271c69ba849cff13fae03'
 ];
 
-const CHOICES = [null, 'bewerkt', 'origineel', 'geen'];
+const CHOICES = [null, 'bewerkt', 'origineel', 'geen', 'zacht'];
 
 async function sha256hex(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));

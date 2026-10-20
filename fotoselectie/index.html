@@ -103,6 +103,7 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .chip{font-size:11px; letter-spacing:.04em; border-radius:3px; padding:2px 7px; border:1px solid var(--line); color:var(--muted); white-space:nowrap}
 .chip.b{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:700}
 .chip.o{border-color:var(--mist); color:var(--mist)}
+.chip.s{border-color:var(--accent); color:var(--accent); font-weight:700}
 
 /* Lege staat */
 .empty{
@@ -257,20 +258,22 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       <div class="modes" role="group" aria-label="Weergave">
         <button type="button" data-mode="compare" aria-pressed="true">Vergelijk</button>
         <button type="button" data-mode="before" aria-pressed="false">Origineel</button>
-        <button type="button" data-mode="after" aria-pressed="false">Bewerkt</button>
+        <button type="button" data-mode="soft" aria-pressed="false" id="mode-soft" hidden>Zachter &middot; 60%</button>
+        <button type="button" data-mode="after" aria-pressed="false" id="mode-after">Bewerkt</button>
       </div>
-      <p class="hint" id="hint">Sleep de lijn · spatiebalk wisselt origineel/bewerkt · pijltjes voor volgende foto</p>
+      <p class="hint" id="hint">Sleep de lijn · spatiebalk wisselt de versies · pijltjes voor volgende foto</p>
     </div>
 
     <div class="feedback">
       <p class="q">Jouw voorkeur voor dit beeld</p>
       <div class="choices" role="group" aria-label="Voorkeur">
-        <button type="button" data-choice="bewerkt">Bewerkt</button>
+        <button type="button" data-choice="bewerkt" id="choice-after">Bewerkt</button>
+        <button type="button" data-choice="zacht" id="choice-soft" hidden>Zachter &middot; 60%</button>
         <button type="button" data-choice="origineel">Origineel</button>
         <button type="button" data-choice="geen">Geen voorkeur</button>
       </div>
       <textarea id="note" placeholder="Opmerking bij dit beeld (optioneel)"></textarea>
-      <span class="savednote" id="savednote">Je keuze wordt automatisch bewaard op dit apparaat.</span>
+      <span class="savednote" id="savednote">Je keuze en opmerking worden automatisch opgeslagen.</span>
     </div>
   </div>
 </div>
@@ -316,9 +319,10 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     });
     return n;
   }
-  function chipFor(it){
+  function chipFor(it, p){
     if (!it || !it.choice) return "";
-    if (it.choice === "bewerkt") return '<span class="chip b">Bewerkt</span>';
+    if (it.choice === "bewerkt") return '<span class="chip b">' + (p && p.soft ? "Bewerkt 100%" : "Bewerkt") + '</span>';
+    if (it.choice === "zacht") return '<span class="chip s">Zachter 60%</span>';
     if (it.choice === "origineel") return '<span class="chip o">Origineel</span>';
     return '<span class="chip">Geen voorkeur</span>';
   }
@@ -336,21 +340,33 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       btn.innerHTML =
         '<img class="thumb" loading="lazy" src="' + (p.thumb || p.after) + '" alt="">' +
         '<span class="meta"><span class="nr">' + String(i+1).padStart(2,"0") + '</span>' +
-        '<span class="name"></span>' + chipFor(state.items[p.id]) + '</span>';
+        '<span class="name"></span>' + chipFor(state.items[p.id], p) + '</span>';
       btn.querySelector(".name").textContent = p.title || "";
       btn.addEventListener("click", function(){ openViewer(i); });
       grid.appendChild(btn);
     });
   }
 
+  // Welke bewerkingsversie actief is: "after" (100%) of "soft" (60%).
+  var editVersion = "after";
+  function softOf(p){ return p && p.soft ? p.soft : null; }
+  function editLabel(p){
+    if (editVersion === "soft") return "Zachter \u00b7 60%";
+    return softOf(p) ? "Bewerkt \u00b7 100%" : "Bewerkt";
+  }
+  function applyVersion(){
+    var p = pairs[current]; if (!p) return;
+    imgAfter.src = (editVersion === "soft" && p.soft) ? p.soft : p.after;
+  }
   function applyMode(){
+    var p = pairs[current];
     document.querySelectorAll(".modes button").forEach(function(b){
       b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
     });
     if (mode === "compare"){
       topLayer.style.display = "";
       divider.style.display = "";
-      labelL.textContent = "Origineel"; labelR.textContent = "Bewerkt";
+      labelL.textContent = "Origineel"; labelR.textContent = editLabel(p);
       labelL.style.display = ""; labelR.style.display = "";
       applySplit();
     } else {
@@ -359,7 +375,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       if (mode === "before") topLayer.style.clipPath = "none";
       labelL.style.display = "none";
       labelR.style.display = "";
-      labelR.textContent = (mode === "before") ? "Origineel" : "Bewerkt";
+      labelR.textContent = (mode === "before") ? "Origineel" : editLabel(p);
     }
   }
   function applySplit(){
@@ -370,8 +386,14 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   function openViewer(i){
     current = i;
     var p = pairs[i];
+    var heeftSoft = !!p.soft;
+    if (!heeftSoft) editVersion = "after";
+    $("mode-soft").hidden = !heeftSoft;
+    $("choice-soft").hidden = !heeftSoft;
+    $("mode-after").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
+    $("choice-after").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     imgBefore.src = p.before;
-    imgAfter.src = p.after;
+    imgAfter.src = (editVersion === "soft" && p.soft) ? p.soft : p.after;
     $("viewer-title").innerHTML = '<b>' + String(i+1).padStart(2,"0") + '</b> · ';
     $("viewer-title").appendChild(document.createTextNode(p.title || ""));
     var it = itemState(p.id);
@@ -418,7 +440,14 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   });
 
   document.querySelectorAll(".modes button").forEach(function(b){
-    b.addEventListener("click", function(){ mode = b.dataset.mode; applyMode(); });
+    b.addEventListener("click", function(){
+      var m = b.dataset.mode;
+      if (m === "soft"){ editVersion = "soft"; mode = "soft"; }
+      else if (m === "after"){ editVersion = "after"; mode = "after"; }
+      else { mode = m; }
+      applyVersion();
+      applyMode();
+    });
   });
   $("close").addEventListener("click", closeViewer);
   $("prev").addEventListener("click", function(){ step(-1); });
@@ -438,14 +467,23 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       try { stage.setPointerCapture(e.pointerId); } catch(err){}
       setSplitFromEvent(e);
     } else {
-      mode = (mode === "before") ? "after" : "before";
-      applyMode();
+      cycleMode();
     }
   });
   stage.addEventListener("pointermove", function(e){ if (dragging) setSplitFromEvent(e); });
   stage.addEventListener("pointerup", function(){ dragging = false; });
   stage.addEventListener("pointercancel", function(){ dragging = false; });
 
+  function cycleMode(){
+    var p = pairs[current];
+    var volgorde = (p && p.soft) ? ["before", "soft", "after"] : ["before", "after"];
+    var huidig = (mode === "compare") ? -1 : volgorde.indexOf(mode);
+    mode = volgorde[(huidig + 1) % volgorde.length];
+    if (mode === "soft") editVersion = "soft";
+    if (mode === "after") editVersion = "after";
+    applyVersion();
+    applyMode();
+  }
   document.addEventListener("keydown", function(e){
     if (!viewer.classList.contains("open")) return;
     if (e.target && (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT")) return;
@@ -454,8 +492,9 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     else if (e.key === "ArrowLeft") step(-1);
     else if (e.key === " "){
       e.preventDefault();
-      mode = (mode === "after") ? "before" : "after";
-      applyMode();
+      if (mode === "compare") mode = "before";
+      else cycleMode();
+      if (mode === "before") applyMode();
     }
   });
 
