@@ -85,7 +85,11 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .selbar .lbl{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
 .selbar button{font:inherit; font-size:13px; background:none; border:1px solid var(--line); border-radius:999px; color:var(--fg); padding:5px 14px; cursor:pointer}
 .selbar button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:700}
-.selbadge{position:absolute; top:8px; right:8px; z-index:2; font-size:15px; line-height:1; color:var(--accent); background:rgba(12,13,15,.75); border-radius:999px; padding:5px 7px}
+.selstar{position:absolute; top:8px; right:8px; z-index:2; display:none; font:inherit; font-size:17px; line-height:1; color:var(--fg); background:rgba(12,13,15,.78); border:1px solid var(--line); border-radius:999px; padding:7px 9px; cursor:pointer}
+.card:hover .selstar, .card:focus-within .selstar{display:block}
+.selstar:hover{color:var(--accent); border-color:var(--accent)}
+.selstar.on{display:block; color:var(--accent); border-color:var(--accent)}
+@media (hover:none){ .selstar{display:block} }
 .selbtn{font:inherit; font-size:14px; background:none; border:1px solid var(--line); border-radius:4px; color:var(--fg); padding:9px 16px; cursor:pointer}
 .selbtn[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:700}
 .selbtn:disabled{opacity:.45; cursor:not-allowed}
@@ -399,19 +403,37 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     $("finish").hidden = pairs.length === 0;
     var filterSel = selFilter ? state.selections[selFilter] : null;
     var eigen = mySlug() ? state.selections[mySlug()] : null;
+    var naamActief = !!mySlug();
     pairs.forEach(function(p, i){
       if (filterSel && !inSel(filterSel, p.id)) return;
-      var btn = document.createElement("button");
+      var btn = document.createElement("div");
       btn.className = "card";
-      btn.type = "button";
+      btn.setAttribute("role", "button");
+      btn.tabIndex = 0;
       btn.style.position = "relative";
-      var ster = inSel(eigen, p.id) ? '<span class="selbadge" title="In jouw selectie">&#9733;</span>' : '';
-      btn.innerHTML = ster +
+      btn.innerHTML =
         '<img class="thumb" loading="lazy" src="' + (p.thumb || p.after || p.soft) + '" alt="">' +
         '<span class="meta"><span class="nr">' + String(i+1).padStart(2,"0") + '</span>' +
         '<span class="name"></span>' + chipFor(state.items[p.id], p) + '</span>';
       btn.querySelector(".name").textContent = p.title || "";
       btn.addEventListener("click", function(){ openViewer(i); });
+      btn.addEventListener("keydown", function(e){
+        if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openViewer(i); }
+      });
+      if (naamActief){
+        var erin = inSel(eigen, p.id);
+        var ster = document.createElement("button");
+        ster.type = "button";
+        ster.className = "selstar" + (erin ? " on" : "");
+        ster.innerHTML = erin ? "&#9733;" : "&#9734;";
+        ster.title = erin ? "Verwijder uit jouw selectie" : "Voeg toe aan jouw selectie";
+        ster.setAttribute("aria-label", ster.title);
+        ster.addEventListener("click", function(e){
+          e.stopPropagation();
+          toggleSelection(p.id, ster);
+        });
+        btn.appendChild(ster);
+      }
       grid.appendChild(btn);
     });
     renderSelbar();
@@ -603,20 +625,35 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       scheduleSync();
     });
   });
-  $("sel-toggle").addEventListener("click", function(){
-    var p = pairs[current]; if (!p) return;
-    var sel = mySel(); if (!sel) return;
-    var idx = sel.ids.indexOf(p.id);
+  function toggleSelection(pairId, sterBtn){
+    var sel = mySel(); if (!sel) return false;
+    var idx = sel.ids.indexOf(pairId);
     if (idx > -1) sel.ids.splice(idx, 1);
     else {
-      if (sel.ids.length >= SEL_MAX) { updateSelUI(); return; }
-      sel.ids.push(p.id);
+      if (sel.ids.length >= SEL_MAX){
+        if (sterBtn) sterBtn.title = "Je selectie is vol (" + SEL_MAX + ")";
+        updateSelUI();
+        return false;
+      }
+      sel.ids.push(pairId);
     }
     sel.updated = Date.now();
     sel.name = (state.name || "").trim();
     saveState();
     scheduleSync();
+    if (sterBtn){
+      var erin = idx === -1;
+      sterBtn.className = "selstar" + (erin ? " on" : "");
+      sterBtn.innerHTML = erin ? "&#9733;" : "&#9734;";
+      sterBtn.title = erin ? "Verwijder uit jouw selectie" : "Voeg toe aan jouw selectie";
+      renderSelbar();
+    }
     updateSelUI();
+    return true;
+  }
+  $("sel-toggle").addEventListener("click", function(){
+    var p = pairs[current]; if (!p) return;
+    toggleSelection(p.id, null);
   });
   noteEl.addEventListener("input", function(){
     var p = pairs[current]; if (!p) return;
