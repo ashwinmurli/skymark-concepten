@@ -90,7 +90,7 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .selstar:hover{color:var(--accent); border-color:var(--accent)}
 .selstar.on{display:block; color:var(--accent); border-color:var(--accent)}
 @media (hover:none){ .selstar{display:block} }
-.selbtn{font:inherit; font-size:14px; background:none; border:1px solid var(--line); border-radius:4px; color:var(--fg); padding:9px 16px; cursor:pointer}
+.selbtn{font:inherit; font-size:13px; background:var(--surface); border:1px solid var(--line); border-radius:4px; color:var(--fg); padding:8px 14px; cursor:pointer; white-space:nowrap}
 .selbtn[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:700}
 .selbtn:disabled{opacity:.45; cursor:not-allowed}
 .selhint{font-size:12.5px; color:var(--muted); margin-left:10px}
@@ -132,7 +132,7 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .viewer{position:fixed; inset:0; background:rgba(10,11,13,.96); display:none; z-index:300; overflow-y:auto; padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
 .viewer.open{display:block}
 .viewer-inner{max-width:1100px; margin:0 auto; padding:18px 20px 40px; display:flex; flex-direction:column; gap:14px}
-.viewer-top{display:flex; align-items:center; gap:12px}
+.viewer-top{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
 .viewer-title{flex:1; min-width:0; font-size:14px; color:var(--muted)}
 .viewer-title b{color:var(--fg); font-weight:500}
 .iconbtn{
@@ -277,6 +277,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   <div class="viewer-inner">
     <div class="viewer-top">
       <p class="viewer-title" id="viewer-title"></p>
+      <button class="selbtn" id="sel-toggle" type="button" aria-pressed="false">&#9734; Voeg toe aan selectie</button>
       <button class="iconbtn" id="prev" type="button" aria-label="Vorige foto">← Vorige</button>
       <button class="iconbtn" id="next" type="button" aria-label="Volgende foto">Volgende →</button>
       <button class="iconbtn" id="close" type="button" aria-label="Sluiten">Sluiten ✕</button>
@@ -314,10 +315,6 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
         <button type="button" data-choice="origineel">Origineel</button>
         <button type="button" data-choice="geen">Geen voorkeur</button>
       </div>
-      <p style="margin-top:14px">
-        <button class="selbtn" id="sel-toggle" type="button" aria-pressed="false">&#9734; Voeg toe aan mijn selectie</button>
-        <span class="selhint" id="sel-hint"></span>
-      </p>
       <textarea id="note" placeholder="Opmerking bij dit beeld (optioneel)"></textarea>
       <span class="savednote" id="savednote">Je keuze en opmerking worden automatisch opgeslagen.</span>
     </div>
@@ -471,23 +468,23 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       $("sel-count").textContent = String(sel && sel.ids ? sel.ids.length : 0);
     }
     var p = pairs[current];
-    var btn = $("sel-toggle"), hint = $("sel-hint");
+    var btn = $("sel-toggle");
     if (!btn || !p) return;
     if (!s){
       btn.disabled = true;
       btn.setAttribute("aria-pressed", "false");
-      btn.innerHTML = "&#9734; Voeg toe aan mijn selectie";
-      hint.textContent = "Vul eerst je naam in bovenaan de pagina.";
+      btn.innerHTML = "&#9734; Voeg toe aan selectie";
+      btn.title = "Vul eerst je naam in bovenaan de pagina.";
       return;
     }
     btn.disabled = false;
     var erin = inSel(sel, p.id);
     var vol = sel && sel.ids.length >= SEL_MAX;
     btn.setAttribute("aria-pressed", String(erin));
-    btn.innerHTML = erin ? "&#9733; In jouw selectie (klik om te verwijderen)" : "&#9734; Voeg toe aan mijn selectie";
-    if (erin) hint.textContent = "";
-    else if (vol){ btn.disabled = true; hint.textContent = "Je selectie is vol (" + SEL_MAX + "). Verwijder eerst een ander beeld."; }
-    else hint.textContent = (sel.ids.length) + " van " + SEL_MAX + " gekozen.";
+    btn.innerHTML = erin ? "&#9733; In jouw selectie" : "&#9734; Voeg toe aan selectie";
+    if (erin) btn.title = "Klik om uit je selectie te verwijderen";
+    else if (vol){ btn.disabled = true; btn.title = "Je selectie is vol (" + SEL_MAX + "). Verwijder eerst een ander beeld."; }
+    else btn.title = sel.ids.length + " van " + SEL_MAX + " gekozen";
   }
 
   // De vergelijkslider toont altijd origineel vs de zachte 60%-versie;
