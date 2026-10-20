@@ -153,6 +153,10 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .lightbox img{max-width:96vw; max-height:90vh; object-fit:contain}
 .lb-label{position:fixed; top:18px; left:50%; transform:translateX(-50%); font-size:11px; letter-spacing:.22em; text-transform:uppercase; background:rgba(12,13,15,.8); color:var(--fg); padding:6px 12px; border-radius:3px}
 .lb-hint{position:fixed; bottom:16px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--muted)}
+.lb-nav{position:fixed; top:50%; transform:translateY(-50%); z-index:401; background:rgba(12,13,15,.75); color:var(--fg); border:1px solid var(--line); border-radius:4px; font:inherit; font-size:15px; padding:14px 16px; cursor:pointer}
+.lb-nav:hover{border-color:var(--accent); color:var(--accent)}
+.lb-nav.prev{left:18px}
+.lb-nav.next{right:18px}
 .taglabel{position:absolute; top:10px; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; background:rgba(12,13,15,.72); color:var(--fg); padding:4px 9px; border-radius:3px}
 .taglabel.l{left:10px}
 .taglabel.r{right:10px}
@@ -300,7 +304,9 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Vergrote foto">
   <span class="lb-label" id="lb-label"></span>
   <img id="lb-img" alt="">
-  <span class="lb-hint">Klik of druk op Escape om te sluiten</span>
+  <button class="lb-nav prev" id="lb-prev" type="button" aria-label="Vorige versie">&larr;</button>
+  <button class="lb-nav next" id="lb-next" type="button" aria-label="Volgende versie">&rarr;</button>
+  <span class="lb-hint">Pijltjes wisselen de versies &middot; klik of Escape om te sluiten</span>
 </div>
 
 <script>
@@ -382,26 +388,42 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     else if (mode === "after") imgAfter.src = p.after;
     else imgAfter.src = compareSrc(p);
   }
-  function applyMode(){
-    var p = pairs[current];
-    var lightbox = $("lightbox"), lbImg = $("lb-img"), lbLabel = $("lb-label");
-  function openLightbox(src, label){
-    lbImg.src = src;
-    lbLabel.textContent = label;
+  var lightbox = $("lightbox"), lbImg = $("lb-img"), lbLabel = $("lb-label");
+  var lbVariants = [], lbIndex = 0;
+  function lbShow(i){
+    if (!lbVariants.length) return;
+    lbIndex = (i + lbVariants.length) % lbVariants.length;
+    lbImg.src = lbVariants[lbIndex].src;
+    lbLabel.textContent = lbVariants[lbIndex].label;
+  }
+  function variantsOf(p){
+    var v = [{ src: p.before, label: "Origineel" }];
+    if (p.soft) v.push({ src: p.soft, label: "Zachter \u00b7 60%" });
+    v.push({ src: p.after, label: p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt" });
+    return v;
+  }
+  function openLightbox(index){
+    var p = pairs[current]; if (!p) return;
+    lbVariants = variantsOf(p);
+    lbShow(index);
     lightbox.classList.add("open");
   }
   function closeLightbox(){ lightbox.classList.remove("open"); }
   lightbox.addEventListener("click", closeLightbox);
+  $("lb-prev").addEventListener("click", function(e){ e.stopPropagation(); lbShow(lbIndex - 1); });
+  $("lb-next").addEventListener("click", function(e){ e.stopPropagation(); lbShow(lbIndex + 1); });
   document.querySelectorAll("#triptych figure").forEach(function(f){
     f.addEventListener("click", function(){
       var p = pairs[current]; if (!p) return;
       var doel = f.dataset.goto;
-      if (doel === "before") openLightbox(p.before, "Origineel");
-      else if (doel === "soft") openLightbox(p.soft, "Zachter \u00b7 60%");
-      else openLightbox(p.after, p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt");
+      var idx = (doel === "before") ? 0 : (doel === "soft") ? 1 : (p.soft ? 2 : 1);
+      openLightbox(idx);
     });
   });
-  document.querySelectorAll(".modes button").forEach(function(b){
+
+  function applyMode(){
+    var p = pairs[current];
+    document.querySelectorAll(".modes button").forEach(function(b){
       b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
     });
     var tri = $("triptych"), stageEl = $("stage");
@@ -536,6 +558,9 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   document.addEventListener("keydown", function(e){
     if (lightbox.classList.contains("open")){
       if (e.key === "Escape") closeLightbox();
+      else if (e.key === "ArrowRight") lbShow(lbIndex + 1);
+      else if (e.key === "ArrowLeft") lbShow(lbIndex - 1);
+      e.preventDefault();
       return;
     }
     if (!viewer.classList.contains("open")) return;
