@@ -148,6 +148,11 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .triptych figure:hover figcaption{color:var(--fg)}
 @media (max-width:700px){ .triptych.open{flex-direction:column} .triptych img{max-height:46vh} }
 .stage.hidden{display:none}
+.lightbox{position:fixed; inset:0; z-index:400; background:rgba(10,11,13,.97); display:none; align-items:center; justify-content:center; padding:28px; cursor:zoom-out}
+.lightbox.open{display:flex}
+.lightbox img{max-width:96vw; max-height:90vh; object-fit:contain}
+.lb-label{position:fixed; top:18px; left:50%; transform:translateX(-50%); font-size:11px; letter-spacing:.22em; text-transform:uppercase; background:rgba(12,13,15,.8); color:var(--fg); padding:6px 12px; border-radius:3px}
+.lb-hint{position:fixed; bottom:16px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--muted)}
 .taglabel{position:absolute; top:10px; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; background:rgba(12,13,15,.72); color:var(--fg); padding:4px 9px; border-radius:3px}
 .taglabel.l{left:10px}
 .taglabel.r{right:10px}
@@ -292,6 +297,12 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   </div>
 </div>
 
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Vergrote foto">
+  <span class="lb-label" id="lb-label"></span>
+  <img id="lb-img" alt="">
+  <span class="lb-hint">Klik of druk op Escape om te sluiten</span>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -361,27 +372,33 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     });
   }
 
-  // Welke bewerkingsversie actief is: "after" (100%) of "soft" (60%).
-  var editVersion = "after";
-  function softOf(p){ return p && p.soft ? p.soft : null; }
-  function editLabel(p){
-    if (editVersion === "soft") return "Zachter \u00b7 60%";
-    return softOf(p) ? "Bewerkt \u00b7 100%" : "Bewerkt";
-  }
+  // De vergelijkslider toont altijd origineel vs de zachte 60%-versie;
+  // alleen beelden zonder 60%-versie vallen terug op de 100%.
+  function compareSrc(p){ return p.soft || p.after; }
+  function compareLabel(p){ return p.soft ? "Zachter \u00b7 60%" : "Bewerkt"; }
   function applyVersion(){
     var p = pairs[current]; if (!p) return;
-    imgAfter.src = (editVersion === "soft" && p.soft) ? p.soft : p.after;
+    if (mode === "soft") imgAfter.src = p.soft || p.after;
+    else if (mode === "after") imgAfter.src = p.after;
+    else imgAfter.src = compareSrc(p);
   }
   function applyMode(){
     var p = pairs[current];
-    document.querySelectorAll("#triptych figure").forEach(function(f){
+    var lightbox = $("lightbox"), lbImg = $("lb-img"), lbLabel = $("lb-label");
+  function openLightbox(src, label){
+    lbImg.src = src;
+    lbLabel.textContent = label;
+    lightbox.classList.add("open");
+  }
+  function closeLightbox(){ lightbox.classList.remove("open"); }
+  lightbox.addEventListener("click", closeLightbox);
+  document.querySelectorAll("#triptych figure").forEach(function(f){
     f.addEventListener("click", function(){
+      var p = pairs[current]; if (!p) return;
       var doel = f.dataset.goto;
-      if (doel === "soft"){ editVersion = "soft"; }
-      if (doel === "after"){ editVersion = "after"; }
-      mode = doel;
-      applyVersion();
-      applyMode();
+      if (doel === "before") openLightbox(p.before, "Origineel");
+      else if (doel === "soft") openLightbox(p.soft, "Zachter \u00b7 60%");
+      else openLightbox(p.after, p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt");
     });
   });
   document.querySelectorAll(".modes button").forEach(function(b){
@@ -398,7 +415,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     if (mode === "compare"){
       topLayer.style.display = "";
       divider.style.display = "";
-      labelL.textContent = "Origineel"; labelR.textContent = editLabel(p);
+      labelL.textContent = "Origineel"; labelR.textContent = compareLabel(p);
       labelL.style.display = ""; labelR.style.display = "";
       applySplit();
     } else {
@@ -407,7 +424,9 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       if (mode === "before") topLayer.style.clipPath = "none";
       labelL.style.display = "none";
       labelR.style.display = "";
-      labelR.textContent = (mode === "before") ? "Origineel" : editLabel(p);
+      labelR.textContent = (mode === "before") ? "Origineel"
+        : (mode === "soft") ? "Zachter \u00b7 60%"
+        : (p && p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt");
     }
   }
   function applySplit(){
@@ -419,13 +438,11 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     current = i;
     var p = pairs[i];
     var heeftSoft = !!p.soft;
-    if (!heeftSoft) editVersion = "after";
     $("mode-soft").hidden = !heeftSoft;
     $("choice-soft").hidden = !heeftSoft;
     $("mode-after").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     $("choice-after").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     imgBefore.src = p.before;
-    imgAfter.src = (editVersion === "soft" && p.soft) ? p.soft : p.after;
     $("tri-before").src = p.before;
     $("tri-after").src = p.after;
     $("tri-after-cap").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
@@ -436,7 +453,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     var it = itemState(p.id);
     noteEl.value = it.note || "";
     syncChoiceButtons(it);
-    split = 50; mode = "triple"; applyMode();
+    split = 50; mode = "triple"; applyVersion(); applyMode();
     viewer.classList.add("open");
     document.body.style.overflow = "hidden";
   }
@@ -478,10 +495,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
 
   document.querySelectorAll(".modes button").forEach(function(b){
     b.addEventListener("click", function(){
-      var m = b.dataset.mode;
-      if (m === "soft"){ editVersion = "soft"; mode = "soft"; }
-      else if (m === "after"){ editVersion = "after"; mode = "after"; }
-      else { mode = m; }
+      mode = b.dataset.mode;
       applyVersion();
       applyMode();
     });
@@ -516,12 +530,14 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     var volgorde = (p && p.soft) ? ["before", "soft", "after"] : ["before", "after"];
     var huidig = (mode === "compare" || mode === "triple") ? -1 : volgorde.indexOf(mode);
     mode = volgorde[(huidig + 1) % volgorde.length];
-    if (mode === "soft") editVersion = "soft";
-    if (mode === "after") editVersion = "after";
     applyVersion();
     applyMode();
   }
   document.addEventListener("keydown", function(e){
+    if (lightbox.classList.contains("open")){
+      if (e.key === "Escape") closeLightbox();
+      return;
+    }
     if (!viewer.classList.contains("open")) return;
     if (e.target && (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT")) return;
     if (e.key === "Escape") closeViewer();
