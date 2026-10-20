@@ -114,6 +114,14 @@ async function writeRemote(token, items, sha, selections) {
 }
 
 export default async function handler(req) {
+  if (req.method === 'GET' && new URL(req.url).searchParams.get('diag') === '1') {
+    /* tijdelijke diagnose: alleen statuscodes, geen inhoud */
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) return json({ token: 'ontbreekt' });
+    const r1 = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}?ref=${BRANCH}`, { headers: ghHeaders(token) });
+    const r2 = await fetch('https://api.github.com/user', { headers: ghHeaders(token) });
+    return json({ token: 'aanwezig', leesFeedback: r1.status, tokenGeldig: r2.status, scopes: r2.headers.get('x-oauth-scopes'), verloopt: r2.headers.get('github-authentication-token-expiration') });
+  }
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
 
   let payload;
