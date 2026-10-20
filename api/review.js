@@ -41,15 +41,16 @@ async function readRemote(token) {
     `https://api.github.com/repos/${REPO}/contents/${FILE}?ref=${BRANCH}`,
     { headers: ghHeaders(token) }
   );
-  if (resp.status === 404) return { items: {}, sha: null };
+  if (resp.status === 404) return { items: {}, selections: {}, sha: null };
   if (!resp.ok) throw new Error(`GitHub GET ${resp.status}`);
   const data = await resp.json();
-  let items = {};
+  let items = {}, selections = {};
   try {
     const parsed = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
     if (parsed && typeof parsed.items === 'object') items = parsed.items;
+    if (parsed && typeof parsed.selections === 'object') selections = parsed.selections;
   } catch (e) { /* corrupte inhoud: behandel als leeg, sha blijft bruikbaar */ }
-  return { items, sha: data.sha };
+  return { items, selections, sha: data.sha };
 }
 
 function sanitizeItems(raw) {
@@ -71,6 +72,24 @@ function sanitizeItems(raw) {
   return out;
 }
 
+function sanitizeSelections(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  const slugs = Object.keys(raw).slice(0, 30);
+  for (const s of slugs) {
+    if (!/^[\w-]{1,40}$/.test(s)) continue;
+    const sel = raw[s];
+    if (!sel || typeof sel !== 'object') continue;
+    const name = typeof sel.name === 'string' ? sel.name.slice(0, 100) : s;
+    const updated = typeof sel.updated === 'number' && isFinite(sel.updated) ? sel.updated : 0;
+    const ids = Array.isArray(sel.ids)
+      ? [...new Set(sel.ids.filter(id => typeof id === 'string' && /^[\w-]{1,40}$/.test(id)))].slice(0, 40)
+      : [];
+    out[s] = { name, ids, updated };
+  }
+  return out;
+}
+
 function merge(remote, incoming) {
   const out = { ...remote };
   for (const id of Object.keys(incoming)) {
@@ -80,10 +99,10 @@ function merge(remote, incoming) {
   return out;
 }
 
-async function writeRemote(token, items, sha) {
+async function writeRemote(token, items, sha, selections) {
   const body = {
     message: `Fotoselectie: feedback bijgewerkt ${new Date().toISOString().slice(0, 16).replace('T', ' ')}`,
-    content: btoa(unescape(encodeURIComponent(JSON.stringify({ items, updated: Date.now() }, null, 1)))),
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({ items, selections: selections || {}, updated: Date.now() }, null, 1)))),
     branch: BRANCH
   };
   if (sha) body.sha = sha;
@@ -109,17 +128,19 @@ export default async function handler(req) {
   try {
     if (payload.action === 'get') {
       const remote = await readRemote(token);
-      return json({ items: remote.items });
+      return json({ items: remote.items, selections: remote.selections });
     }
 
     if (payload.action === 'set') {
       const incoming = sanitizeItems(payload.items);
+      const incomingSel = sanitizeSelections(payload.selections);
       /* twee pogingen: bij een sha-conflict (gelijktijdige save) verse stand ophalen */
       for (let attempt = 0; attempt < 2; attempt++) {
         const remote = await readRemote(token);
         const merged = merge(remote.items, incoming);
-        const put = await writeRemote(token, merged, remote.sha);
-        if (put.ok) return json({ ok: true, items: merged });
+        const mergedSel = merge(remote.selections, incomingSel);
+        const put = await writeRemote(token, merged, remote.sha, mergedSel);
+        if (put.ok) return json({ ok: true, items: merged, selections: mergedSel });
         if (put.status !== 409 && put.status !== 422) {
           return json({ error: `github ${put.status}` }, 500);
         }

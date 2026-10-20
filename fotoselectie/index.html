@@ -79,6 +79,17 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .savestate.ok{color:#8fae8a}
 .savestate.busy{color:var(--accent)}
 .savestate.err{color:#c97070}
+.seltally{font-size:13px; color:var(--muted)}
+.seltally b{color:var(--accent)}
+.selbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding-bottom:14px}
+.selbar .lbl{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.selbar button{font:inherit; font-size:13px; background:none; border:1px solid var(--line); border-radius:999px; color:var(--fg); padding:5px 14px; cursor:pointer}
+.selbar button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:700}
+.selbadge{position:absolute; top:8px; right:8px; z-index:2; font-size:15px; line-height:1; color:var(--accent); background:rgba(12,13,15,.75); border-radius:999px; padding:5px 7px}
+.selbtn{font:inherit; font-size:14px; background:none; border:1px solid var(--line); border-radius:4px; color:var(--fg); padding:9px 16px; cursor:pointer}
+.selbtn[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:700}
+.selbtn:disabled{opacity:.45; cursor:not-allowed}
+.selhint{font-size:12.5px; color:var(--muted); margin-left:10px}
 .progress b{color:var(--fg); font-weight:700; font-variant-numeric:tabular-nums}
 .namefield{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted)}
 .namefield input{
@@ -227,9 +238,9 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   <header class="page">
     <p class="eyebrow">Skymark · De Binckhorst</p>
     <h1>Fotoselectie</h1>
-    <p class="lede">Elke foto staat er twee keer: het <strong>origineel</strong> en de <strong>warmere bewerking</strong>. Open een beeld, sleep de lijn om te vergelijken of wissel met één tik, en geef per foto je voorkeur. Alles wat je invult wordt automatisch opgeslagen.</p>
+    <p class="lede">Elk beeld staat er in meerdere versies: het <strong>origineel</strong> en de <strong>warmere bewerking</strong>, bij de eerste serie ook op volle sterkte. Open een beeld om ze naast elkaar te zien, geef per foto je voorkeur en stel je eigen selectie samen. Alles wat je invult wordt automatisch opgeslagen.</p>
     <div class="intro">
-    <p>Dit is de selectie uit de eerste shootronde in de Binckhorst. Naar aanleiding van jullie feedback is de bewerking warmer gemaakt; daarom staat elk beeld er twee keer, zodat je het origineel en de nieuwe bewerking direct naast elkaar ziet. Geef per beeld je voorkeur en laat gerust opmerkingen achter. Alles wordt direct in deze tool opgeslagen, je hoeft niets te mailen; ik kijk hier mee. Groet, Ash</p>
+    <p>Hier staan beide shootrondes uit de Binckhorst, inmiddels 104 beelden. Naar aanleiding van jullie feedback staat naast het origineel ook de zachtere bewerking op 60%; bij de eerste serie kun je daarnaast de volle sterkte bekijken. Geef per beeld je voorkeur, laat gerust opmerkingen achter, en vul bovenaan je naam in om je eigen selectie van maximaal 40 beelden samen te stellen. Alles wordt direct in deze tool opgeslagen, je hoeft niets te mailen; ik kijk hier mee. Groet, Ash</p>
   </div>
 </header>
 
@@ -237,6 +248,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     <label class="namefield" for="reviewer">Je naam
       <input id="reviewer" type="text" autocomplete="name" placeholder="Bijv. Esmée">
     </label>
+    <p class="seltally" id="seltally" hidden>Selectie van <span id="seltally-naam"></span>: <b id="sel-count">0</b> / 40</p>
     <p class="progress"><b id="done-count">0</b> van <b id="total-count">0</b> beoordeeld <span class="savestate" id="savestate" role="status"></span></p>
   </div>
 
@@ -244,6 +256,8 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     <h2>De selectie komt eraan</h2>
     <p>Hier verschijnen de fotoparen, elk met origineel en bewerking naast elkaar. Deze pagina wordt gevuld zodra de beelden klaarstaan.</p>
   </div>
+
+  <div class="selbar" id="selbar" hidden></div>
 
   <div class="grid" id="grid"></div>
 
@@ -296,6 +310,10 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
         <button type="button" data-choice="origineel">Origineel</button>
         <button type="button" data-choice="geen">Geen voorkeur</button>
       </div>
+      <p style="margin-top:14px">
+        <button class="selbtn" id="sel-toggle" type="button" aria-pressed="false">&#9734; Voeg toe aan mijn selectie</button>
+        <span class="selhint" id="sel-hint"></span>
+      </p>
       <textarea id="note" placeholder="Opmerking bij dit beeld (optioneel)"></textarea>
       <span class="savednote" id="savednote">Je keuze en opmerking worden automatisch opgeslagen.</span>
     </div>
@@ -320,14 +338,28 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   var split = 50;
 
   function loadState(){
-    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {name:"", items:{}}; }
-    catch(e){ return {name:"", items:{}}; }
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {name:"", items:{}, selections:{}}; }
+    catch(e){ return {name:"", items:{}, selections:{}}; }
   }
   function saveState(){
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
   }
   var state = loadState();
   if (!state.items) state.items = {};
+  if (!state.selections) state.selections = {};
+  var SEL_MAX = 40;
+  var selFilter = null;
+  function slugOf(naam){
+    return (naam || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  }
+  function mySlug(){ return slugOf(state.name); }
+  function mySel(){
+    var s = mySlug();
+    if (!s) return null;
+    if (!state.selections[s]) state.selections[s] = { name: (state.name || "").trim(), ids: [], updated: 0 };
+    return state.selections[s];
+  }
+  function inSel(sel, id){ return !!(sel && sel.ids && sel.ids.indexOf(id) > -1); }
 
   var $ = function(id){ return document.getElementById(id); };
   var grid = $("grid"), viewer = $("viewer"), stage = $("stage");
@@ -337,7 +369,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   var noteEl = $("note");
 
   $("reviewer").value = state.name || "";
-  $("reviewer").addEventListener("input", function(){ state.name = this.value; saveState(); });
+  $("reviewer").addEventListener("input", function(){ state.name = this.value; saveState(); updateSelUI(); renderGrid(); });
 
   function itemState(id){
     if (!state.items[id]) state.items[id] = {choice:null, note:""};
@@ -365,11 +397,16 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     $("done-count").textContent = String(reviewedCount());
     $("empty").hidden = pairs.length > 0;
     $("finish").hidden = pairs.length === 0;
+    var filterSel = selFilter ? state.selections[selFilter] : null;
+    var eigen = mySlug() ? state.selections[mySlug()] : null;
     pairs.forEach(function(p, i){
+      if (filterSel && !inSel(filterSel, p.id)) return;
       var btn = document.createElement("button");
       btn.className = "card";
       btn.type = "button";
-      btn.innerHTML =
+      btn.style.position = "relative";
+      var ster = inSel(eigen, p.id) ? '<span class="selbadge" title="In jouw selectie">&#9733;</span>' : '';
+      btn.innerHTML = ster +
         '<img class="thumb" loading="lazy" src="' + (p.thumb || p.after || p.soft) + '" alt="">' +
         '<span class="meta"><span class="nr">' + String(i+1).padStart(2,"0") + '</span>' +
         '<span class="name"></span>' + chipFor(state.items[p.id], p) + '</span>';
@@ -377,6 +414,58 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       btn.addEventListener("click", function(){ openViewer(i); });
       grid.appendChild(btn);
     });
+    renderSelbar();
+    updateSelUI();
+  }
+  function renderSelbar(){
+    var bar = $("selbar");
+    var slugs = Object.keys(state.selections).filter(function(s){
+      return state.selections[s] && state.selections[s].ids && state.selections[s].ids.length;
+    });
+    bar.hidden = slugs.length === 0;
+    if (bar.hidden){ selFilter = null; return; }
+    var html = '<span class="lbl">Selecties</span>' +
+      '<button type="button" data-sel="" aria-pressed="' + String(!selFilter) + '">Alle beelden (' + pairs.length + ')</button>';
+    slugs.forEach(function(s){
+      var sel = state.selections[s];
+      html += '<button type="button" data-sel="' + s + '" aria-pressed="' + String(selFilter === s) + '">' +
+        (sel.name || s) + ' (' + sel.ids.length + ')</button>';
+    });
+    bar.innerHTML = html;
+    bar.querySelectorAll("button").forEach(function(b){
+      b.addEventListener("click", function(){
+        selFilter = b.dataset.sel || null;
+        renderGrid();
+      });
+    });
+  }
+  function updateSelUI(){
+    var s = mySlug();
+    var sel = s ? (state.selections[s] || { name: (state.name || "").trim(), ids: [], updated: 0 }) : null;
+    var tally = $("seltally");
+    tally.hidden = !s;
+    if (s){
+      $("seltally-naam").textContent = (state.name || "").trim();
+      $("sel-count").textContent = String(sel && sel.ids ? sel.ids.length : 0);
+    }
+    var p = pairs[current];
+    var btn = $("sel-toggle"), hint = $("sel-hint");
+    if (!btn || !p) return;
+    if (!s){
+      btn.disabled = true;
+      btn.setAttribute("aria-pressed", "false");
+      btn.innerHTML = "&#9734; Voeg toe aan mijn selectie";
+      hint.textContent = "Vul eerst je naam in bovenaan de pagina.";
+      return;
+    }
+    btn.disabled = false;
+    var erin = inSel(sel, p.id);
+    var vol = sel && sel.ids.length >= SEL_MAX;
+    btn.setAttribute("aria-pressed", String(erin));
+    btn.innerHTML = erin ? "&#9733; In jouw selectie (klik om te verwijderen)" : "&#9734; Voeg toe aan mijn selectie";
+    if (erin) hint.textContent = "";
+    else if (vol){ btn.disabled = true; hint.textContent = "Je selectie is vol (" + SEL_MAX + "). Verwijder eerst een ander beeld."; }
+    else hint.textContent = (sel.ids.length) + " van " + SEL_MAX + " gekozen.";
   }
 
   // De vergelijkslider toont altijd origineel vs de zachte 60%-versie;
@@ -483,6 +572,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     noteEl.value = it.note || "";
     syncChoiceButtons(it);
     split = 50; mode = "triple"; applyVersion(); applyMode();
+    updateSelUI();
     viewer.classList.add("open");
     document.body.style.overflow = "hidden";
   }
@@ -512,6 +602,21 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       saveState();
       scheduleSync();
     });
+  });
+  $("sel-toggle").addEventListener("click", function(){
+    var p = pairs[current]; if (!p) return;
+    var sel = mySel(); if (!sel) return;
+    var idx = sel.ids.indexOf(p.id);
+    if (idx > -1) sel.ids.splice(idx, 1);
+    else {
+      if (sel.ids.length >= SEL_MAX) { updateSelUI(); return; }
+      sel.ids.push(p.id);
+    }
+    sel.updated = Date.now();
+    sel.name = (state.name || "").trim();
+    saveState();
+    scheduleSync();
+    updateSelUI();
   });
   noteEl.addEventListener("input", function(){
     var p = pairs[current]; if (!p) return;
@@ -601,12 +706,19 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     it.updated = Date.now();
     it.name = (state.name || "").trim();
   }
-  function mergeRemote(remote){
-    if (!remote || typeof remote !== "object") return;
-    Object.keys(remote).forEach(function(id){
-      var r = remote[id], l = state.items[id];
-      if (!l || (r.updated || 0) > (l.updated || 0)) state.items[id] = r;
-    });
+  function mergeRemote(remote, remoteSel){
+    if (remote && typeof remote === "object"){
+      Object.keys(remote).forEach(function(id){
+        var r = remote[id], l = state.items[id];
+        if (!l || (r.updated || 0) > (l.updated || 0)) state.items[id] = r;
+      });
+    }
+    if (remoteSel && typeof remoteSel === "object"){
+      Object.keys(remoteSel).forEach(function(s){
+        var r = remoteSel[s], l = state.selections[s];
+        if (!l || (r.updated || 0) > (l.updated || 0)) state.selections[s] = r;
+      });
+    }
   }
   function apiCall(body){
     body.secret = SYNC_SECRET;
@@ -621,7 +733,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   }
   function pullRemote(){
     return apiCall({ action: "get" }).then(function(data){
-      mergeRemote(data.items);
+      mergeRemote(data.items, data.selections);
       saveState();
       renderGrid();
       setSave("", "");
@@ -631,8 +743,8 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     if (pushing) { dirty = true; return; }
     pushing = true; dirty = false;
     setSave("Opslaan…", "busy");
-    apiCall({ action: "set", items: state.items }).then(function(data){
-      mergeRemote(data.items);
+    apiCall({ action: "set", items: state.items, selections: state.selections }).then(function(data){
+      mergeRemote(data.items, data.selections);
       saveState();
       renderGrid();
       setSave("Opgeslagen", "ok");
@@ -654,7 +766,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   }
   document.addEventListener("visibilitychange", function(){
     if (document.visibilityState === "hidden" && dirty && navigator.sendBeacon){
-      var payload = JSON.stringify({ secret: SYNC_SECRET, action: "set", items: state.items });
+      var payload = JSON.stringify({ secret: SYNC_SECRET, action: "set", items: state.items, selections: state.selections });
       navigator.sendBeacon(SYNC_API, new Blob([payload], { type: "application/json" }));
       dirty = false;
     }
