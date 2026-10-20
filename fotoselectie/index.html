@@ -140,6 +140,14 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
   background:var(--accent); color:var(--accent-ink); font-size:11px; letter-spacing:.06em;
   padding:5px 8px; border-radius:99px; white-space:nowrap; font-weight:700;
 }
+.triptych{display:none; gap:10px}
+.triptych.open{display:flex}
+.triptych figure{flex:1 1 0; min-width:0; margin:0; display:flex; flex-direction:column; gap:8px; cursor:zoom-in}
+.triptych img{display:block; width:100%; max-height:62vh; object-fit:contain; background:#0c0d0f; border:1px solid var(--line); border-radius:6px}
+.triptych figcaption{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); text-align:center}
+.triptych figure:hover figcaption{color:var(--fg)}
+@media (max-width:700px){ .triptych.open{flex-direction:column} .triptych img{max-height:46vh} }
+.stage.hidden{display:none}
 .taglabel{position:absolute; top:10px; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; background:rgba(12,13,15,.72); color:var(--fg); padding:4px 9px; border-radius:3px}
 .taglabel.l{left:10px}
 .taglabel.r{right:10px}
@@ -246,6 +254,11 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       <button class="iconbtn" id="close" type="button" aria-label="Sluiten">Sluiten ✕</button>
     </div>
 
+    <div class="triptych" id="triptych" aria-label="Alle versies naast elkaar">
+      <figure data-goto="before"><img id="tri-before" alt="Origineel"><figcaption>Origineel</figcaption></figure>
+      <figure data-goto="soft" id="tri-soft-fig" hidden><img id="tri-soft" alt="Zachtere bewerking, 60 procent"><figcaption>Zachter &middot; 60%</figcaption></figure>
+      <figure data-goto="after"><img id="tri-after" alt="Bewerkte foto"><figcaption id="tri-after-cap">Bewerkt</figcaption></figure>
+    </div>
     <div class="stage" id="stage">
       <img id="img-after" alt="Bewerkte foto">
       <div class="top" id="top-layer"><img id="img-before" alt="Originele foto"></div>
@@ -256,12 +269,13 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
 
     <div class="viewer-controls">
       <div class="modes" role="group" aria-label="Weergave">
+        <button type="button" data-mode="triple" aria-pressed="false">Naast elkaar</button>
         <button type="button" data-mode="compare" aria-pressed="true">Vergelijk</button>
         <button type="button" data-mode="before" aria-pressed="false">Origineel</button>
         <button type="button" data-mode="soft" aria-pressed="false" id="mode-soft" hidden>Zachter &middot; 60%</button>
         <button type="button" data-mode="after" aria-pressed="false" id="mode-after">Bewerkt</button>
       </div>
-      <p class="hint" id="hint">Sleep de lijn · spatiebalk wisselt de versies · pijltjes voor volgende foto</p>
+      <p class="hint" id="hint">Klik een versie om te vergroten · in Vergelijk sleep je de lijn · spatiebalk wisselt de versies</p>
     </div>
 
     <div class="feedback">
@@ -360,9 +374,27 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   }
   function applyMode(){
     var p = pairs[current];
-    document.querySelectorAll(".modes button").forEach(function(b){
+    document.querySelectorAll("#triptych figure").forEach(function(f){
+    f.addEventListener("click", function(){
+      var doel = f.dataset.goto;
+      if (doel === "soft"){ editVersion = "soft"; }
+      if (doel === "after"){ editVersion = "after"; }
+      mode = doel;
+      applyVersion();
+      applyMode();
+    });
+  });
+  document.querySelectorAll(".modes button").forEach(function(b){
       b.setAttribute("aria-pressed", String(b.dataset.mode === mode));
     });
+    var tri = $("triptych"), stageEl = $("stage");
+    if (mode === "triple"){
+      tri.classList.add("open");
+      stageEl.classList.add("hidden");
+      return;
+    }
+    tri.classList.remove("open");
+    stageEl.classList.remove("hidden");
     if (mode === "compare"){
       topLayer.style.display = "";
       divider.style.display = "";
@@ -394,12 +426,17 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     $("choice-after").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     imgBefore.src = p.before;
     imgAfter.src = (editVersion === "soft" && p.soft) ? p.soft : p.after;
+    $("tri-before").src = p.before;
+    $("tri-after").src = p.after;
+    $("tri-after-cap").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
+    $("tri-soft-fig").hidden = !heeftSoft;
+    if (heeftSoft) $("tri-soft").src = p.soft;
     $("viewer-title").innerHTML = '<b>' + String(i+1).padStart(2,"0") + '</b> · ';
     $("viewer-title").appendChild(document.createTextNode(p.title || ""));
     var it = itemState(p.id);
     noteEl.value = it.note || "";
     syncChoiceButtons(it);
-    split = 50; mode = "compare"; applyMode();
+    split = 50; mode = "triple"; applyMode();
     viewer.classList.add("open");
     document.body.style.overflow = "hidden";
   }
@@ -477,7 +514,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   function cycleMode(){
     var p = pairs[current];
     var volgorde = (p && p.soft) ? ["before", "soft", "after"] : ["before", "after"];
-    var huidig = (mode === "compare") ? -1 : volgorde.indexOf(mode);
+    var huidig = (mode === "compare" || mode === "triple") ? -1 : volgorde.indexOf(mode);
     mode = volgorde[(huidig + 1) % volgorde.length];
     if (mode === "soft") editVersion = "soft";
     if (mode === "after") editVersion = "after";
@@ -492,9 +529,8 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     else if (e.key === "ArrowLeft") step(-1);
     else if (e.key === " "){
       e.preventDefault();
-      if (mode === "compare") mode = "before";
+      if (mode === "compare" || mode === "triple") { mode = "before"; applyMode(); }
       else cycleMode();
-      if (mode === "before") applyMode();
     }
   });
 
