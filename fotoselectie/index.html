@@ -143,6 +143,7 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .triptych{display:none; gap:10px}
 .triptych.open{display:flex}
 .triptych figure{flex:1 1 0; min-width:0; margin:0; display:flex; flex-direction:column; gap:8px; cursor:zoom-in}
+.triptych figure[hidden]{display:none}
 .triptych img{display:block; width:100%; max-height:62vh; object-fit:contain; background:#0c0d0f; border:1px solid var(--line); border-radius:6px}
 .triptych figcaption{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); text-align:center}
 .triptych figure:hover figcaption{color:var(--fg)}
@@ -266,7 +267,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     <div class="triptych" id="triptych" aria-label="Alle versies naast elkaar">
       <figure data-goto="before"><img id="tri-before" alt="Origineel"><figcaption>Origineel</figcaption></figure>
       <figure data-goto="soft" id="tri-soft-fig" hidden><img id="tri-soft" alt="Zachtere bewerking, 60 procent"><figcaption>Zachter &middot; 60%</figcaption></figure>
-      <figure data-goto="after"><img id="tri-after" alt="Bewerkte foto"><figcaption id="tri-after-cap">Bewerkt</figcaption></figure>
+      <figure data-goto="after" id="tri-after-fig"><img id="tri-after" alt="Bewerkte foto"><figcaption id="tri-after-cap">Bewerkt</figcaption></figure>
     </div>
     <div class="stage" id="stage">
       <img id="img-after" alt="Bewerkte foto">
@@ -369,7 +370,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       btn.className = "card";
       btn.type = "button";
       btn.innerHTML =
-        '<img class="thumb" loading="lazy" src="' + (p.thumb || p.after) + '" alt="">' +
+        '<img class="thumb" loading="lazy" src="' + (p.thumb || p.after || p.soft) + '" alt="">' +
         '<span class="meta"><span class="nr">' + String(i+1).padStart(2,"0") + '</span>' +
         '<span class="name"></span>' + chipFor(state.items[p.id], p) + '</span>';
       btn.querySelector(".name").textContent = p.title || "";
@@ -380,12 +381,13 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
 
   // De vergelijkslider toont altijd origineel vs de zachte 60%-versie;
   // alleen beelden zonder 60%-versie vallen terug op de 100%.
+  function heeftAfter(p){ return !!(p && p.after); }
   function compareSrc(p){ return p.soft || p.after; }
   function compareLabel(p){ return p.soft ? "Zachter \u00b7 60%" : "Bewerkt"; }
   function applyVersion(){
     var p = pairs[current]; if (!p) return;
     if (mode === "soft") imgAfter.src = p.soft || p.after;
-    else if (mode === "after") imgAfter.src = p.after;
+    else if (mode === "after") imgAfter.src = p.after || p.soft;
     else imgAfter.src = compareSrc(p);
   }
   var lightbox = $("lightbox"), lbImg = $("lb-img"), lbLabel = $("lb-label");
@@ -399,7 +401,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   function variantsOf(p){
     var v = [{ src: p.before, label: "Origineel" }];
     if (p.soft) v.push({ src: p.soft, label: "Zachter \u00b7 60%" });
-    v.push({ src: p.after, label: p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt" });
+    if (p.after) v.push({ src: p.after, label: p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt" });
     return v;
   }
   function openLightbox(index){
@@ -417,6 +419,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       var p = pairs[current]; if (!p) return;
       var doel = f.dataset.goto;
       var idx = (doel === "before") ? 0 : (doel === "soft") ? 1 : (p.soft ? 2 : 1);
+      if (doel === "after" && !p.after) return;
       openLightbox(idx);
     });
   });
@@ -460,13 +463,17 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     current = i;
     var p = pairs[i];
     var heeftSoft = !!p.soft;
+    var met100 = heeftAfter(p);
     $("mode-soft").hidden = !heeftSoft;
     $("choice-soft").hidden = !heeftSoft;
+    $("mode-after").hidden = !met100;
+    $("choice-after").hidden = !met100;
     $("mode-after").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     $("choice-after").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     imgBefore.src = p.before;
     $("tri-before").src = p.before;
-    $("tri-after").src = p.after;
+    $("tri-after-fig").hidden = !met100;
+    if (met100) $("tri-after").src = p.after;
     $("tri-after-cap").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     $("tri-soft-fig").hidden = !heeftSoft;
     if (heeftSoft) $("tri-soft").src = p.soft;
@@ -549,7 +556,9 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
 
   function cycleMode(){
     var p = pairs[current];
-    var volgorde = (p && p.soft) ? ["before", "soft", "after"] : ["before", "after"];
+    var volgorde = ["before"];
+    if (p && p.soft) volgorde.push("soft");
+    if (p && p.after) volgorde.push("after");
     var huidig = (mode === "compare" || mode === "triple") ? -1 : volgorde.indexOf(mode);
     mode = volgorde[(huidig + 1) % volgorde.length];
     applyVersion();
