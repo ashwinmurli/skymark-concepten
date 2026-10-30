@@ -81,6 +81,29 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .savestate.err{color:#c97070}
 .seltally{font-size:13px; color:var(--muted)}
 .seltally b{color:var(--accent)}
+.viewtabs{display:flex; gap:0; border-bottom:1px solid var(--line); margin-bottom:16px}
+.viewtabs button{font:inherit; font-size:14px; background:none; border:0; border-bottom:2px solid transparent; color:var(--muted); padding:10px 16px; cursor:pointer; margin-bottom:-1px}
+.viewtabs button[aria-pressed="true"]{color:var(--fg); border-bottom-color:var(--accent)}
+.viewtabs .cnt{font-size:12px; color:var(--accent); margin-left:6px}
+.ovfilters{display:flex; flex-wrap:wrap; gap:8px; padding-bottom:16px}
+.ovfilters button{font:inherit; font-size:13px; background:none; border:1px solid var(--line); border-radius:999px; color:var(--fg); padding:5px 14px; cursor:pointer}
+.ovfilters button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:700}
+.ovlist{display:grid; gap:10px}
+.ovrow{display:grid; grid-template-columns:140px 1fr; gap:16px; align-items:start; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px; cursor:pointer}
+.ovrow:hover{border-color:var(--accent)}
+.ovrow img{width:140px; aspect-ratio:3/2; object-fit:cover; border-radius:4px; display:block}
+.ovrow .t{font-size:14px; color:var(--muted); margin-bottom:6px}
+.ovrow .t b{color:var(--fg); font-weight:500}
+.ovrow ul{list-style:none; margin:0; padding:0; display:grid; gap:5px}
+.ovrow li{font-size:14px; line-height:1.45}
+.ovrow li b{font-weight:600}
+.ovrow li .k{color:var(--accent)}
+.ovrow li .s{color:var(--accent)}
+.ovrow li .n{color:var(--fg)}
+.ovempty{color:var(--muted); font-size:14px; padding:20px 0}
+.ovsum{display:flex; flex-wrap:wrap; gap:18px; font-size:13px; color:var(--muted); padding-bottom:12px}
+.ovsum b{color:var(--fg)}
+@media (max-width:560px){ .ovrow{grid-template-columns:90px 1fr} .ovrow img{width:90px} }
 .selbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding-bottom:14px}
 .selbar .lbl{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
 .selbar button{font:inherit; font-size:13px; background:none; border:1px solid var(--line); border-radius:999px; color:var(--fg); padding:5px 14px; cursor:pointer}
@@ -271,6 +294,17 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     <h2>De selectie komt eraan</h2>
     <p>Hier verschijnen de fotoparen, elk met origineel en bewerking naast elkaar. Deze pagina wordt gevuld zodra de beelden klaarstaan.</p>
   </div>
+
+  <div class="viewtabs" role="tablist">
+    <button type="button" id="tab-grid" aria-pressed="true">Alle beelden</button>
+    <button type="button" id="tab-ov" aria-pressed="false">Feedback-overzicht<span class="cnt" id="ov-count"></span></button>
+  </div>
+
+  <section id="overview" hidden>
+    <div class="ovsum" id="ov-sum"></div>
+    <div class="ovfilters" id="ov-filters"></div>
+    <div class="ovlist" id="ov-list"></div>
+  </section>
 
   <div class="selbar" id="selbar" hidden></div>
 
@@ -521,7 +555,134 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     });
     renderSelbar();
     updateSelUI();
+    renderOverview();
   }
+  // Feedback-overzicht: per beeld wie wat koos, opmerkte of selecteerde.
+  var ovFilter = "alles";
+  function activiteit(){
+    var personen = {};
+    function persoon(slug, naam){
+      if (!personen[slug]) personen[slug] = { naam: naam || slug, keuzes: 0, opm: 0, sel: 0 };
+      return personen[slug];
+    }
+    var rijen = [];
+    pairs.forEach(function(p, i){
+      var regels = {};
+      peopleFor(p.id).forEach(function(m){
+        regels[m.slug] = { naam: m.name, keuze: m.it.choice, opm: (m.it.note || "").trim(), sel: false };
+        var ps = persoon(m.slug, m.name);
+        if (m.it.choice) ps.keuzes++;
+        if ((m.it.note || "").trim()) ps.opm++;
+      });
+      Object.keys(state.selections).forEach(function(s){
+        var sel = state.selections[s];
+        if (inSel(sel, p.id)){
+          if (!regels[s]) regels[s] = { naam: sel.name || s, keuze: null, opm: "", sel: true };
+          else regels[s].sel = true;
+          persoon(s, sel.name).sel++;
+        }
+      });
+      var lijst = Object.keys(regels).map(function(s){ var r = regels[s]; r.slug = s; return r; })
+        .sort(function(a, b){ return a.naam.localeCompare(b.naam); });
+      if (lijst.length) rijen.push({ p: p, i: i, regels: lijst });
+    });
+    return { rijen: rijen, personen: personen };
+  }
+  function renderOverview(){
+    var a = activiteit();
+    $("ov-count").textContent = a.rijen.length ? String(a.rijen.length) : "";
+    if ($("overview").hidden) return;
+    var slugs = Object.keys(a.personen).sort(function(x, y){ return a.personen[x].naam.localeCompare(a.personen[y].naam); });
+    // samenvatting per persoon
+    $("ov-sum").innerHTML = "";
+    slugs.forEach(function(s){
+      var ps = a.personen[s], span = document.createElement("span");
+      var b = document.createElement("b"); b.textContent = ps.naam;
+      span.appendChild(b);
+      function n(x, een, meer){ return x + " " + (x === 1 ? een : meer); }
+      span.appendChild(document.createTextNode(": " + n(ps.sel, "geselecteerd", "geselecteerd") + ", " +
+        n(ps.opm, "opmerking", "opmerkingen") + ", " + n(ps.keuzes, "voorkeur", "voorkeuren")));
+      $("ov-sum").appendChild(span);
+    });
+    // filters
+    var filters = [["alles", "Alle feedback"], ["opm", "Met opmerking"], ["sel", "Geselecteerd"]];
+    slugs.forEach(function(s){ filters.push(["p:" + s, a.personen[s].naam]); });
+    if (filters.map(function(f){ return f[0]; }).indexOf(ovFilter) === -1) ovFilter = "alles";
+    $("ov-filters").innerHTML = "";
+    filters.forEach(function(f){
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = f[1];
+      b.setAttribute("aria-pressed", String(ovFilter === f[0]));
+      b.addEventListener("click", function(){ ovFilter = f[0]; renderOverview(); });
+      $("ov-filters").appendChild(b);
+    });
+    // rijen
+    var list = $("ov-list");
+    list.innerHTML = "";
+    var zichtbaar = a.rijen.map(function(r){
+      var regels = r.regels.filter(function(g){
+        if (ovFilter === "opm") return !!g.opm;
+        if (ovFilter === "sel") return g.sel;
+        if (ovFilter.indexOf("p:") === 0) return g.slug === ovFilter.slice(2);
+        return true;
+      });
+      return { p: r.p, i: r.i, regels: regels };
+    }).filter(function(r){ return r.regels.length; });
+    if (!zichtbaar.length){
+      var leeg = document.createElement("p");
+      leeg.className = "ovempty";
+      leeg.textContent = a.rijen.length ? "Geen beelden binnen dit filter." : "Nog geen voorkeuren, opmerkingen of selecties. Zodra iemand met een ingevulde naam iets aanklikt, verschijnt het hier.";
+      list.appendChild(leeg);
+      return;
+    }
+    zichtbaar.forEach(function(r){
+      var row = document.createElement("div");
+      row.className = "ovrow";
+      row.setAttribute("role", "button");
+      row.tabIndex = 0;
+      var img = document.createElement("img");
+      img.loading = "lazy"; img.alt = ""; img.src = r.p.thumb || r.p.soft || r.p.after;
+      row.appendChild(img);
+      var body = document.createElement("div");
+      var titel = document.createElement("p");
+      titel.className = "t";
+      titel.innerHTML = "<b>" + String(r.i + 1).padStart(2, "0") + "</b> \u00b7 ";
+      titel.appendChild(document.createTextNode(r.p.title || ""));
+      body.appendChild(titel);
+      var ul = document.createElement("ul");
+      r.regels.forEach(function(g){
+        var li = document.createElement("li");
+        var b = document.createElement("b"); b.textContent = g.naam; li.appendChild(b);
+        var delen = [];
+        if (g.sel) delen.push(["s", "\u2605 In selectie"]);
+        if (g.keuze) delen.push(["k", "Voorkeur: " + keuzeLabel(g.keuze, false)]);
+        if (g.opm) delen.push(["n", "\u201c" + g.opm + "\u201d"]);
+        delen.forEach(function(d, idx){
+          li.appendChild(document.createTextNode(idx === 0 ? "  " : "  \u00b7  "));
+          var sp = document.createElement("span"); sp.className = d[0]; sp.textContent = d[1]; li.appendChild(sp);
+        });
+        ul.appendChild(li);
+      });
+      body.appendChild(ul);
+      row.appendChild(body);
+      row.addEventListener("click", function(){ openViewer(r.i); });
+      row.addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); openViewer(r.i); } });
+      list.appendChild(row);
+    });
+  }
+  function toonTab(welke){
+    var ov = welke === "ov";
+    $("overview").hidden = !ov;
+    grid.hidden = ov;
+    $("selbar").style.display = ov ? "none" : "";
+    $("tab-grid").setAttribute("aria-pressed", String(!ov));
+    $("tab-ov").setAttribute("aria-pressed", String(ov));
+    try { history.replaceState(null, "", ov ? "#overzicht" : location.pathname); } catch(e){}
+    renderOverview();
+  }
+  $("tab-grid").addEventListener("click", function(){ toonTab("grid"); });
+  $("tab-ov").addEventListener("click", function(){ toonTab("ov"); });
+
   function renderSelbar(){
     var bar = $("selbar");
     var slugs = Object.keys(state.selections).filter(function(s){
@@ -909,6 +1070,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
   fetch("pairs.json").then(function(r){ return r.json(); }).then(function(data){
     pairs = (data && data.pairs) || [];
     renderGrid();
+    if (location.hash === "#overzicht") toonTab("ov");
     pullRemote();
   }).catch(function(){
     pairs = [];
