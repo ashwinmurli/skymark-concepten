@@ -107,17 +107,23 @@ async function decodeAudio(src, start, dur) {
     ac.close();
     const sr = audio.sampleRate;
     const from = Math.floor(start * sr);
-    const len = Math.min(Math.floor(dur * sr), audio.length - from);
-    if (len <= 0) return null;
+    const avail = Math.min(Math.floor(dur * sr), audio.length - from);
+    if (avail <= 0) return null;
+    /* geluid loopt altijd even lang als het beeld: een korter spoor wordt met stilte aangevuld */
+    const len = Math.floor(dur * sr);
     /* altijd stereo: mono-bronnen worden verdubbeld */
     const ch = 2;
     const planes = [];
-    for (let c = 0; c < ch; c++) planes.push(audio.getChannelData(Math.min(c, audio.numberOfChannels - 1)).slice(from, from + len));
+    for (let c = 0; c < ch; c++) {
+      const p = new Float32Array(len);
+      p.set(audio.getChannelData(Math.min(c, audio.numberOfChannels - 1)).subarray(from, from + avail));
+      planes.push(p);
+    }
     /* korte fade in en uit tegen tikken */
-    const fade = Math.min(Math.floor(sr * 0.12), Math.floor(len / 4));
-    for (const p of planes) for (let i = 0; i < fade; i++) { const g = i / fade; p[i] *= g; p[len - 1 - i] *= g; }
+    const fade = Math.min(Math.floor(sr * 0.12), Math.floor(avail / 4));
+    for (const p of planes) for (let i = 0; i < fade; i++) { const g = i / fade; p[i] *= g; p[avail - 1 - i] *= g; }
     let silent = true;
-    outer: for (const p of planes) for (let i = 0; i < len; i += 64) if (Math.abs(p[i]) > 1e-4) { silent = false; break outer; }
+    outer: for (const p of planes) for (let i = 0; i < avail; i += 64) if (Math.abs(p[i]) > 1e-4) { silent = false; break outer; }
     if (silent) return null;
     return { sr, ch, len, planes };
   } catch (e) {
