@@ -44,7 +44,7 @@ function newSlide(templateId, keep) {
 
 function newPost(format = 'feed') {
   const first = templatesFor(format)[0].id;
-  return { id: uid(), name: 'Naamloze post', format, slides: [newSlide(first)] };
+  return { id: uid(), name: 'Naamloze post', format, mode: 'static', slides: [newSlide(first)] };
 }
 
 /* Zet een andere template op een slide. Aangepaste teksten en beelden blijven
@@ -120,6 +120,7 @@ const cv = $('#cv');
 const ctx = cv.getContext('2d');
 
 function fitStage() {
+  if (!post) return;
   const size = sizeOf(post.format);
   if (cv.width !== size.w || cv.height !== size.h) { cv.width = size.w; cv.height = size.h; }
   const wrap = $('#stage-wrap');
@@ -159,7 +160,10 @@ function videoOf(s) {
   return null;
 }
 
+const isVideo = () => post.mode === 'video';
+
 function play() {
+  if (!isVideo()) return;
   playing = true;
   $('#play').innerHTML = ICON_PAUSE;
   const v = videoOf(slide());
@@ -440,6 +444,12 @@ function renderInspector() {
       msec.append(el('p', { class: 'muted', style: 'margin:8px 0 0' }, 'Sleep in het voorbeeld om de uitsnede te verschuiven. ',
         el('a', { href: '#', style: 'color:var(--gold)', onclick: e => { e.preventDefault(); m.zoom = 1; m.pos = { x: 0, y: 0 }; changed(true); } }, 'Centreren')));
 
+      const ov = el('input', { type: 'range', min: 0, max: 80, step: 1 });
+      ov.value = Math.round((m.overlay || 0) * 100);
+      const ovl = el('span', {}, ov.value + '%');
+      ov.addEventListener('input', () => { m.overlay = ov.value / 100; ovl.textContent = ov.value + '%'; if (!playing) draw(); changed(false); });
+      msec.append(el('div', { class: 'range' }, el('label', {}, el('span', {}, 'Overlay Binck Black'), ovl), ov));
+
       if (m.kind === 'video') {
         const v = mediaEl(slot.key, m);
         const total = v && isFinite(v.duration) ? v.duration : 0;
@@ -470,7 +480,7 @@ function renderInspector() {
           snd.checked = m.sound !== false;
           snd.addEventListener('change', () => { m.sound = snd.checked; changed(false); });
           msec.append(
-            el('div', { class: 'range' }, el('label', {}, el('span', {}, 'Begin'), il), inp),
+            el('div', { class: 'range' }, el('label', {}, el('span', {}, isVideo() ? 'Begin' : 'Begin (dit beeld wordt de afbeelding)'), il), inp),
             el('div', { class: 'range' }, el('label', {}, el('span', {}, 'Einde'), ol), outp),
             dl,
             el('label', { class: 'chk', style: 'margin-top:10px' }, snd, 'Geluid van de video meenemen')
@@ -493,7 +503,17 @@ function renderInspector() {
   csec.append(sw, el('p', { class: 'muted', style: 'margin:12px 0 0' }, 'Alleen combinaties uit het brandbook, zodat alles leesbaar en herkenbaar blijft.'));
   box.append(csec);
 
-  /* beweging */
+  /* export */
+  if (!isVideo()) {
+    box.append(el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Export als afbeelding'),
+      el('ul', { class: 'spec' },
+        el('li', {}, `${sizeOf(post.format).w}×${sizeOf(post.format).h} pixels`),
+        el('li', {}, 'JPG met foto, PNG zonder foto (scherpe vlakken en letters)'),
+        post.format === 'carousel' ? el('li', {}, 'Carrousel: zip met genummerde bestanden') : null,
+        el('li', {}, 'Wil je beweging? Zet de modus bovenin op Video.')
+      )));
+    return;
+  }
   const hasVideo = slideHasVideo(s);
   const anim = el('input', { type: 'checkbox' });
   anim.checked = s.animate !== false;
@@ -510,7 +530,7 @@ function renderInspector() {
   bsec.append(el('ul', { class: 'spec', style: 'margin-top:14px' },
     el('li', {}, `MP4, H.264 + AAC, 30 fps, ${sizeOf(post.format).w}×${sizeOf(post.format).h}`),
     el('li', {}, 'Klaar voor Instagram: geen extra omzetting nodig'),
-    el('li', {}, 'Afbeelding: JPG met foto, PNG zonder foto')
+    post.format === 'carousel' ? el('li', {}, 'Carrousel: elke slide als MP4 in één zip') : null
   ));
   box.append(bsec);
 }
@@ -549,7 +569,11 @@ $('#file-input').addEventListener('change', e => {
   if (!f) return;
   const kind = f.type.startsWith('video') ? 'video' : 'image';
   const src = URL.createObjectURL(f);
-  slide().media[pickSlot] = { kind, src, ref: { type: 'upload', name: f.name }, zoom: 1, pos: { x: 0, y: 0 }, in: 0, out: null, sound: true };
+  slide().media[pickSlot] = { kind, src, ref: { type: 'upload', name: f.name }, zoom: 1, pos: { x: 0, y: 0 }, in: 0, out: null, sound: true, overlay: 0 };
+  if (kind === 'video' && !isVideo()) {
+    post.mode = 'video';
+    toast('Video toegevoegd: de post staat nu in videomodus. Terugzetten kan bovenin.');
+  }
   changed(true);
 });
 
@@ -560,17 +584,18 @@ function serialize() {
     id: post.id,
     name: post.name,
     format: post.format,
+    mode: post.mode,
     slides: post.slides.map(s => ({
       id: s.id, template: s.template, palette: s.palette, texts: s.texts, animate: s.animate, duration: s.duration,
       media: Object.fromEntries(Object.entries(s.media).filter(([, m]) => m).map(([k, m]) => [k, {
-        kind: m.kind, ref: m.ref, zoom: m.zoom || 1, pos: m.pos || { x: 0, y: 0 }, in: m.in || 0, out: m.out ?? null, sound: m.sound !== false
+        kind: m.kind, ref: m.ref, zoom: m.zoom || 1, pos: m.pos || { x: 0, y: 0 }, in: m.in || 0, out: m.out ?? null, sound: m.sound !== false, overlay: m.overlay || 0
       }]))
     }))
   };
 }
 
 function hydrate(data) {
-  const p = { id: data.id || uid(), name: data.name || 'Naamloze post', format: FORMATS[data.format] ? data.format : 'feed', slides: [] };
+  const p = { id: data.id || uid(), name: data.name || 'Naamloze post', format: FORMATS[data.format] ? data.format : 'feed', mode: data.mode === 'video' ? 'video' : 'static', slides: [] };
   for (const s of data.slides || []) {
     const tpl = getTemplate(s.template);
     const ns = newSlide(tpl.id);
@@ -706,6 +731,15 @@ function checkMissing(slides) {
   return true;
 }
 
+async function exportSlide() {
+  return doExport(isVideo() ? 'video' : 'image');
+}
+
+async function exportMain() {
+  if (post.format === 'carousel') return exportCarousel();
+  return exportSlide();
+}
+
 async function doExport(kind) {
   if (playing) stop();
   const s = slide();
@@ -740,8 +774,8 @@ async function exportCarousel() {
       const base = fileBase(post, i);
       const frac = i / post.slides.length;
       ui.set(`Slide ${i + 1} van ${post.slides.length}`, frac);
-      if (slideHasVideo(s)) {
-        if (!videoSupported()) throw new Error('video-slides vragen Chrome, Edge of Safari 17+');
+      if (isVideo()) {
+        if (!videoSupported()) throw new Error('video vraagt Chrome, Edge of Safari 17+');
         const r = await exportVideo(s, post.format, getMedia, p => ui.set(`Slide ${i + 1} van ${post.slides.length}: video ${Math.round(p * 100)}%`, frac + p / post.slides.length));
         files.push({ name: `${base}.mp4`, blob: r.blob });
       } else {
@@ -773,14 +807,23 @@ function refreshAll() {
   if (current >= post.slides.length) current = post.slides.length - 1;
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.f === post.format));
   $('#post-name').value = post.name;
-  $('#btn-zip').style.display = post.format === 'carousel' ? '' : 'none';
-  $('#btn-img').title = post.format === 'carousel' ? 'Deze slide als afbeelding' : 'Exporteer als afbeelding';
-  $('#btn-vid').title = post.format === 'carousel' ? 'Deze slide als video' : 'Exporteer als MP4';
-  fitStage();
+  document.querySelectorAll('#mode button').forEach(b => b.classList.toggle('on', b.dataset.m === post.mode));
+  $('#btn-slide').style.display = post.format === 'carousel' ? '' : 'none';
+  $('#btn-export').textContent = post.format === 'carousel' ? (isVideo() ? 'Exporteer carrousel (MP4)' : 'Exporteer carrousel') : (isVideo() ? 'Exporteer video' : 'Exporteer afbeelding');
+  $('#playbar').classList.toggle('hide', !isVideo());
+  if (!isVideo() && playing) stop();
   renderTemplates();
   renderStrip();
   renderInspector();
+  fitStage();
   draw();
+}
+
+function setMode(m) {
+  if (m === post.mode) return;
+  if (playing) stop();
+  post.mode = m;
+  changed(true);
 }
 
 function bind() {
@@ -798,14 +841,15 @@ function bind() {
   });
   $('#btn-save').addEventListener('click', saveDraft);
   $('#btn-drafts').addEventListener('click', openDrafts);
-  $('#btn-img').addEventListener('click', () => doExport('image'));
-  $('#btn-vid').addEventListener('click', () => doExport('video'));
-  $('#btn-zip').addEventListener('click', exportCarousel);
+  document.querySelectorAll('#mode button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
+  $('#btn-slide').addEventListener('click', exportSlide);
+  $('#btn-export').addEventListener('click', exportMain);
+  new ResizeObserver(() => fitStage()).observe($('#stage-wrap'));
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').classList.remove('show')));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m && m.id !== 'm-export' && m.id !== 'm-name') m.classList.remove('show'); }));
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(m => { if (m.id !== 'm-export') m.classList.remove('show'); });
-    if (e.key === ' ' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); playing ? stop() : play(); }
+    if (e.key === ' ' && isVideo() && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); playing ? stop() : play(); }
   });
   window.addEventListener('resize', fitStage);
   window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });

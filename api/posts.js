@@ -75,6 +75,7 @@ function clean(draft) {
     author: String(draft.author || '').slice(0, 60),
     updated: Date.now(),
     format: ['feed', 'story', 'carousel'].includes(draft.format) ? draft.format : 'feed',
+    mode: draft.mode === 'video' ? 'video' : 'static',
     slides: Array.isArray(draft.slides) ? draft.slides.slice(0, 20) : []
   };
   if (JSON.stringify(out).length > MAX_BYTES) return null;
@@ -82,7 +83,7 @@ function clean(draft) {
 }
 
 function summary(d) {
-  return { id: d.id, name: d.name, author: d.author, updated: d.updated, format: d.format, count: d.slides.length, first: d.slides[0] ? d.slides[0].template : null };
+  return { id: d.id, name: d.name, author: d.author, updated: d.updated, format: d.format, mode: d.mode || 'static', count: d.slides.length, first: d.slides[0] ? d.slides[0].template : null };
 }
 
 export default async function handler(req) {

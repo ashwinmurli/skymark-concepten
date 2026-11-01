@@ -74,11 +74,17 @@ button{cursor:pointer;}
 .btn.gold:hover{background:#d8b25d;}
 .btn:disabled{opacity:.35;cursor:default;}
 .sep{width:1px;height:26px;background:var(--line);}
+.mode{display:flex;border:1px solid var(--line2);}
+.mode button{background:none;border:0;padding:8px 12px;font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);white-space:nowrap;}
+.mode button+button{border-left:1px solid var(--line2);}
+.mode button.on{background:var(--mist);color:var(--black);}
+.mode button:not(.on):hover{color:var(--mist);}
+.playbar.hide{display:none;}
 
 /* stage */
-.stage-wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:26px;position:relative;background:
+.stage-wrap{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:26px;position:relative;background:
   radial-gradient(circle at 50% 40%, rgba(220,235,218,.05), transparent 60%), var(--ink);}
-.stage{position:relative;box-shadow:0 30px 80px rgba(0,0,0,.45);}
+.stage{position:relative;flex:none;box-shadow:0 30px 80px rgba(0,0,0,.45);}
 .stage canvas{display:block;width:100%;height:100%;}
 .stage.pan canvas{cursor:grab;}
 .stage.panning canvas{cursor:grabbing;}
@@ -227,9 +233,12 @@ button{cursor:pointer;}
       <button class="btn" id="btn-drafts">Concepten</button>
       <button class="btn" id="btn-save">Bewaar</button>
       <span class="sep"></span>
-      <button class="btn" id="btn-img">Afbeelding</button>
-      <button class="btn" id="btn-vid">Video</button>
-      <button class="btn gold" id="btn-zip">Carrousel (zip)</button>
+      <div class="mode" id="mode" role="group" aria-label="Exportmodus">
+        <button data-m="static">Afbeelding</button>
+        <button data-m="video">Video</button>
+      </div>
+      <button class="btn" id="btn-slide" title="Exporteer alleen de slide die je nu ziet">Deze slide</button>
+      <button class="btn gold" id="btn-export">Exporteer</button>
     </div>
     <div class="stage-wrap" id="stage-wrap">
       <div class="stage" id="stage">
@@ -237,7 +246,7 @@ button{cursor:pointer;}
         <div class="safe" id="safe"><i data-l="Instagram-balk" style="top:0;height:13%"></i><i data-l="Reactieveld" style="bottom:0;height:17.7%"></i></div>
       </div>
     </div>
-    <div class="playbar">
+    <div class="playbar" id="playbar">
       <button class="play" id="play" aria-label="Afspelen"></button>
       <span id="time">0,0 s</span>
       <div class="timeline"><i id="tl"></i></div>

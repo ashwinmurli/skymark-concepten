@@ -243,6 +243,11 @@ export function renderSlide(ctx, slide, formatId, opts = {}) {
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(el, r.x, r.y, r.w, r.h);
+        /* overlay in Binck Black, sterkte per beeld instelbaar */
+        if (m.overlay > 0) {
+          ctx.fillStyle = hexA(COLORS['binck-black'].hex, Math.min(0.85, m.overlay));
+          ctx.fillRect(L.x, L.y, L.w, L.h);
+        }
       } else if (opts.placeholders !== false) {
         drawPlaceholder(ctx, L, 'Kies een beeld');
       } else {
