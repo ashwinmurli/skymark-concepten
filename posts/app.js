@@ -2,7 +2,7 @@
 
 import { TEMPLATES, FORMATS, COLORS, getTemplate, templatesFor } from './templates.js';
 import { loadFonts, loadAssets, renderSlide, sizeOf, mediaBoxes, mediaRect, paletteOf, prepareSlide } from './engine.js';
-import { exportImage, exportVideo, makeZip, download, fileBase, slideHasVideo, clipDuration, videoSupported, MAX_SECONDS } from './exporter.js';
+import { exportImage, exportVideo, exportSequence, sequenceTimeline, composite, TRANSITIONS, makeZip, download, fileBase, slideHasVideo, clipDuration, videoSupported, MAX_SECONDS } from './exporter.js';
 
 const API = '/api/posts';
 const SECRET = 'girxy6-nidzyn-wUknir';
@@ -36,7 +36,7 @@ let dirty = false;
 
 function newSlide(templateId, keep) {
   const tpl = getTemplate(templateId);
-  const s = { id: uid(), template: tpl.id, palette: tpl.palettes[0].id, texts: {}, media: {}, animate: true, duration: 6 };
+  const s = { id: uid(), template: tpl.id, palette: tpl.palettes[0].id, texts: {}, media: {}, animate: true, animateOut: true, duration: 6 };
   for (const f of tpl.fields) s.texts[f.key] = f.def;
   if (keep) applyTemplate(s, templateId, keep);
   return s;
@@ -44,7 +44,7 @@ function newSlide(templateId, keep) {
 
 function newPost(format = 'feed') {
   const first = templatesFor(format)[0].id;
-  return { id: uid(), name: 'Naamloze post', format, mode: 'static', slides: [newSlide(first)] };
+  return { id: uid(), name: 'Naamloze post', format, mode: 'static', videoExport: 'los', transition: { type: 'fade', dur: 0.7 }, slides: [newSlide(first)] };
 }
 
 /* Zet een andere template op een slide. Aangepaste teksten en beelden blijven
@@ -161,11 +161,51 @@ function videoOf(s) {
 }
 
 const isVideo = () => post.mode === 'video';
+const isSequence = () => post.format === 'carousel' && isVideo() && post.videoExport === 'doorlopend' && post.slides.length > 1;
+
+const seqA = document.createElement('canvas');
+const seqB = document.createElement('canvas');
+
+function seqTimeline() {
+  return sequenceTimeline(post.slides, s => clipDuration(s, (slot, m) => mediaEl(slot, m)), post.transition);
+}
+
+/* Toont de hele carrousel als één doorlopende video, met overgangen. */
+function tickSeq() {
+  if (!playing) return;
+  const tl = seqTimeline();
+  let t = (performance.now() - playStart) / 1000;
+  if (t > tl.total + 0.4) { playStart = performance.now(); t = 0; }
+  t = Math.min(t, tl.total - 1 / 60);
+  let i = 0;
+  while (i < post.slides.length - 1 && t >= tl.starts[i + 1]) i++;
+  const inTr = tl.T > 0 && i > 0 && t < tl.starts[i] + tl.T;
+  const active = inTr ? [i - 1, i] : [i];
+  post.slides.forEach((s, k) => {
+    const v = videoOf(s);
+    if (!v || !v.e) return;
+    if (!active.includes(k)) { if (!v.e.paused) v.e.pause(); return; }
+    const target = (v.m.in || 0) + (t - tl.starts[k]);
+    if (v.e.paused || Math.abs(v.e.currentTime - target) > 0.3) { v.e.currentTime = target; v.e.play().catch(() => {}); }
+  });
+  const size = sizeOf(post.format);
+  const live = (k, cx) => renderSlide(cx, post.slides[k], post.format, { t: t - tl.starts[k], duration: tl.durs[k], getMedia });
+  if (inTr) {
+    for (const c of [seqA, seqB]) if (c.width !== size.w || c.height !== size.h) { c.width = size.w; c.height = size.h; }
+    live(i - 1, seqA.getContext('2d'));
+    live(i, seqB.getContext('2d'));
+    composite(ctx, seqA, seqB, post.transition.type, (t - tl.starts[i]) / tl.T, size.w, size.h);
+  } else live(i, ctx);
+  $('#time').textContent = `Slide ${i + 1} · ` + fmtSec(t) + ' / ' + fmtSec(tl.total);
+  $('#tl').style.width = Math.min(100, t / tl.total * 100) + '%';
+  requestAnimationFrame(tickSeq);
+}
 
 function play() {
   if (!isVideo()) return;
   playing = true;
   $('#play').innerHTML = ICON_PAUSE;
+  if (isSequence()) { playStart = performance.now(); requestAnimationFrame(tickSeq); return; }
   const v = videoOf(slide());
   if (v && v.e) { v.e.currentTime = v.m.in || 0; v.e.play().catch(() => {}); }
   playStart = performance.now();
@@ -280,7 +320,9 @@ function renderTemplates() {
     const grid = el('div', { class: 'tpl-grid' });
     for (const t of list.filter(x => x.group === g)) {
       const c = el('canvas', { width: 216, height: Math.round(216 * size.h / size.w) });
-      const b = el('button', { class: 'tpl' + (t.id === slide().template ? ' on' : ''), title: t.note || t.name, onclick: () => {
+      const b = el('button', { class: 'tpl' + (t.id === slide().template ? ' on' : ''), title: post.format === 'carousel' ? 'Klik: op deze slide. Sleep naar de slidebalk: nieuwe slide.' : (t.note || t.name), draggable: post.format === 'carousel' ? 'true' : null,
+        ondragstart: e => { e.dataTransfer.setData(DT_TPL, t.id); e.dataTransfer.effectAllowed = 'copy'; $('#strip').classList.add('dragging'); },
+        ondragend: () => clearDrop(), onclick: () => {
         applyTemplate(slide(), t.id);
         changed(true);
       } }, c, el('span', {}, t.name));
@@ -318,7 +360,10 @@ function renderStrip() {
   strip.innerHTML = '';
   post.slides.forEach((s, i) => {
     const c = el('canvas', { width: 152, height: 190 });
-    const b = el('button', { class: 'slide-th' + (i === current ? ' on' : ''), onclick: () => { if (playing) stop(); current = i; refreshAll(); } },
+    const b = el('button', { class: 'slide-th' + (i === current ? ' on' : ''), draggable: 'true', 'data-i': i,
+      ondragstart: e => { e.dataTransfer.setData(DT_SLIDE, String(i)); e.dataTransfer.effectAllowed = 'move'; $('#strip').classList.add('dragging'); },
+      ondragend: () => clearDrop(),
+      onclick: () => { if (playing) stop(); current = i; refreshAll(); } },
       c, el('b', {}, String(i + 1)), slideHasVideo(s) ? el('em', {}, 'VIDEO') : null);
     renderThumb(c, s, post.format);
     strip.append(b);
@@ -351,6 +396,88 @@ function renderStrip() {
     } }, '×')
   );
   strip.append(tools);
+  if (post.slides.length < 4) strip.append(el('p', { class: 'strip-hint' }, 'Sleep een template uit de zijbalk naar deze balk voor een nieuwe slide, of op een slide om die te vervangen. Slides verslepen verandert de volgorde.'));
+  strip.append(el('i', { class: 'drop-line', id: 'drop-line' }));
+}
+
+/* ---------- slepen naar de slidebalk ---------- */
+
+const DT_TPL = 'text/x-skymark-template';
+const DT_SLIDE = 'text/x-skymark-slide';
+let dropTarget = null;
+
+function clearDrop() {
+  dropTarget = null;
+  $('#strip').classList.remove('dragging');
+  document.querySelectorAll('.slide-th.drop-replace').forEach(n => n.classList.remove('drop-replace'));
+  const line = $('#drop-line');
+  if (line) line.style.display = 'none';
+}
+
+function dropAt(e) {
+  const types = [...e.dataTransfer.types];
+  const isTpl = types.includes(DT_TPL);
+  const thumbs = [...document.querySelectorAll('.slide-th')];
+  const strip = $('#strip');
+  const sr = strip.getBoundingClientRect();
+  let target = { mode: 'insert', index: thumbs.length };
+  for (let k = 0; k < thumbs.length; k++) {
+    const r = thumbs[k].getBoundingClientRect();
+    if (isTpl && e.clientX > r.left + r.width * 0.25 && e.clientX < r.right - r.width * 0.25) { target = { mode: 'replace', index: k }; break; }
+    if (e.clientX < r.left + r.width / 2) { target = { mode: 'insert', index: k }; break; }
+  }
+  document.querySelectorAll('.slide-th.drop-replace').forEach(n => n.classList.remove('drop-replace'));
+  const line = $('#drop-line');
+  if (target.mode === 'replace') { thumbs[target.index].classList.add('drop-replace'); line.style.display = 'none'; }
+  else {
+    const ref = thumbs[target.index] ? thumbs[target.index].getBoundingClientRect().left - 6 : (thumbs.length ? thumbs[thumbs.length - 1].getBoundingClientRect().right + 4 : sr.left + 18);
+    line.style.left = (ref - sr.left + strip.scrollLeft) + 'px';
+    line.style.display = 'block';
+  }
+  return target;
+}
+
+function bindStripDrop() {
+  const strip = $('#strip');
+  strip.addEventListener('dragover', e => {
+    const types = [...e.dataTransfer.types];
+    if (!types.includes(DT_TPL) && !types.includes(DT_SLIDE)) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = types.includes(DT_TPL) ? 'copy' : 'move';
+    dropTarget = dropAt(e);
+  });
+  strip.addEventListener('dragleave', e => { if (!strip.contains(e.relatedTarget)) { const keep = strip.classList.contains('dragging'); clearDrop(); if (keep) strip.classList.add('dragging'); } });
+  strip.addEventListener('drop', e => {
+    e.preventDefault();
+    const tid = e.dataTransfer.getData(DT_TPL);
+    const from = e.dataTransfer.getData(DT_SLIDE);
+    const target = dropTarget || dropAt(e);
+    clearDrop();
+    if (playing) stop();
+    if (tid) {
+      if (target.mode === 'replace') {
+        applyTemplate(post.slides[target.index], tid);
+        current = target.index;
+      } else {
+        if (post.slides.length >= 20) { toast('Een carrousel heeft maximaal 20 slides.'); return; }
+        const ns = newSlide(tid);
+        const near = post.slides[Math.max(0, target.index - 1)];
+        if (near && getTemplate(tid).palettes.find(p => p.id === near.palette)) ns.palette = near.palette;
+        post.slides.splice(target.index, 0, ns);
+        current = target.index;
+      }
+      changed(true);
+    } else if (from !== '') {
+      const f = +from;
+      let to = target.index;
+      if (to > f) to--;
+      if (to === f) return;
+      const [s] = post.slides.splice(f, 1);
+      post.slides.splice(to, 0, s);
+      current = to;
+      changed(true);
+    }
+  });
 }
 
 function move(d) {
@@ -518,8 +645,12 @@ function renderInspector() {
   const anim = el('input', { type: 'checkbox' });
   anim.checked = s.animate !== false;
   anim.addEventListener('change', () => { s.animate = anim.checked; changed(false); });
-  const bsec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Video-export'),
-    el('label', { class: 'chk' }, anim, 'Tekst en beeld rustig laten binnenkomen'));
+  const animOut = el('input', { type: 'checkbox' });
+  animOut.checked = s.animateOut !== false;
+  animOut.addEventListener('change', () => { s.animateOut = animOut.checked; changed(false); });
+  const bsec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, post.format === 'carousel' ? 'Beweging van deze slide' : 'Beweging'),
+    el('label', { class: 'chk' }, anim, 'In: tekst en beeld rustig laten binnenkomen'),
+    el('label', { class: 'chk', style: 'margin-top:8px' }, animOut, 'Uit: tekst rustig laten verdwijnen aan het eind'));
   if (!hasVideo) {
     const d = el('input', { type: 'range', min: 3, max: 20, step: 1 });
     d.value = s.duration || 6;
@@ -530,9 +661,43 @@ function renderInspector() {
   bsec.append(el('ul', { class: 'spec', style: 'margin-top:14px' },
     el('li', {}, `MP4, H.264 + AAC, 30 fps, ${sizeOf(post.format).w}×${sizeOf(post.format).h}`),
     el('li', {}, 'Klaar voor Instagram: geen extra omzetting nodig'),
-    post.format === 'carousel' ? el('li', {}, 'Carrousel: elke slide als MP4 in één zip') : null
+    post.format === 'carousel' && post.videoExport !== 'doorlopend' ? el('li', {}, 'Carrousel: elke slide als MP4 in één zip') : null
   ));
   box.append(bsec);
+  if (post.format === 'carousel') box.append(sequenceSection());
+}
+
+/* Carrousel als video: losse clips voor Instagram, of één doorlopende video met overgangen. */
+function sequenceSection() {
+  const sec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Carrousel als video'));
+  const opt = (val, title, sub) => {
+    const r = el('input', { type: 'radio', name: 'vexp', value: val });
+    r.checked = (post.videoExport || 'los') === val;
+    r.addEventListener('change', () => { post.videoExport = val; if (playing) stop(); changed(true); });
+    return el('label', { class: 'radio' }, r, el('span', {}, el('b', {}, title), el('small', {}, sub)));
+  };
+  sec.append(
+    opt('los', 'Losse video’s', 'Voor een Instagram-carrousel. Elke slide een eigen MP4 met in- en uitgang; de kijker swipet zelf.'),
+    opt('doorlopend', 'Eén doorlopende video', 'Voor een Reel of story. Alle slides achter elkaar, met een overgang ertussen.')
+  );
+  if (post.videoExport === 'doorlopend') {
+    const tr = post.transition || (post.transition = { type: 'fade', dur: 0.7 });
+    const row = el('div', { class: 'chips' });
+    for (const [k, v] of Object.entries(TRANSITIONS)) {
+      row.append(el('button', { class: 'chip' + (tr.type === k ? ' on' : ''), onclick: () => { tr.type = k; changed(true); } }, v.name));
+    }
+    sec.append(el('p', { class: 'muted', style: 'margin:14px 0 8px' }, 'Overgang'), row);
+    if (tr.type !== 'cut') {
+      const d = el('input', { type: 'range', min: 3, max: 15, step: 1 });
+      d.value = Math.round((tr.dur || 0.7) * 10);
+      const dl = el('span', {}, fmtSec(d.value / 10));
+      d.addEventListener('input', () => { tr.dur = d.value / 10; dl.textContent = fmtSec(tr.dur); changed(false); });
+      sec.append(el('div', { class: 'range' }, el('label', {}, el('span', {}, 'Duur van de overgang'), dl), d));
+    }
+    const tl = seqTimeline();
+    sec.append(el('p', { class: 'muted', style: 'margin:10px 0 0' }, `Totale lengte: ${fmtSec(tl.total)}. Druk op afspelen om de hele reeks te zien.`));
+  }
+  return sec;
 }
 
 /* ---------- beeld kiezen ---------- */
@@ -585,8 +750,10 @@ function serialize() {
     name: post.name,
     format: post.format,
     mode: post.mode,
+    videoExport: post.videoExport,
+    transition: post.transition,
     slides: post.slides.map(s => ({
-      id: s.id, template: s.template, palette: s.palette, texts: s.texts, animate: s.animate, duration: s.duration,
+      id: s.id, template: s.template, palette: s.palette, texts: s.texts, animate: s.animate, animateOut: s.animateOut, duration: s.duration,
       media: Object.fromEntries(Object.entries(s.media).filter(([, m]) => m).map(([k, m]) => [k, {
         kind: m.kind, ref: m.ref, zoom: m.zoom || 1, pos: m.pos || { x: 0, y: 0 }, in: m.in || 0, out: m.out ?? null, sound: m.sound !== false, overlay: m.overlay || 0
       }]))
@@ -595,13 +762,17 @@ function serialize() {
 }
 
 function hydrate(data) {
-  const p = { id: data.id || uid(), name: data.name || 'Naamloze post', format: FORMATS[data.format] ? data.format : 'feed', mode: data.mode === 'video' ? 'video' : 'static', slides: [] };
+  const p = { id: data.id || uid(), name: data.name || 'Naamloze post', format: FORMATS[data.format] ? data.format : 'feed', mode: data.mode === 'video' ? 'video' : 'static',
+    videoExport: data.videoExport === 'doorlopend' ? 'doorlopend' : 'los',
+    transition: { type: data.transition && TRANSITIONS[data.transition.type] ? data.transition.type : 'fade', dur: data.transition && +data.transition.dur > 0 ? Math.min(1.5, +data.transition.dur) : 0.7 },
+    slides: [] };
   for (const s of data.slides || []) {
     const tpl = getTemplate(s.template);
     const ns = newSlide(tpl.id);
     ns.id = s.id || uid();
     ns.palette = s.palette || ns.palette;
     ns.animate = s.animate !== false;
+    ns.animateOut = s.animateOut !== false;
     ns.duration = s.duration || 6;
     for (const f of tpl.fields) if (s.texts && s.texts[f.key] != null) ns.texts[f.key] = s.texts[f.key];
     for (const [k, m] of Object.entries(s.media || {})) {
@@ -736,6 +907,7 @@ async function exportSlide() {
 }
 
 async function exportMain() {
+  if (isSequence()) return exportReel();
   if (post.format === 'carousel') return exportCarousel();
   return exportSlide();
 }
@@ -758,6 +930,20 @@ async function doExport(kind) {
     const res = await exportVideo(s, post.format, getMedia, p => ui.set(`Beeld voor beeld renderen: ${Math.round(p * 100)}%`, p));
     download(res.blob, `${name}.mp4`);
     toast(`Video klaar: ${fmtSec(res.seconds)}, ${(res.blob.size / 1024 / 1024).toFixed(1).replace('.', ',')} MB${res.audio ? ', met geluid' : ''}.`);
+  } catch (e) {
+    toast('Video maken lukte niet: ' + e.message);
+  } finally { ui.close(); draw(); }
+}
+
+async function exportReel() {
+  if (playing) stop();
+  if (!checkMissing(post.slides)) return;
+  if (!videoSupported()) { toast('Video exporteren werkt in Chrome, Edge of Safari 17 en nieuwer.'); return; }
+  const ui = exportModal('Doorlopende video maken');
+  try {
+    const res = await exportSequence(post.slides, post.format, getMedia, post.transition, p => ui.set(`Beeld voor beeld renderen: ${Math.round(p * 100)}%`, p));
+    download(res.blob, `${fileBase(post)}.mp4`);
+    toast(`Video klaar: ${post.slides.length} slides, ${fmtSec(res.seconds)}, ${(res.blob.size / 1024 / 1024).toFixed(1).replace('.', ',')} MB${res.audio ? ', met geluid' : ''}.`);
   } catch (e) {
     toast('Video maken lukte niet: ' + e.message);
   } finally { ui.close(); draw(); }
@@ -809,7 +995,7 @@ function refreshAll() {
   $('#post-name').value = post.name;
   document.querySelectorAll('#mode button').forEach(b => b.classList.toggle('on', b.dataset.m === post.mode));
   $('#btn-slide').style.display = post.format === 'carousel' ? '' : 'none';
-  $('#btn-export').textContent = post.format === 'carousel' ? (isVideo() ? 'Exporteer carrousel (MP4)' : 'Exporteer carrousel') : (isVideo() ? 'Exporteer video' : 'Exporteer afbeelding');
+  $('#btn-export').textContent = isSequence() ? 'Exporteer als één video' : post.format === 'carousel' ? (isVideo() ? 'Exporteer carrousel (MP4)' : 'Exporteer carrousel') : (isVideo() ? 'Exporteer video' : 'Exporteer afbeelding');
   $('#playbar').classList.toggle('hide', !isVideo());
   if (!isVideo() && playing) stop();
   renderTemplates();
@@ -845,6 +1031,7 @@ function bind() {
   $('#btn-slide').addEventListener('click', exportSlide);
   $('#btn-export').addEventListener('click', exportMain);
   new ResizeObserver(() => fitStage()).observe($('#stage-wrap'));
+  bindStripDrop();
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').classList.remove('show')));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m && m.id !== 'm-export' && m.id !== 'm-name') m.classList.remove('show'); }));
   document.addEventListener('keydown', e => {

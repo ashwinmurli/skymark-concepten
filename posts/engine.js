@@ -79,7 +79,12 @@ function hexA(hex, a) {
   return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`;
 }
 
-const easeOut = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+const clamp01 = x => Math.min(1, Math.max(0, x));
+const easeOut = x => 1 - Math.pow(1 - clamp01(x), 3);
+const easeInOut = x => { x = clamp01(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+
+/* Timing van de animaties, in seconden. */
+export const ANIM = { inStart: 0.3, inStagger: 0.16, inDur: 0.9, outDur: 0.7, outStagger: 0.08, outEnd: 0.1 };
 
 /* ---------- tekst ---------- */
 
@@ -212,7 +217,9 @@ export function renderSlide(ctx, slide, formatId, opts = {}) {
   const size = sizeOf(formatId);
   const t = opts.t;
   const animate = slide.animate !== false && t != null;
+  const animOut = slide.animateOut !== false && t != null;
   const dur = opts.duration || 6;
+  const nAnim = layers.filter(l => !['fill', 'gradient', 'media'].includes(l.t)).length;
   const report = { overflow: [] };
 
   ctx.save();
@@ -255,11 +262,20 @@ export function renderSlide(ctx, slide, formatId, opts = {}) {
         ctx.fillRect(L.x, L.y, L.w, L.h);
       }
     } else {
-      if (animate) {
-        const start = 0.3 + order * 0.16;
-        const p = easeOut((t - start) / 0.9);
-        ctx.globalAlpha = p;
-        ctx.translate(0, (1 - p) * 26);
+      if (animate || animOut) {
+        let a = 1, dy = 0;
+        if (animate) {
+          const p = easeOut((t - (ANIM.inStart + order * ANIM.inStagger)) / ANIM.inDur);
+          a *= p; dy += (1 - p) * 26;
+        }
+        if (animOut) {
+          /* uitgang: in dezelfde volgorde, de laatste laag is net voor het einde weg */
+          const start = dur - ANIM.outEnd - ANIM.outDur - (nAnim - 1 - order) * ANIM.outStagger;
+          const q = easeInOut((t - start) / ANIM.outDur);
+          a *= 1 - q; dy -= q * 18;
+        }
+        ctx.globalAlpha = a;
+        ctx.translate(0, dy);
       }
       order++;
       if (L.t === 'text') {
@@ -308,5 +324,5 @@ export function mediaBoxes(slide, formatId) {
 export function introLength(slide, formatId) {
   const { layers } = resolve(slide, formatId);
   const n = layers.filter(l => !['fill', 'gradient', 'media'].includes(l.t)).length;
-  return 0.3 + Math.max(0, n - 1) * 0.16 + 0.9;
+  return ANIM.inStart + Math.max(0, n - 1) * ANIM.inStagger + ANIM.inDur;
 }

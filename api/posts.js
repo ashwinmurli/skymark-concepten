@@ -76,6 +76,11 @@ function clean(draft) {
     updated: Date.now(),
     format: ['feed', 'story', 'carousel'].includes(draft.format) ? draft.format : 'feed',
     mode: draft.mode === 'video' ? 'video' : 'static',
+    videoExport: draft.videoExport === 'doorlopend' ? 'doorlopend' : 'los',
+    transition: {
+      type: draft.transition && ['cut', 'fade', 'slide', 'wipe'].includes(draft.transition.type) ? draft.transition.type : 'fade',
+      dur: draft.transition && +draft.transition.dur > 0 ? Math.min(1.5, +draft.transition.dur) : 0.7
+    },
     slides: Array.isArray(draft.slides) ? draft.slides.slice(0, 20) : []
   };
   if (JSON.stringify(out).length > MAX_BYTES) return null;
