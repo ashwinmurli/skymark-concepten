@@ -2,9 +2,9 @@
  "items": {
   "20--esm-e-ten-hove": {
    "choice": "origineel",
-   "note": "",
+   "note": "Ik vind dit origineel mooier",
    "name": "Esmée ten Hove",
-   "updated": 1793627259265
+   "updated": 1793627264158
   }
  },
  "selections": {
@@ -33,5 +33,5 @@
    "updated": 1793627253921
   }
  },
- "updated": 1793627260289
+ "updated": 1793627265181
 }
