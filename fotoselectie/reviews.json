@@ -35,6 +35,12 @@
    "note": "",
    "name": "Esmée ten Hove",
    "updated": 1793627724971
+  },
+  "84--esm-e-ten-hove": {
+   "choice": null,
+   "note": "Dit is 19 minuten met de auto en driekwartieer lopen. Dit is te ver voor een hotspot.",
+   "name": "Esmée ten Hove",
+   "updated": 1793627854353
   }
  },
  "selections": {
@@ -80,5 +86,5 @@
    "updated": 1793627746949
   }
  },
- "updated": 1793627747979
+ "updated": 1793627855509
 }
