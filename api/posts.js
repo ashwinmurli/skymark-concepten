@@ -163,6 +163,125 @@ function cleanFile(f) {
   return { path, parts: Math.max(1, Math.min(40, +f.parts || 1)), type: f.type === 'video' ? 'video' : 'image' };
 }
 
+
+/* ---------- e-mailmeldingen (Resend) ----------
+   Bij aanbieden krijgen de goedkeurders een mail; bij goedkeuren, feedback of
+   een opmerking krijgen de makers er een. Wie de actie zelf doet, krijgt geen
+   mail. Een mislukte mail laat de actie zelf nooit mislukken. */
+
+const SITE = 'https://skymark.connectingthepolkadots.com/posts/';
+const PEOPLE = {
+  approver: [
+    { name: 'Esmée', email: 'etenhove@amvest.nl' },
+    { name: 'Camille', email: 'cstijlaart@amvest.nl' }
+  ],
+  maker: [
+    { name: 'Ash', email: 'ash@connectingthepolkadots.com' },
+    { name: 'Celine', email: 'celinepoulussen.work@gmail.com' }
+  ]
+};
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const FORMAT_NL = { feed: 'Feed 4:5', story: 'Story 9:16', carousel: 'Carrousel' };
+
+function mailHtml({ eyebrow, title, intro, quote, rows, cta, link }) {
+  const rowHtml = (rows || []).filter(r => r && r[1]).map(r =>
+    `<tr><td style="padding:3px 16px 3px 0;color:#8B8B7E;font-size:13px;white-space:nowrap;vertical-align:top">${esc(r[0])}</td><td style="padding:3px 0;color:#101310;font-size:13px">${esc(r[1])}</td></tr>`).join('');
+  return `<!doctype html><html><body style="margin:0;background:#F1F1EB;padding:32px 16px;font-family:Helvetica,Arial,sans-serif">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center">
+<table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;width:100%;background:#ffffff;border:1px solid #D4D4CF">
+<tr><td style="background:#101310;padding:22px 32px;color:#DCEBDA;font-size:13px;letter-spacing:4px;text-transform:uppercase">Skymark</td></tr>
+<tr><td style="padding:32px 32px 8px">
+<p style="margin:0 0 10px;color:#556655;font-size:11px;font-weight:bold;letter-spacing:2px;text-transform:uppercase">${esc(eyebrow)}</p>
+<h1 style="margin:0 0 14px;color:#101310;font-family:Georgia,serif;font-weight:normal;font-size:26px;line-height:1.25">${esc(title)}</h1>
+<p style="margin:0 0 18px;color:#101310;font-size:15px;line-height:1.55">${esc(intro)}</p>
+${quote ? `<p style="margin:0 0 20px;padding:12px 16px;background:#F1F1EB;border-left:3px solid #556655;color:#101310;font-size:14px;line-height:1.55;white-space:pre-wrap">${esc(quote)}</p>` : ''}
+${rowHtml ? `<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 24px">${rowHtml}</table>` : ''}
+<a href="${esc(link)}" style="display:inline-block;background:#556655;color:#DCEBDA;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;padding:13px 22px">${esc(cta)}</a>
+</td></tr>
+<tr><td style="padding:24px 32px 28px;color:#8B8B7E;font-size:12px;line-height:1.5">Je krijgt deze mail via de Skymark-portal van Connecting the Polkadots. Log in met het wachtwoord dat je al hebt.</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+function mailText({ title, intro, quote, rows, link }) {
+  return [title, '', intro, quote ? '\n"' + quote + '"' : '', '', ...(rows || []).filter(r => r && r[1]).map(r => `${r[0]}: ${r[1]}`), '', link].join('\n');
+}
+
+async function sendMail(to, subject, content) {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return 'geen RESEND_API_KEY';
+  if (!to.length) return 'geen ontvangers';
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: process.env.RESEND_FROM || 'Skymark posts <posts@connectingthepolkadots.com>',
+      to: to.map(p => p.email),
+      reply_to: 'ash@connectingthepolkadots.com',
+      subject,
+      html: mailHtml(content),
+      text: mailText(content)
+    })
+  });
+  return r.ok ? 'verstuurd' : `mislukt (${r.status}): ${(await r.text()).slice(0, 300)}`;
+}
+
+function others(role, by) {
+  const b = String(by || '').trim().toLowerCase();
+  return PEOPLE[role].filter(p => !b || !b.startsWith(p.name.toLowerCase()));
+}
+
+function dayNl(d) {
+  return d ? new Date(d + 'T12:00:00Z').toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
+}
+
+async function notify(event, d, extra) {
+  try {
+    const link = `${SITE}#post=${d.id}`;
+    const s = d.submitted || {};
+    const rows = [
+      ['Format', FORMAT_NL[d.format] + (s.mode === 'video' ? ', video' : '')],
+      ['Gepland', dayNl(s.date || d.date)],
+      ['Versie', String(d.version || '')]
+    ];
+    if (event === 'submit') {
+      const again = d.version > 1;
+      return await sendMail(PEOPLE.approver, `${again ? 'Nieuwe versie' : 'Ter goedkeuring'}: ${d.name}`, {
+        eyebrow: again ? `Versie ${d.version} ter goedkeuring` : 'Nieuwe post ter goedkeuring',
+        title: d.name,
+        intro: again
+          ? `${extra.by} heeft de feedback verwerkt en een nieuwe versie klaargezet. Wil je er nog even naar kijken?`
+          : `${extra.by} heeft een nieuwe post voor Skymark klaargezet. Je kunt hem bekijken, goedkeuren of er feedback op geven.`,
+        quote: extra.note || '',
+        rows: rows.concat([['Bijschrift', s.caption ? s.caption.slice(0, 160) + (s.caption.length > 160 ? '…' : '') : '']]),
+        cta: 'Bekijk de post',
+        link
+      });
+    }
+    if (event === 'approve') {
+      return await sendMail(others('maker'), `Goedgekeurd: ${d.name}`, {
+        eyebrow: 'Goedgekeurd', title: d.name,
+        intro: `${extra.by} heeft versie ${d.version} goedgekeurd.${extra.text ? ' Met deze opmerking:' : ''}`,
+        quote: extra.text, rows, cta: 'Open de post', link
+      });
+    }
+    if (event === 'changes' || event === 'comment') {
+      const fromApprover = extra.role === 'approver';
+      const to = fromApprover ? others('maker', extra.by) : others('approver', extra.by);
+      const slide = Number.isInteger(extra.slide) ? ` (slide ${extra.slide + 1})` : '';
+      return await sendMail(to, `${event === 'changes' ? 'Feedback' : 'Reactie'} op ${d.name}`, {
+        eyebrow: event === 'changes' ? 'Feedback, graag aanpassen' : 'Nieuwe reactie',
+        title: d.name,
+        intro: `${extra.by} schreef${slide}:`,
+        quote: extra.text, rows, cta: fromApprover ? 'Open de post' : 'Bekijk de reactie', link
+      });
+    }
+    return 'geen mail voor deze actie';
+  } catch (e) {
+    return 'mislukt: ' + String(e && e.message || e);
+  }
+}
+
 export default async function handler(req) {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
   let p;
@@ -227,7 +346,9 @@ export default async function handler(req) {
         drafts[d.id] = d;
         return { ok: true, draft: d, message: `Posttool: ${kind} op "${d.name}" door ${by}` };
       });
-      return res.error ? json({ error: res.error }, res.status || 500) : json({ ok: true, draft: res.draft });
+      if (res.error) return json({ error: res.error }, res.status || 500);
+      const mail = ['approve', 'changes', 'comment'].includes(kind) ? await notify(kind, res.draft, { by, text, role, slide: Number.isInteger(p.slide) ? p.slide : null }) : null;
+      return json({ ok: true, draft: res.draft, mail });
     }
 
     /* alles hieronder alleen voor makers */
@@ -303,7 +424,18 @@ export default async function handler(req) {
         drafts[d.id] = d;
         return { ok: true, draft: d, message: `Posttool: "${d.name}" versie ${version} ter goedkeuring` };
       });
-      return res.error ? json({ error: res.error }, res.status || 500) : json({ ok: true, draft: res.draft });
+      if (res.error) return json({ error: res.error }, res.status || 500);
+      const mail = await notify('submit', res.draft, { by, note });
+      return json({ ok: true, draft: res.draft, mail });
+    }
+
+    if (p.action === 'mailtest') {
+      const mail = await sendMail([PEOPLE.maker[0]], 'Testmail Skymark posts', {
+        eyebrow: 'Testmail', title: 'De meldingen werken',
+        intro: 'Als je dit leest, kan de posttool mails versturen. Esmée en Camille krijgen voortaan een mail bij elke post die je aanbiedt.',
+        rows: [['Afzender', process.env.RESEND_FROM || 'posts@connectingthepolkadots.com']], cta: 'Naar de posttool', link: SITE
+      });
+      return json({ ok: mail === 'verstuurd', mail });
     }
 
     return json({ error: 'unknown action' }, 400);

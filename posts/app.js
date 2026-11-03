@@ -1266,6 +1266,7 @@ async function init() {
   bind();
   document.body.classList.remove('booting');
   refreshAll();
+  if (/post=/.test(location.hash)) setView('review');
   window.__posts = { get post() { return post; }, set post(p) { post = p; refreshAll(); }, hydrate, refreshAll, getMedia, exportVideo, exportImage, setCurrent: i => { current = i; refreshAll(); } };
 }
 

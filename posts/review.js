@@ -82,6 +82,12 @@ export async function refreshReview() {
   }
   renderTabs(tabs);
   renderGrid(tabs.find(t => t.id === tab));
+  /* link uit een mail: #post=<id> opent die post direct */
+  const m = location.hash.match(/post=([\w-]+)/);
+  if (m && !$('#m-rv').classList.contains('show')) {
+    history.replaceState(null, '', location.pathname);
+    openDetail(m[1]);
+  }
 }
 
 function renderWho() {
