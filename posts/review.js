@@ -95,7 +95,16 @@ function renderWho() {
   who.innerHTML = '';
   const me = ctx.me();
   if (ctx.role === 'maker') {
-    who.append(el('button', { class: 'btn', onclick: ctx.backToEditor }, 'Naar maken'));
+    who.append(
+      el('a', { href: '#', onclick: async e => {
+        e.preventDefault();
+        try {
+          const r = await ctx.api({ action: 'mailtest' });
+          ctx.toast(r.ok ? 'Testmail verstuurd naar ash@connectingthepolkadots.com.' : 'Testmail lukte niet: ' + r.mail);
+        } catch (err) { ctx.toast('Testmail lukte niet: ' + err.message); }
+      } }, 'Testmail sturen'),
+      el('button', { class: 'btn', style: 'margin-left:10px', onclick: ctx.backToEditor }, 'Naar maken')
+    );
   } else {
     who.append(
       el('span', { class: 'muted' }, me ? `Je reageert als ${me} · ` : ''),
