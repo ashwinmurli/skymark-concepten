@@ -215,9 +215,8 @@ async function sendMail(to, subject, content) {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: process.env.RESEND_FROM || 'Skymark posts <posts@connectingthepolkadots.com>',
+      from: process.env.RESEND_FROM || 'Ash van Vugt-Murli <ash@connectingthepolkadots.com>',
       to: to.map(p => p.email),
-      reply_to: 'ash@connectingthepolkadots.com',
       subject,
       html: mailHtml(content),
       text: mailText(content)
@@ -430,10 +429,10 @@ export default async function handler(req) {
     }
 
     if (p.action === 'mailtest') {
-      const mail = await sendMail([PEOPLE.maker[0]], 'Testmail Skymark posts', {
+      const mail = await sendMail([PEOPLE.maker[0]], 'Testmail Skymark-posttool', {
         eyebrow: 'Testmail', title: 'De meldingen werken',
         intro: 'Als je dit leest, kan de posttool mails versturen. Esmée en Camille krijgen voortaan een mail bij elke post die je aanbiedt.',
-        rows: [['Afzender', process.env.RESEND_FROM || 'posts@connectingthepolkadots.com']], cta: 'Naar de posttool', link: SITE
+        rows: [['Afzender', process.env.RESEND_FROM || 'ash@connectingthepolkadots.com']], cta: 'Naar de posttool', link: SITE
       });
       return json({ ok: mail === 'verstuurd', mail });
     }
