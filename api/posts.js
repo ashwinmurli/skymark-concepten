@@ -1,26 +1,44 @@
 export const config = { runtime: 'edge' };
 
-/* Concepten van de posttool.
-   Bewaart posts/drafts.json op de branch "feedback" (die deployt niet),
-   met dezelfde GitHub-token als api/review.js. Altijd POST:
-   { secret, action: "list" }                 -> { drafts: [samenvatting] }
-   { secret, action: "get", id }              -> { draft }
-   { secret, action: "save", draft }          -> { ok, draft }
-   { secret, action: "delete", id }           -> { ok }
-   Eigen uploads (foto/video van je computer) worden niet opgeslagen; alleen
-   tekst, keuzes en verwijzingen naar de fotoselectie. */
+/* Posttool: concepten, goedkeuring en previews.
+
+   Opslag op de branch "feedback" (die deployt niet), met dezelfde GitHub-token
+   als api/review.js:
+     posts/drafts.json                  alle posts met status en gesprek
+     posts/media/<id>/v<n>/<bestand>    previews per aangeboden versie
+
+   Rollen, bepaald door het wachtwoord (alleen als hash in deze code):
+     maker      Ash en Celine: maken, bewaren, aanbieden, feedback verwerken
+     approver   Esmée en Camille (het gewone portalwachtwoord): alleen
+                aangeboden posts zien, goedkeuren en feedback geven
+
+   Altijd POST met { secret, action, ... }:
+     whoami                             -> { role }
+     list                               -> { drafts: [samenvatting] }
+     get { id }                         -> { draft }
+     save { draft }          (maker)    -> { ok, draft }
+     delete { id }           (maker)    -> { ok }
+     upload { path, b64 }    (maker)    -> { ok, path }
+     submit { id, version, previews, sequence, by, note }   (maker) -> { ok, draft }
+     review { id, kind, text, slide, by, commentId }         -> { ok, draft }
+     media { path }                     -> de bytes van een preview */
 
 const REPO = 'ashwinmurli/skymark-concepten';
 const BRANCH = 'feedback';
 const FILE = 'posts/drafts.json';
 
-const SECRET_HASHES = [
-  '5a01578e704b3b7cd4a0dda3232734cf95a1c3adf756c20702de3f67eb743174',
-  '7b132e77d40b11d72715ae2687f63b7a142a379228e271c69ba849cff13fae03'
-];
+const ROLE_BY_HASH = {
+  /* portalwachtwoorden (kijken en formats-editor) */
+  '5a01578e704b3b7cd4a0dda3232734cf95a1c3adf756c20702de3f67eb743174': 'approver',
+  '7b132e77d40b11d72715ae2687f63b7a142a379228e271c69ba849cff13fae03': 'approver',
+  /* makerswachtwoord posttool */
+  '1b89a93efd9c4119f37c5abbb7bdff935ce567a6496b661b53bfe98557b9b64e': 'maker'
+};
 
 const MAX_DRAFTS = 300;
-const MAX_BYTES = 60000;
+const MAX_BYTES = 120000;
+const MAX_UPLOAD = 3_400_000;
+const STATUSES = ['concept', 'review', 'changes', 'approved'];
 
 async function sha256hex(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
@@ -34,8 +52,8 @@ function json(body, status) {
   });
 }
 
-function ghHeaders(token) {
-  return { Authorization: `token ${token}`, 'User-Agent': 'skymark-posts' };
+function ghHeaders(token, extra) {
+  return Object.assign({ Authorization: `token ${token}`, 'User-Agent': 'skymark-posts' }, extra || {});
 }
 
 async function readRemote(token) {
@@ -44,8 +62,14 @@ async function readRemote(token) {
   if (!resp.ok) throw new Error(`GitHub GET ${resp.status}`);
   const data = await resp.json();
   let drafts = {};
+  let raw = data.content;
+  /* bestanden groter dan 1 MB komen zonder inhoud terug: dan los ophalen */
+  if (!raw && data.sha) {
+    const b = await fetch(`https://api.github.com/repos/${REPO}/git/blobs/${data.sha}`, { headers: ghHeaders(token) });
+    raw = (await b.json()).content;
+  }
   try {
-    const parsed = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(String(raw).replace(/\n/g, '')))));
     if (parsed && typeof parsed.drafts === 'object') drafts = parsed.drafts;
   } catch (e) { /* corrupte inhoud: leeg behandelen */ }
   return { drafts, sha: data.sha };
@@ -60,19 +84,37 @@ async function writeRemote(token, drafts, sha, message) {
   if (sha) body.sha = sha;
   return fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`, {
     method: 'PUT',
-    headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
+    headers: ghHeaders(token, { 'Content-Type': 'application/json' }),
     body: JSON.stringify(body)
   });
 }
 
-function clean(draft) {
+/* Lees, wijzig en schrijf drafts.json, met een nieuwe poging bij een gelijktijdige wijziging. */
+async function mutate(token, fn) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const remote = await readRemote(token);
+    const drafts = { ...remote.drafts };
+    const res = fn(drafts);
+    if (res && res.error) return res;
+    const put = await writeRemote(token, drafts, remote.sha, res.message);
+    if (put.ok) return res;
+    if (put.status !== 409 && put.status !== 422) return { error: `github ${put.status}`, status: 500 };
+  }
+  return { error: 'conflict', status: 500 };
+}
+
+const str = (v, n) => String(v == null ? '' : v).slice(0, n);
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+
+/* De inhoud die makers aanpassen; status en gesprek beheert de server zelf. */
+function cleanContent(draft) {
   if (!draft || typeof draft !== 'object') return null;
   const id = String(draft.id || '');
   if (!/^[\w-]{6,40}$/.test(id)) return null;
   const out = {
     id,
-    name: String(draft.name || 'Naamloze post').slice(0, 120),
-    author: String(draft.author || '').slice(0, 60),
+    name: str(draft.name || 'Naamloze post', 120),
+    author: str(draft.author, 60),
     updated: Date.now(),
     format: ['feed', 'story', 'carousel'].includes(draft.format) ? draft.format : 'feed',
     mode: draft.mode === 'video' ? 'video' : 'static',
@@ -81,56 +123,189 @@ function clean(draft) {
       type: draft.transition && ['cut', 'fade', 'slide', 'wipe'].includes(draft.transition.type) ? draft.transition.type : 'fade',
       dur: draft.transition && +draft.transition.dur > 0 ? Math.min(1.5, +draft.transition.dur) : 0.7
     },
+    caption: str(draft.caption, 2200),
+    date: /^\d{4}-\d{2}-\d{2}$/.test(draft.date || '') ? draft.date : '',
     slides: Array.isArray(draft.slides) ? draft.slides.slice(0, 20) : []
   };
   if (JSON.stringify(out).length > MAX_BYTES) return null;
   return out;
 }
 
+function reviewFields(d) {
+  return {
+    status: STATUSES.includes(d && d.status) ? d.status : 'concept',
+    version: d && d.version || 0,
+    submitted: d && d.submitted || null,
+    thread: d && Array.isArray(d.thread) ? d.thread : [],
+    approvals: d && Array.isArray(d.approvals) ? d.approvals : [],
+    editedSinceSubmit: !!(d && d.editedSinceSubmit)
+  };
+}
+
 function summary(d) {
-  return { id: d.id, name: d.name, author: d.author, updated: d.updated, format: d.format, mode: d.mode || 'static', count: d.slides.length, first: d.slides[0] ? d.slides[0].template : null };
+  const r = reviewFields(d);
+  const open = r.thread.filter(t => t.role === 'approver' && (t.type === 'changes' || t.type === 'comment') && !t.resolved).length;
+  const sub = r.submitted;
+  return {
+    id: d.id, name: d.name, author: d.author, updated: d.updated, format: d.format, mode: d.mode,
+    count: (d.slides || []).length, first: d.slides && d.slides[0] ? d.slides[0].template : null,
+    date: d.date || '', status: r.status, version: r.version, editedSinceSubmit: r.editedSinceSubmit,
+    openFeedback: open, approvals: r.approvals.filter(a => a.version === r.version),
+    thumb: sub && sub.previews && sub.previews[0] ? sub.previews[0].still : null,
+    submittedAt: sub ? sub.at : null
+  };
+}
+
+function cleanFile(f) {
+  if (!f || typeof f !== 'object') return null;
+  const path = String(f.path || '');
+  if (!/^posts\/media\/[\w-]{6,40}\/v\d{1,3}\/[\w.-]{1,60}$/.test(path)) return null;
+  return { path, parts: Math.max(1, Math.min(40, +f.parts || 1)), type: f.type === 'video' ? 'video' : 'image' };
 }
 
 export default async function handler(req) {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
-  let payload;
-  try { payload = await req.json(); } catch (e) { return json({ error: 'bad json' }, 400); }
-  if (!SECRET_HASHES.includes(await sha256hex(String(payload.secret || '')))) return json({ error: 'unauthorized' }, 401);
+  let p;
+  try { p = await req.json(); } catch (e) { return json({ error: 'bad json' }, 400); }
+  const role = ROLE_BY_HASH[await sha256hex(String(p.secret || ''))];
+  if (!role) return json({ error: 'unauthorized' }, 401);
   const token = process.env.GITHUB_TOKEN;
   if (!token) return json({ error: 'not configured' }, 500);
+  const maker = role === 'maker';
+  const needMaker = () => json({ error: 'alleen voor makers' }, 403);
 
   try {
-    if (payload.action === 'list') {
+    if (p.action === 'whoami') return json({ role });
+
+    if (p.action === 'list') {
       const { drafts } = await readRemote(token);
-      return json({ drafts: Object.values(drafts).map(summary).sort((a, b) => b.updated - a.updated) });
+      let list = Object.values(drafts);
+      if (!maker) list = list.filter(d => d.submitted);
+      return json({ role, drafts: list.map(summary).sort((a, b) => (b.submittedAt || b.updated) - (a.submittedAt || a.updated)) });
     }
-    if (payload.action === 'get') {
+
+    if (p.action === 'get') {
       const { drafts } = await readRemote(token);
-      const d = drafts[String(payload.id || '')];
-      return d ? json({ draft: d }) : json({ error: 'not found' }, 404);
+      const d = drafts[String(p.id || '')];
+      if (!d || (!maker && !d.submitted)) return json({ error: 'not found' }, 404);
+      return json({ draft: d });
     }
-    if (payload.action === 'save' || payload.action === 'delete') {
-      const incoming = payload.action === 'save' ? clean(payload.draft) : null;
-      if (payload.action === 'save' && !incoming) return json({ error: 'invalid draft' }, 400);
-      for (let attempt = 0; attempt < 3; attempt++) {
-        const remote = await readRemote(token);
-        const drafts = { ...remote.drafts };
-        let msg;
-        if (incoming) {
-          drafts[incoming.id] = incoming;
-          const ids = Object.values(drafts).sort((a, b) => b.updated - a.updated).map(d => d.id);
-          for (const old of ids.slice(MAX_DRAFTS)) delete drafts[old];
-          msg = `Posttool: concept "${incoming.name}" bewaard`;
+
+    if (p.action === 'media') {
+      const path = String(p.path || '');
+      if (!/^posts\/media\/[\w-]{6,40}\/v\d{1,3}\/[\w.-]{1,64}$/.test(path)) return json({ error: 'bad path' }, 400);
+      const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, { headers: ghHeaders(token, { Accept: 'application/vnd.github.raw' }) });
+      if (!r.ok) return json({ error: `github ${r.status}` }, r.status === 404 ? 404 : 500);
+      const type = /\.mp4/.test(path) ? 'video/mp4' : /\.png/.test(path) ? 'image/png' : 'image/jpeg';
+      return new Response(r.body, { headers: { 'Content-Type': type, 'Cache-Control': 'private, max-age=31536000, immutable' } });
+    }
+
+    if (p.action === 'review') {
+      const kind = String(p.kind || '');
+      const allowed = maker ? ['comment', 'resolve', 'reopen'] : ['approve', 'changes', 'comment'];
+      if (!allowed.includes(kind)) return json({ error: 'niet toegestaan' }, 403);
+      const text = str(p.text, 2000).trim();
+      if ((kind === 'changes' || kind === 'comment') && !text) return json({ error: 'tekst ontbreekt' }, 400);
+      const by = str(p.by, 60).trim() || (maker ? 'Maker' : 'Klant');
+      const res = await mutate(token, drafts => {
+        const d = drafts[String(p.id || '')];
+        if (!d || !d.submitted) return { error: 'not found', status: 404 };
+        const r = reviewFields(d);
+        if (kind === 'resolve' || kind === 'reopen') {
+          const item = r.thread.find(t => t.id === p.commentId);
+          if (!item) return { error: 'not found', status: 404 };
+          item.resolved = kind === 'resolve';
+          item.resolvedBy = kind === 'resolve' ? by : '';
+          item.resolvedAt = kind === 'resolve' ? Date.now() : 0;
         } else {
-          delete drafts[String(payload.id || '')];
-          msg = 'Posttool: concept verwijderd';
+          const slide = Number.isInteger(p.slide) && p.slide >= 0 && p.slide < 20 ? p.slide : null;
+          r.thread.push({ id: uid(), at: Date.now(), by, role, type: kind, text, slide, version: r.version, resolved: false });
+          if (kind === 'approve') { r.status = 'approved'; r.approvals.push({ by, at: Date.now(), version: r.version }); }
+          if (kind === 'changes') r.status = 'changes';
         }
-        const put = await writeRemote(token, drafts, remote.sha, msg);
-        if (put.ok) return json({ ok: true, draft: incoming || undefined });
-        if (put.status !== 409 && put.status !== 422) return json({ error: `github ${put.status}` }, 500);
-      }
-      return json({ error: 'conflict' }, 500);
+        Object.assign(d, r);
+        drafts[d.id] = d;
+        return { ok: true, draft: d, message: `Posttool: ${kind} op "${d.name}" door ${by}` };
+      });
+      return res.error ? json({ error: res.error }, res.status || 500) : json({ ok: true, draft: res.draft });
     }
+
+    /* alles hieronder alleen voor makers */
+    if (!maker) return needMaker();
+
+    if (p.action === 'save') {
+      const incoming = cleanContent(p.draft);
+      if (!incoming) return json({ error: 'invalid draft' }, 400);
+      const res = await mutate(token, drafts => {
+        const prev = drafts[incoming.id];
+        const r = reviewFields(prev);
+        if (r.submitted) r.editedSinceSubmit = true;
+        drafts[incoming.id] = Object.assign(incoming, r);
+        const ids = Object.values(drafts).sort((a, b) => b.updated - a.updated).map(d => d.id);
+        for (const old of ids.slice(MAX_DRAFTS)) delete drafts[old];
+        return { ok: true, draft: drafts[incoming.id], message: `Posttool: concept "${incoming.name}" bewaard` };
+      });
+      return res.error ? json({ error: res.error }, res.status || 500) : json({ ok: true, draft: res.draft });
+    }
+
+    if (p.action === 'delete') {
+      const res = await mutate(token, drafts => {
+        delete drafts[String(p.id || '')];
+        return { ok: true, message: 'Posttool: concept verwijderd' };
+      });
+      return res.error ? json({ error: res.error }, res.status || 500) : json({ ok: true });
+    }
+
+    if (p.action === 'upload') {
+      const path = 'posts/media/' + String(p.path || '');
+      if (!/^posts\/media\/[\w-]{6,40}\/v\d{1,3}\/[\w.-]{1,64}$/.test(path)) return json({ error: 'bad path' }, 400);
+      const b64 = String(p.b64 || '');
+      if (b64.length * 0.75 > MAX_UPLOAD) return json({ error: 'te groot' }, 413);
+      for (let attempt = 0; attempt < 2; attempt++) {
+        let sha = null;
+        if (attempt) {
+          const g = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, { headers: ghHeaders(token) });
+          if (g.ok) sha = (await g.json()).sha;
+        }
+        const body = { message: `Posttool: preview ${path.split('/').slice(2).join('/')}`, content: b64, branch: BRANCH };
+        if (sha) body.sha = sha;
+        const put = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+          method: 'PUT', headers: ghHeaders(token, { 'Content-Type': 'application/json' }), body: JSON.stringify(body)
+        });
+        if (put.ok) return json({ ok: true, path });
+        if (put.status !== 422 && put.status !== 409) return json({ error: `github ${put.status}` }, 500);
+      }
+      return json({ error: 'upload mislukt' }, 500);
+    }
+
+    if (p.action === 'submit') {
+      const previews = Array.isArray(p.previews) ? p.previews.slice(0, 20).map(x => ({
+        slide: Math.max(0, Math.min(19, +x.slide || 0)),
+        still: cleanFile(x.still),
+        video: cleanFile(x.video)
+      })).filter(x => x.still) : [];
+      if (!previews.length) return json({ error: 'geen previews' }, 400);
+      const sequence = cleanFile(p.sequence);
+      const by = str(p.by, 60).trim() || 'Maker';
+      const note = str(p.note, 2000).trim();
+      const res = await mutate(token, drafts => {
+        const d = drafts[String(p.id || '')];
+        if (!d) return { error: 'bewaar de post eerst', status: 404 };
+        const r = reviewFields(d);
+        const version = r.version + 1;
+        if (+p.version !== version) return { error: 'versie klopt niet, laad opnieuw', status: 409 };
+        r.version = version;
+        r.status = 'review';
+        r.editedSinceSubmit = false;
+        r.submitted = { version, at: Date.now(), by, name: d.name, format: d.format, mode: d.mode, videoExport: d.videoExport, caption: d.caption || '', date: d.date || '', previews, sequence };
+        r.thread.push({ id: uid(), at: Date.now(), by, role: 'maker', type: 'submit', text: note, slide: null, version, resolved: true });
+        Object.assign(d, r);
+        drafts[d.id] = d;
+        return { ok: true, draft: d, message: `Posttool: "${d.name}" versie ${version} ter goedkeuring` };
+      });
+      return res.error ? json({ error: res.error }, res.status || 500) : json({ ok: true, draft: res.draft });
+    }
+
     return json({ error: 'unknown action' }, 400);
   } catch (e) {
     return json({ error: String(e && e.message || e) }, 500);

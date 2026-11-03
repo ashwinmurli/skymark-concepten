@@ -30,7 +30,7 @@ const svgSrc = {};
 const svgImg = new Map();
 
 export async function loadAssets() {
-  await Promise.all(['wordmark', 'kroon', 'kader', 'kroonbogen', 'stippenovaal'].map(async name => {
+  await Promise.all(['wordmark', 'kroon', 'kader', 'kroonbogen', 'stippenovaal', 'boog-boven', 'boog-onder'].map(async name => {
     const r = await fetch(`${BASE}assets/${name}.svg`);
     svgSrc[name] = await r.text();
   }));
@@ -284,6 +284,10 @@ export function renderSlide(ctx, slide, formatId, opts = {}) {
           const lay = drawText(ctx, L, raw, roles[L.color]);
           if (lay.overflow && L.field) report.overflow.push(L.field);
         }
+      } else if (L.t === 'frame') {
+        ctx.strokeStyle = roles[L.color];
+        ctx.lineWidth = L.stroke;
+        ctx.strokeRect(L.x + L.stroke / 2, L.y + L.stroke / 2, L.w - L.stroke, L.h - L.stroke);
       } else if (L.t === 'svg') {
         const e = svgImage(L.asset, roles[L.color]);
         if (e.img.complete && e.img.naturalWidth) ctx.drawImage(e.img, L.x, L.y, L.w, L.h);

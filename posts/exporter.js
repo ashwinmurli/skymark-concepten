@@ -50,14 +50,14 @@ function canvasFor(formatId) {
 
 /* Met foto: JPEG op hoge kwaliteit (Instagram maakt er toch JPEG van).
    Zonder foto: PNG, dan blijven vlakken en letters messcherp. */
-export async function exportImage(slide, formatId, getMediaEl) {
+export async function exportImage(slide, formatId, getMediaEl, opts = {}) {
   await prepareSlide(slide, formatId);
   const c = canvasFor(formatId);
   renderSlide(c.getContext('2d'), slide, formatId, { t: null, getMedia: getMediaEl, placeholders: false });
-  const photo = slideHasPhoto(slide);
-  const type = photo ? 'image/jpeg' : 'image/png';
-  const blob = await new Promise(res => c.toBlob(res, type, 0.95));
-  return { blob, ext: photo ? 'jpg' : 'png' };
+  /* opts.preview: altijd JPEG, iets lichter, voor de goedkeuringsweergave */
+  const jpg = opts.preview || slideHasPhoto(slide);
+  const blob = await new Promise(res => c.toBlob(res, jpg ? 'image/jpeg' : 'image/png', opts.preview ? 0.86 : 0.95));
+  return { blob, ext: jpg ? 'jpg' : 'png' };
 }
 
 /* ---------- video ---------- */
@@ -132,11 +132,17 @@ async function decodeAudio(src, start, dur) {
 }
 
 /* Schrijft frames en (optioneel) geluid naar een MP4. */
-async function createWriter(size, audio) {
+/* opts.preview: 720 breed en een lage bitrate, voor de goedkeuringsweergave */
+async function createWriter(size, audio, opts = {}) {
   const fmtKey = size.h > 1500 ? 'story' : 'feed';
   let aCfg = null;
   if (audio) { aCfg = await pickAudioConfig(audio.sr, audio.ch); if (!aCfg) audio = null; }
-  const vCfg = await pickVideoConfig(size.w, size.h, BITRATE[fmtKey]);
+  const outW = opts.preview ? 720 : size.w;
+  const outH = opts.preview ? Math.round(size.h * 720 / size.w / 2) * 2 : size.h;
+  let scaled = null;
+  if (outW !== size.w) { scaled = document.createElement('canvas'); scaled.width = outW; scaled.height = outH; }
+  const vCfg = await pickVideoConfig(outW, outH, opts.preview ? 2_200_000 : BITRATE[fmtKey]);
+  size = { w: outW, h: outH };
   const target = new ArrayBufferTarget();
   const muxer = new Muxer({
     target,
@@ -154,6 +160,12 @@ async function createWriter(size, audio) {
     codec: vCfg.codec,
     async frame(canvas) {
       if (failure) throw failure;
+      if (scaled) {
+        const sx = scaled.getContext('2d');
+        sx.imageSmoothingQuality = 'high';
+        sx.drawImage(canvas, 0, 0, scaled.width, scaled.height);
+        canvas = scaled;
+      }
       const f = new VideoFrame(canvas, { timestamp: Math.round(i * 1e6 / FPS), duration: Math.round(1e6 / FPS) });
       venc.encode(f, { keyFrame: i % (FPS * 2) === 0 });
       f.close();
@@ -193,7 +205,7 @@ function videoSlot(slide) {
 }
 
 /* Maakt een MP4 van één slide. onProgress krijgt 0..1. */
-export async function exportVideo(slide, formatId, getMediaEl, onProgress = () => {}) {
+export async function exportVideo(slide, formatId, getMediaEl, onProgress = () => {}, opts = {}) {
   if (!videoSupported()) throw new Error('Video-export werkt in Chrome, Edge of Safari 17+.');
   await prepareSlide(slide, formatId);
   const size = sizeOf(formatId);
@@ -206,7 +218,7 @@ export async function exportVideo(slide, formatId, getMediaEl, onProgress = () =
   if (vel) vel.pause();
 
   const audio = vm && vm.sound !== false ? await decodeAudio(vm.src, vm.in || 0, dur) : null;
-  const w = await createWriter(size, audio);
+  const w = await createWriter(size, audio, opts);
   const canvas = canvasFor(formatId);
   const ctx = canvas.getContext('2d', { alpha: false });
   for (let i = 0; i < frames; i++) {
@@ -276,7 +288,7 @@ function loadVideoCopy(src) {
   });
 }
 
-export async function exportSequence(slides, formatId, getMediaEl, transition, onProgress = () => {}) {
+export async function exportSequence(slides, formatId, getMediaEl, transition, onProgress = () => {}, opts = {}) {
   if (!videoSupported()) throw new Error('Video-export werkt in Chrome, Edge of Safari 17+.');
   const size = sizeOf(formatId);
   for (const s of slides) await prepareSlide(s, formatId);
@@ -314,7 +326,7 @@ export async function exportSequence(slides, formatId, getMediaEl, transition, o
     audio = { sr, ch: 2, len, planes };
   }
 
-  const w = await createWriter(size, audio);
+  const w = await createWriter(size, audio, opts);
   const out = canvasFor(formatId), octx = out.getContext('2d', { alpha: false });
   const ca = canvasFor(formatId), cb = canvasFor(formatId);
   const xa = ca.getContext('2d'), xb = cb.getContext('2d');

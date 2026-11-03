@@ -2,10 +2,13 @@
 
 import { TEMPLATES, FORMATS, COLORS, getTemplate, templatesFor } from './templates.js';
 import { loadFonts, loadAssets, renderSlide, sizeOf, mediaBoxes, mediaRect, paletteOf, prepareSlide } from './engine.js';
+import { initReview, refreshReview, statusPill, STATUS } from './review.js';
 import { exportImage, exportVideo, exportSequence, sequenceTimeline, composite, TRANSITIONS, makeZip, download, fileBase, slideHasVideo, clipDuration, videoSupported, MAX_SECONDS } from './exporter.js';
 
 const API = '/api/posts';
-const SECRET = 'girxy6-nidzyn-wUknir';
+const PW_VIEW = 'girxy6-nidzyn-wUknir';
+let SECRET = PW_VIEW;
+let ROLE = 'approver';
 const LS_POST = 'skymark_posts_current';
 const LS_AUTHOR = 'skymark_posts_author';
 
@@ -512,6 +515,8 @@ function renderInspector() {
   const box = $('#inspector');
   box.innerHTML = '';
 
+  box.append(postSection());
+
   box.append(el('div', { class: 'sec' },
     el('p', { class: 'eyebrow' }, post.format === 'carousel' ? `Slide ${current + 1} van ${post.slides.length}` : FORMATS[post.format].name + ' · ' + FORMATS[post.format].ratio),
     el('p', { class: 'tpl-title' }, tpl.name),
@@ -752,6 +757,9 @@ function serialize() {
     mode: post.mode,
     videoExport: post.videoExport,
     transition: post.transition,
+    caption: post.caption || '',
+    date: post.date || '',
+    review: post.review,
     slides: post.slides.map(s => ({
       id: s.id, template: s.template, palette: s.palette, texts: s.texts, animate: s.animate, animateOut: s.animateOut, duration: s.duration,
       media: Object.fromEntries(Object.entries(s.media).filter(([, m]) => m).map(([k, m]) => [k, {
@@ -765,6 +773,9 @@ function hydrate(data) {
   const p = { id: data.id || uid(), name: data.name || 'Naamloze post', format: FORMATS[data.format] ? data.format : 'feed', mode: data.mode === 'video' ? 'video' : 'static',
     videoExport: data.videoExport === 'doorlopend' ? 'doorlopend' : 'los',
     transition: { type: data.transition && TRANSITIONS[data.transition.type] ? data.transition.type : 'fade', dur: data.transition && +data.transition.dur > 0 ? Math.min(1.5, +data.transition.dur) : 0.7 },
+    caption: data.caption || '',
+    date: data.date || '',
+    review: reviewOf(data.review && !data.status ? data.review : data),
     slides: [] };
   for (const s of data.slides || []) {
     const tpl = getTemplate(s.template);
@@ -809,6 +820,11 @@ function askAuthor() {
   return new Promise(resolve => {
     const m = $('#m-name');
     const inp = $('#name-input');
+    const quick = $('#quick-names');
+    quick.innerHTML = '';
+    for (const n of ROLE === 'maker' ? ['Ash', 'Celine'] : ['Esmée', 'Camille']) {
+      quick.append(el('button', { class: 'chip', onclick: () => { inp.value = n; ok(); } }, n));
+    }
     inp.value = author();
     m.classList.add('show');
     inp.focus();
@@ -825,6 +841,12 @@ function askAuthor() {
   });
 }
 
+async function apiBlob(body) {
+  const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ secret: SECRET }, body)) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.blob();
+}
+
 async function api(body) {
   const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ secret: SECRET }, body)) });
   const j = await r.json().catch(() => ({}));
@@ -838,8 +860,10 @@ async function saveDraft() {
   btn.disabled = true;
   $('#save-state').textContent = 'Bewaren...';
   try {
-    await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
+    const res = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
+    post.review = reviewOf(res.draft);
     dirty = false;
+    renderInspector();
     $('#save-state').textContent = 'Bewaard';
     const uploads = post.slides.some(s => Object.values(s.media).some(m => m && m.ref && m.ref.type === 'upload'));
     toast(uploads ? 'Concept bewaard. Eigen foto’s en video’s gaan niet mee; die kies je bij openen opnieuw.' : 'Concept bewaard. Celine en jij zien het onder Concepten.');
@@ -860,16 +884,8 @@ async function openDrafts() {
     for (const d of drafts) {
       const when = new Date(d.updated).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       list.append(el('li', {},
-        el('div', {}, el('b', {}, d.name), el('small', {}, `${FORMATS[d.format].name}${d.count > 1 ? ' · ' + d.count + ' slides' : ''} · ${d.author || 'onbekend'} · ${when}`)),
-        el('button', { class: 'btn', onclick: async () => {
-          if (dirty && !confirm('Je huidige post is niet bewaard. Toch dit concept openen?')) return;
-          const { draft } = await api({ action: 'get', id: d.id });
-          if (playing) stop();
-          post = hydrate(draft); current = 0; dirty = false;
-          $('#m-drafts').classList.remove('show');
-          refreshAll();
-          $('#save-state').textContent = 'Geopend';
-        } }, 'Open'),
+        el('div', {}, el('b', {}, d.name), el('small', {}, `${FORMATS[d.format].name}${d.count > 1 ? ' · ' + d.count + ' slides' : ''} · ${d.author || 'onbekend'} · ${when}`), el('div', { style: 'margin-top:5px' }, statusPill(d.status))),
+        el('button', { class: 'btn', onclick: async () => { if (await openDraft(d.id)) $('#m-drafts').classList.remove('show'); } }, 'Open'),
         el('button', { class: 'close', title: 'Verwijder', onclick: async () => {
           if (!confirm(`“${d.name}” verwijderen?`)) return;
           await api({ action: 'delete', id: d.id });
@@ -1026,6 +1042,7 @@ function bind() {
     refreshAll();
   });
   $('#btn-save').addEventListener('click', saveDraft);
+  $('#btn-review').addEventListener('click', () => setView('review'));
   $('#btn-drafts').addEventListener('click', openDrafts);
   document.querySelectorAll('#mode button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
   $('#btn-slide').addEventListener('click', exportSlide);
@@ -1042,7 +1059,201 @@ function bind() {
   window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 }
 
+/* ---------- goedkeuring vanuit de editor ---------- */
+
+function reviewOf(d) {
+  return {
+    status: d && STATUS[d.status] ? d.status : 'concept',
+    version: d && d.version || 0,
+    thread: d && Array.isArray(d.thread) ? d.thread : [],
+    editedSinceSubmit: !!(d && d.editedSinceSubmit),
+    submitted: d && d.submitted || null
+  };
+}
+
+async function openDraft(id) {
+  if (dirty && !confirm('Je huidige post is niet bewaard. Toch deze post openen?')) return false;
+  const { draft } = await api({ action: 'get', id });
+  if (playing) stop();
+  post = hydrate(draft); current = 0; dirty = false;
+  setView('make');
+  refreshAll();
+  $('#save-state').textContent = 'Geopend';
+  return true;
+}
+
+function setView(v) {
+  document.body.classList.toggle('view-review', v === 'review');
+  if (v === 'review') { if (playing) stop(); refreshReview(); }
+  else fitStage();
+}
+
+function postSection() {
+  const r = post.review || reviewOf(null);
+  const sec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Post'));
+  const cap = el('textarea', { rows: 4, id: 'f-caption', placeholder: 'De tekst onder de post op Instagram' });
+  cap.value = post.caption || '';
+  cap.addEventListener('input', () => { post.caption = cap.value; changed(false); });
+  const date = el('input', { type: 'date', id: 'f-date' });
+  date.value = post.date || '';
+  date.addEventListener('change', () => { post.date = date.value; changed(false); });
+  sec.append(
+    el('div', { class: 'field' }, el('label', { for: 'f-caption' }, 'Bijschrift voor Instagram'), cap),
+    el('div', { class: 'field' }, el('label', { for: 'f-date' }, 'Geplande datum'), date)
+  );
+
+  const st = el('div', { class: 'post-status' }, statusPill(r.status));
+  if (r.version) st.append(el('small', { class: 'muted' }, `Versie ${r.version} aangeboden${r.submitted ? ' door ' + r.submitted.by : ''}`));
+  if (r.editedSinceSubmit || (dirty && r.version)) st.append(el('small', { class: 'rv-open' }, 'Aangepast sinds de laatste versie. Bied opnieuw aan als het klaar is.'));
+
+  const open = r.thread.filter(t => t.role === 'approver' && (t.type === 'changes' || t.type === 'comment') && !t.resolved);
+  for (const t of open) {
+    const cb = el('input', { type: 'checkbox' });
+    cb.addEventListener('change', async () => {
+      try {
+        const res = await api({ action: 'review', id: post.id, kind: 'resolve', commentId: t.id, by: author() || 'Maker' });
+        post.review = reviewOf(res.draft);
+        renderInspector();
+      } catch (e) { toast('Dat lukte niet: ' + e.message); cb.checked = false; }
+    });
+    st.append(el('div', { class: 'fb-item' },
+      el('small', {}, `${t.by}${t.slide != null ? ' · slide ' + (t.slide + 1) : ''}${t.version !== r.version ? ' · versie ' + t.version : ''}`),
+      t.text,
+      el('label', { class: 'chk', style: 'margin-top:6px;font-size:12px;color:var(--stone)' }, cb, 'Verwerkt')));
+  }
+
+  const note = el('textarea', { rows: 2, placeholder: 'Toelichting voor Esmée en Camille (optioneel)' });
+  const btn = el('button', { class: 'btn gold', onclick: () => submitForApproval(note.value) }, r.version ? `Versie ${r.version + 1} aanbieden` : 'Ter goedkeuring aanbieden');
+  st.append(el('div', { class: 'field', style: 'width:100%;margin:6px 0 0' }, note), btn);
+  if (r.version) st.append(el('a', { href: '#', style: 'color:var(--gold);font-size:12.5px', onclick: e => { e.preventDefault(); setView('review'); } }, 'Bekijk in goedkeuring'));
+  sec.append(el('div', { class: 'field' }, el('label', {}, 'Goedkeuring'), st));
+  return sec;
+}
+
+function blobToB64(blob) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(String(fr.result).split(',')[1]);
+    fr.onerror = rej;
+    fr.readAsDataURL(blob);
+  });
+}
+
+const PART = 2_900_000;
+async function uploadPreview(rel, blob, type) {
+  const parts = Math.max(1, Math.ceil(blob.size / PART));
+  let path = null;
+  for (let i = 0; i < parts; i++) {
+    const chunk = blob.slice(i * PART, (i + 1) * PART);
+    const r = await api({ action: 'upload', path: parts > 1 ? `${rel}.p${i}` : rel, b64: await blobToB64(chunk) });
+    path = r.path.replace(/\.p\d+$/, '');
+  }
+  return { path, parts, type };
+}
+
+async function submitForApproval(note) {
+  if (playing) stop();
+  const missing = post.slides.some(s => Object.values(s.media).some(m => m && m.missing)) || post.slides.some(s => getTemplate(s.template).media.some(m => !s.media[m.key] || !s.media[m.key].src));
+  if (missing && !confirm('Niet elk beeldvak is gevuld. Toch aanbieden?')) return;
+  if (isVideo() && !videoSupported()) { toast('Video-previews maken werkt in Chrome, Edge of Safari 17+.'); return; }
+  const who = author() || await askAuthor();
+  const ui = exportModal('Ter goedkeuring aanbieden');
+  try {
+    ui.set('Post bewaren', 0.02);
+    const saved = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
+    post.review = reviewOf(saved.draft);
+    dirty = false;
+    const version = post.review.version + 1;
+    const base = `${post.id}/v${version}`;
+    const n = post.slides.length;
+    const previews = [];
+    let sequence = null;
+    for (let i = 0; i < n; i++) {
+      const s = post.slides[i];
+      ui.set(`Preview slide ${i + 1} van ${n}`, 0.05 + 0.85 * i / n);
+      const img = await exportImage(s, post.format, getMedia, { preview: true });
+      const still = await uploadPreview(`${base}/s${i + 1}.jpg`, img.blob, 'image');
+      let video = null;
+      if (isVideo() && !isSequence()) {
+        const v = await exportVideo(s, post.format, getMedia, p => ui.set(`Video slide ${i + 1} van ${n}: ${Math.round(p * 100)}%`, 0.05 + 0.85 * (i + p * 0.9) / n), { preview: true });
+        ui.set(`Video slide ${i + 1} uploaden`, null);
+        video = await uploadPreview(`${base}/s${i + 1}.mp4`, v.blob, 'video');
+      }
+      previews.push({ slide: i, still, video });
+    }
+    if (isSequence()) {
+      const v = await exportSequence(post.slides, post.format, getMedia, post.transition, p => ui.set(`Doorlopende video: ${Math.round(p * 100)}%`, 0.5 + 0.4 * p), { preview: true });
+      ui.set('Video uploaden', 0.92);
+      sequence = await uploadPreview(`${base}/reeks.mp4`, v.blob, 'video');
+    }
+    ui.set('Aanbieden', 0.97);
+    const res = await api({ action: 'submit', id: post.id, version, previews, sequence, by: who, note: (note || '').trim() });
+    post.review = reviewOf(res.draft);
+    renderInspector();
+    $('#save-state').textContent = 'Aangeboden';
+    toast(`Versie ${version} staat klaar voor Esmée en Camille.`);
+  } catch (e) {
+    toast('Aanbieden lukte niet: ' + e.message);
+  } finally { ui.close(); draw(); }
+}
+
+function makerLogin() {
+  const m = $('#m-maker');
+  const inp = $('#maker-input');
+  const err = $('#maker-err');
+  inp.value = '';
+  err.classList.remove('show');
+  m.classList.add('show');
+  inp.focus();
+  const go = async () => {
+    try {
+      const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: inp.value, action: 'whoami' }) });
+      const j = await r.json();
+      if (j.role !== 'maker') throw new Error();
+      sessionStorage.setItem('skymark_posts_secret', inp.value);
+      location.reload();
+    } catch (e) { err.textContent = 'Onjuist wachtwoord.'; err.classList.add('show'); inp.value = ''; inp.focus(); }
+  };
+  $('#maker-ok').onclick = go;
+  inp.onkeydown = e => { if (e.key === 'Enter') go(); };
+}
+
+async function resolveRole() {
+  if (!window.__skyAuthed) await new Promise(r => window.addEventListener('skymark-auth', r, { once: true }));
+  let s = null;
+  try { s = sessionStorage.getItem('skymark_posts_secret'); } catch (e) {}
+  if (s) {
+    try {
+      const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: s, action: 'whoami' }) });
+      const j = await r.json();
+      if (j.role === 'maker') { SECRET = s; ROLE = 'maker'; return; }
+    } catch (e) {}
+    try { sessionStorage.removeItem('skymark_posts_secret'); } catch (e) {}
+  }
+  SECRET = PW_VIEW;
+  ROLE = 'approver';
+}
+
 async function init() {
+  await resolveRole();
+  initReview({
+    role: ROLE, api, apiBlob, toast,
+    me: author,
+    askName: () => askAuthor(),
+    makerLogin,
+    openInEditor: id => openDraft(id),
+    backToEditor: () => setView('make')
+  });
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').classList.remove('show')));
+  if (ROLE !== 'maker') {
+    /* goedkeurders: alleen de goedkeuringsweergave, geen editor of templates */
+    document.body.classList.add('role-approver', 'view-review');
+    document.body.classList.remove('booting');
+    refreshReview();
+    if (!author()) askAuthor().then(refreshReview);
+    return;
+  }
+  document.body.classList.add('role-maker');
   const [, , pj] = await Promise.all([
     loadFonts(),
     loadAssets(),
@@ -1053,6 +1264,7 @@ async function init() {
   try { saved = JSON.parse(localStorage.getItem(LS_POST)); } catch (e) {}
   post = saved ? hydrate(saved) : newPost('feed');
   bind();
+  document.body.classList.remove('booting');
   refreshAll();
   window.__posts = { get post() { return post; }, set post(p) { post = p; refreshAll(); }, hydrate, refreshAll, getMedia, exportVideo, exportImage, setCurrent: i => { current = i; refreshAll(); } };
 }

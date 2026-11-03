@@ -186,6 +186,75 @@ button{cursor:pointer;}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--mist);color:var(--black);padding:10px 16px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:900;max-width:min(560px,90vw);}
 .toast.show{opacity:1;transform:translateX(-50%);}
 
+
+/* ROLLEN EN GOEDKEURING */
+body.role-approver .app, body.view-review .app{display:none;}
+.review{display:none;min-height:calc(100vh - 52px);padding:36px 40px 80px;max-width:1400px;margin:0 auto;}
+body.view-review .review{display:block;}
+body.booting .app, body.booting .review{visibility:hidden;}
+.rv-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:26px;}
+.rv-head h1{font-family:'PPTalisman',serif;font-weight:300;font-size:44px;line-height:1;margin:6px 0 0;color:var(--mist);}
+.rv-who{font-size:13px;color:var(--stone);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.rv-who a{color:var(--gold);}
+.rv-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:24px;flex-wrap:wrap;}
+.rv-tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;margin-bottom:-1px;color:var(--stone);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;display:flex;gap:8px;align-items:center;}
+.rv-tabs button b{font-weight:600;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:1px 7px;border-radius:10px;letter-spacing:0;color:var(--mist);}
+.rv-tabs button.on{color:var(--mist);border-bottom-color:var(--gold);}
+.rv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px;}
+.rv-empty{grid-column:1/-1;padding:40px 0;font-size:15px;}
+.rv-card{background:var(--panel);border:1px solid var(--line);padding:0;text-align:left;display:flex;flex-direction:column;transition:border-color .15s,transform .15s;}
+.rv-card:hover{border-color:var(--line2);transform:translateY(-2px);}
+.rv-thumb{aspect-ratio:4/5;background:var(--panel2) center/cover no-repeat;position:relative;display:grid;place-items:center;color:var(--stone);font-size:12px;}
+.rv-thumb.story{background-size:cover;}
+.rv-thumb em{position:absolute;right:8px;top:8px;font-style:normal;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:rgba(16,19,16,.85);color:var(--mist);padding:3px 7px;}
+.rv-card-body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:5px;align-items:flex-start;}
+.rv-card-body b{font-weight:400;font-size:16px;line-height:1.25;color:var(--mist);margin-top:4px;}
+.rv-card-body small{font-size:12px;color:var(--stone);line-height:1.35;}
+.rv-open{color:#E2B26A !important;}
+.pill{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border:1px solid currentColor;line-height:1.3;}
+.st-concept{color:var(--stone);}
+.st-review{color:var(--gold);}
+.st-changes{color:#E09A8A;}
+.st-approved{color:#9FD29A;}
+.rv-dialog{width:min(1240px,100%);height:min(900px,100%);}
+.rv-dialog header h3{flex:1;}
+.rv-body{display:grid;grid-template-columns:minmax(0,1fr) 380px;flex:1;min-height:0;}
+.rv-view{display:flex;flex-direction:column;min-height:0;background:var(--ink);}
+.rv-media{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:24px;}
+.rv-media img,.rv-media video{max-width:100%;max-height:100%;display:block;box-shadow:0 20px 60px rgba(0,0,0,.5);background:#000;}
+.rv-nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px;border-top:1px solid var(--line);font-size:12px;color:var(--stone);}
+.rv-side{border-left:1px solid var(--line);overflow-y:auto;padding:18px 20px 30px;}
+.rv-sec{padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--line);}
+.rv-sec:last-child{border-bottom:0;}
+.rv-sec p{margin:0 0 6px;font-size:13.5px;}
+.rv-caption{white-space:pre-wrap;background:var(--panel2);border:1px solid var(--line);padding:10px 12px;font-size:13.5px;line-height:1.5;}
+.rv-thread{display:flex;flex-direction:column;gap:10px;}
+.rv-msg{border-left:2px solid var(--line2);padding:2px 0 2px 12px;}
+.rv-msg.t-changes{border-left-color:#E09A8A;}
+.rv-msg.t-approve{border-left-color:#9FD29A;}
+.rv-msg.t-submit{border-left-color:var(--gold);}
+.rv-msg.resolved{opacity:.6;}
+.rv-msg-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+.rv-msg-head b{font-weight:600;font-size:12.5px;}
+.rv-msg-head small{font-size:11px;color:var(--stone);white-space:nowrap;}
+.rv-msg p{margin:4px 0 0;font-size:13.5px;white-space:pre-wrap;}
+.rv-resolve{margin-top:6px;font-size:12px;color:var(--stone);}
+.rv-done{display:block;margin-top:4px;font-size:11.5px;color:#9FD29A;}
+.rv-act textarea{width:100%;background:var(--panel2);border:1px solid var(--line);padding:9px 11px;outline:none;resize:vertical;color:var(--mist);min-height:76px;}
+.rv-act textarea:focus{border-color:var(--gold);}
+.rv-btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.post-status{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+.fb-item{border-left:2px solid #E09A8A;padding:2px 0 2px 10px;margin:8px 0;font-size:13px;}
+.fb-item small{display:block;color:var(--stone);font-size:11.5px;}
+.fb-item .chk{display:flex;gap:7px;}
+.field input[type=date]{width:100%;background:var(--panel2);border:1px solid var(--line);padding:8px 11px;color:var(--mist);color-scheme:dark;}
+.quick-names{display:flex;gap:8px;margin-bottom:10px;}
+@media (max-width:900px){
+  .review{padding:24px 16px 60px;}
+  .rv-body{grid-template-columns:1fr;overflow-y:auto;}
+  .rv-media{max-height:60vh;}
+  .rv-side{border-left:0;border-top:1px solid var(--line);overflow:visible;}
+}
 @media (max-width:1100px){
   .app{grid-template-columns:1fr;height:auto;}
   .left,.right{border:0;border-bottom:1px solid var(--line);}
@@ -198,7 +267,7 @@ button{cursor:pointer;}
 }
 </style>
 </head>
-<body>
+<body class="booting">
 <div id="password-screen">
   <div class="pw-box">
     <div class="pw-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 321.22 48.26">
@@ -246,6 +315,7 @@ button{cursor:pointer;}
       <button class="btn" id="btn-new">Nieuw</button>
       <button class="btn" id="btn-drafts">Concepten</button>
       <button class="btn" id="btn-save">Bewaar</button>
+      <button class="btn" id="btn-review">Goedkeuring</button>
       <span class="sep"></span>
       <div class="mode" id="mode" role="group" aria-label="Exportmodus">
         <button data-m="static">Afbeelding</button>
@@ -272,6 +342,36 @@ button{cursor:pointer;}
   <aside class="right" id="inspector"></aside>
 </div>
 
+<section class="review" id="review">
+  <div class="rv-head">
+    <div><p class="eyebrow">Skymark · Posts</p><h1>Goedkeuring</h1></div>
+    <div class="rv-who" id="rv-who"></div>
+  </div>
+  <div class="rv-tabs" id="rv-tabs"></div>
+  <div class="rv-grid" id="rv-grid"></div>
+</section>
+
+<div class="modal" id="m-rv"><div class="dialog rv-dialog">
+  <header><h3 id="rv-title"></h3><span id="rv-status"></span><button class="close" data-close>&times;</button></header>
+  <div class="rv-body">
+    <div class="rv-view">
+      <div class="rv-media" id="rv-media"></div>
+      <div class="rv-nav"><button class="icon-btn" id="rv-prev" aria-label="Vorige">‹</button><span id="rv-count"></span><button class="icon-btn" id="rv-next" aria-label="Volgende">›</button></div>
+    </div>
+    <aside class="rv-side" id="rv-side"></aside>
+  </div>
+</div></div>
+
+<div class="modal" id="m-maker"><div class="dialog small">
+  <header><h3>Inloggen als maker</h3><button class="close" data-close>&times;</button></header>
+  <div class="body">
+    <p class="muted" style="margin-top:0">Voor het maken van posts. Esmée en Camille hebben dit niet nodig.</p>
+    <div class="field"><input type="password" id="maker-input" placeholder="Makerswachtwoord" autocomplete="off" style="width:100%;background:var(--panel2);border:1px solid var(--line);padding:9px 11px;color:var(--mist)"></div>
+    <p class="warn" id="maker-err"></p>
+    <button class="btn gold" id="maker-ok">Inloggen</button>
+  </div>
+</div></div>
+
 <div class="modal" id="m-photos"><div class="dialog">
   <header><h3>Fotoselectie</h3><span class="muted">De 60%-bewerking, de vaste basis voor series.</span><button class="close" data-close>&times;</button></header>
   <div class="body"><div class="photo-grid" id="photo-grid"></div></div>
@@ -285,8 +385,9 @@ button{cursor:pointer;}
 <div class="modal" id="m-name"><div class="dialog small">
   <header><h3>Wie ben je?</h3></header>
   <div class="body">
-    <p class="muted" style="margin-top:0">Je naam komt bij je concepten te staan, zodat je ziet wie wat heeft gemaakt.</p>
-    <div class="field"><input type="text" id="name-input" placeholder="Bijvoorbeeld Celine"></div>
+    <p class="muted" style="margin-top:0" id="name-text">Je naam komt bij je reacties en concepten te staan, zodat iedereen ziet van wie wat komt.</p>
+    <div class="quick-names" id="quick-names"></div>
+    <div class="field"><input type="text" id="name-input" placeholder="Je naam"></div>
     <button class="btn gold" id="name-ok">Opslaan</button>
   </div>
 </div></div>
@@ -308,22 +409,31 @@ button{cursor:pointer;}
 (function(){
   var PW_EDIT='skymark-edit-2025', PW_VIEW='girxy6-nidzyn-wUknir';
   var screen=document.getElementById('password-screen');
+  function done(){ window.__skyAuthed=true; window.dispatchEvent(new Event('skymark-auth')); }
   var saved=null; try{saved=sessionStorage.getItem('skymark_auth');}catch(e){}
-  if(saved==='view'||saved==='edit'){screen.style.display='none';return;}
+  if(saved==='view'||saved==='edit'){screen.style.display='none';done();return;}
   var field=document.getElementById('pw-field'), btn=document.getElementById('pw-btn'), err=document.getElementById('pw-error');
+  function enter(role, secret){
+    try{
+      sessionStorage.setItem('skymark_auth', role==='edit'?'edit':'view');
+      if(role==='edit') sessionStorage.setItem('skymark_editor','1');
+      if(secret) sessionStorage.setItem('skymark_posts_secret', secret); else sessionStorage.removeItem('skymark_posts_secret');
+    }catch(e){}
+    screen.style.transition='opacity .4s ease'; screen.style.opacity='0';
+    setTimeout(function(){screen.style.display='none';},400);
+    done();
+  }
+  function fail(){ err.textContent='Onjuist wachtwoord, probeer het opnieuw.'; field.value=''; field.focus(); }
   function attempt(){
     var val=field.value;
-    if(val===PW_EDIT||val===PW_VIEW){
-      try{
-        sessionStorage.setItem('skymark_auth', val===PW_EDIT?'edit':'view');
-        if(val===PW_EDIT) sessionStorage.setItem('skymark_editor','1');
-      }catch(e){}
-      screen.style.transition='opacity .4s ease'; screen.style.opacity='0';
-      setTimeout(function(){screen.style.display='none';},400);
-    } else {
-      err.textContent='Onjuist wachtwoord, probeer het opnieuw.';
-      field.value=''; field.focus();
-    }
+    if(val===PW_EDIT){enter('edit');return;}
+    if(val===PW_VIEW){enter('view');return;}
+    if(!val){fail();return;}
+    /* makerswachtwoord wordt alleen op de server gecontroleerd */
+    fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:val,action:'whoami'})})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(j){ if(j&&j.role==='maker') enter('view', val); else fail(); })
+      .catch(fail);
   }
   btn.addEventListener('click',attempt);
   field.addEventListener('keydown',function(e){if(e.key==='Enter')attempt();});

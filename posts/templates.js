@@ -13,6 +13,10 @@
    text      tekstveld (field) of vaste tekst (text), krimpt tot het in h past
    svg       merkvorm uit /posts/assets, ingekleurd met een kleurrol
    pill      stempel: omlijnd label dat meegroeit met de tekst
+   frame     dunne omlijning (rechthoek), lijndikte in stroke
+
+   Regel: geen loze graphics of vaste teksten. Elk element is een veld dat
+   je invult of leeg laat, of een bewuste vorm uit het definitieve design.
 
    Kleurrollen: bg, head, body, label, mark, logo. */
 
@@ -50,7 +54,6 @@ function opBeeld(id, color) {
 
 /* Typografie uit Figma. ls is letterspatiëring als fractie van de korpsgrootte. */
 const EYEBROW = { font: 'mori-semibold', size: 22, lh: 1.2, ls: 0.18, upper: true };
-const HANDLE = { font: 'mori-semibold', size: 22, lh: 1.2, ls: 0.18, upper: true, text: 'skymark.denhaag' };
 
 export const FORMATS = {
   feed:     { id: 'feed', name: 'Feed', ratio: '4:5', w: 1080, h: 1350 },
@@ -59,6 +62,54 @@ export const FORMATS = {
 };
 
 export const TEMPLATES = [
+  /* ---------- Beeld ---------- */
+  {
+    id: 'mijlpaal-midden',
+    name: 'Titel op beeld',
+    group: 'Beeld',
+    note: 'Definitief (Figma, pagina Final).',
+    fields: [{ key: 'kop', label: 'Kop', def: 'De bouw\nvan Skymark\nis begonnen.', multiline: true }],
+    media: [{ key: 'foto', label: 'Beeld of video' }],
+    palettes: [opBeeld('op-pine', 'urban-pine'), opBeeld('op-mist', 'mist-green'), opBeeld('op-wit', 'cloud-white'), opBeeld('op-zwart', 'binck-black')],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1350 },
+        { t: 'text', field: 'kop', x: 70, y: 400, w: 940, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 82, lh: 1.12, ls: -0.03, min: 56 }
+      ],
+      story: [
+        { t: 'fill', color: 'bg' },
+        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1920 },
+        { t: 'text', field: 'kop', x: 70, y: 685, w: 940, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.12, ls: -0.03, min: 56 }
+      ]
+    }
+  },
+  {
+    id: 'statement-beeld',
+    name: 'Statement op beeld',
+    group: 'Beeld',
+    note: 'Definitief (Figma, pagina Final).',
+    fields: [
+      { key: 'statement', label: 'Statement', def: 'Under construction,\nabove expectations.', multiline: true },
+      { key: 'onderregel', label: 'Onderregel', def: 'De bouw van Skymark is begonnen.' }
+    ],
+    media: [{ key: 'foto', label: 'Beeld of video' }],
+    palettes: [opBeeld('op-wit', 'cloud-white'), opBeeld('op-mist', 'mist-green'), opBeeld('op-zwart', 'binck-black')],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1350 },
+        { t: 'text', field: 'statement', x: 90, y: 400, w: 900, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'onderregel', x: 90, y: 1190, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
+      ],
+      story: [
+        { t: 'fill', color: 'bg' },
+        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1920 },
+        { t: 'text', field: 'statement', x: 90, y: 685, w: 900, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'onderregel', x: 90, y: 1600, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
+      ]
+    }
+  },
   {
     id: 'passe-partout',
     name: 'Passe-partout',
@@ -86,73 +137,72 @@ export const TEMPLATES = [
     }
   },
   {
-    id: 'mijlpaal-midden',
-    name: 'Mijlpaal · titel op beeld',
-    group: 'Beeld',
-    note: 'Definitief design (Figma, pagina Final).',
-    fields: [{ key: 'kop', label: 'Kop', def: 'De bouw\nvan Skymark\nis begonnen.', multiline: true }],
-    media: [{ key: 'foto', label: 'Beeld of video' }],
-    palettes: [opBeeld('op-pine', 'urban-pine'), opBeeld('op-mist', 'mist-green'), opBeeld('op-wit', 'cloud-white'), opBeeld('op-zwart', 'binck-black')],
-    layouts: {
-      feed: [
-        { t: 'fill', color: 'bg' },
-        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1350 },
-        { t: 'text', field: 'kop', x: 70, y: 400, w: 940, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 82, lh: 1.12, ls: -0.03, min: 56 }
-      ],
-      story: [
-        { t: 'fill', color: 'bg' },
-        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1920 },
-        { t: 'text', field: 'kop', x: 70, y: 685, w: 940, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.12, ls: -0.03, min: 56 }
-      ]
-    }
-  },
-  {
     id: 'mijlpaal-onder',
-    name: 'Mijlpaal · titel onder',
+    name: 'Titel onder op beeld',
     group: 'Beeld',
     note: 'Beeld vol, verloop en kop onderin.',
     fields: [{ key: 'kop', label: 'Kop', def: 'Under construction,\nabove expectations.', multiline: true }],
     media: [{ key: 'foto', label: 'Beeld of video' }],
-    palettes: [pal('donker'), pal('pine', { logo: 'cloud-white' }), pal('plum', { logo: 'cloud-white' })],
+    palettes: [pal('donker'), pal('pine'), pal('plum')],
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1350 },
         { t: 'gradient', x: 0, y: 790, w: 1080, h: 560, color: 'bg', from: 0, to: 0.78 },
-        { t: 'svg', asset: 'wordmark', x: 72, y: 72, w: 240, h: 36, color: 'logo' },
         { t: 'text', field: 'kop', x: 72, y: 880, w: 940, h: 342, valign: 'bottom', color: 'head', font: 'talisman-light', size: 92, lh: 1.12, ls: -0.03, min: 60 }
       ],
       story: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1920 },
         { t: 'gradient', x: 0, y: 1220, w: 1080, h: 700, color: 'bg', from: 0, to: 0.8 },
-        { t: 'svg', asset: 'wordmark', x: 72, y: 96, w: 240, h: 36, color: 'logo' },
         { t: 'text', field: 'kop', x: 72, y: 1420, w: 940, h: 346, valign: 'bottom', color: 'head', font: 'talisman-light', size: 92, lh: 1.12, ls: -0.03, min: 60 }
       ]
     }
   },
   {
+    id: 'maker',
+    name: 'De Binckhorst Maakt',
+    group: 'Beeld',
+    fields: [
+      { key: 'stempel', label: 'Stempel', def: 'De Binckhorst maakt' },
+      { key: 'naam', label: 'Naam', def: 'Naam van de maker' },
+      { key: 'wat', label: 'Omschrijving', def: 'Wat die maakt, en waar in de Binckhorst', multiline: true }
+    ],
+    media: [{ key: 'foto', label: 'Beeld of video' }],
+    palettes: [pal('donker', { label: 'mist-green', body: 'sage-stone' }), pal('pine', { label: 'mist-green' }), pal('plum', { label: 'mist-green' })],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1010 },
+        { t: 'pill', field: 'stempel', x: 72, y: 72, h: 67, padX: 30, stroke: 2, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'naam', x: 72, y: 1062, w: 936, h: 100, color: 'head', font: 'talisman-light', size: 72, lh: 1.15, ls: -0.03, min: 48 },
+        { t: 'text', field: 'wat', x: 72, y: 1186, w: 900, h: 92, color: 'body', font: 'mori-book', size: 32, lh: 1.4, ls: -0.02, min: 26 }
+      ]
+    }
+  },
+
+  /* ---------- Tekst ---------- */
+  {
     id: 'quote',
     name: 'Quote',
     group: 'Tekst',
+    note: 'Definitief (Figma, pagina Final).',
     fields: [
       { key: 'quote', label: 'Quote', def: '“Hier komt de quote van de architect over de keuze voor deze vorm.”', multiline: true },
       { key: 'naam', label: 'Naam', def: 'Naam architect · De Zwarte Hond' }
     ],
     media: [],
-    palettes: [pal('brick'), pal('donker', { label: 'mist-green' }), pal('plum', { label: 'mist-green' }), pal('pine', { label: 'mist-green', mark: 'golden-yellow' })],
+    palettes: [pal('brick'), pal('donker', { label: 'mist-green' }), pal('plum', { label: 'mist-green' }), pal('pine', { label: 'mist-green' })],
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'text', field: 'quote', x: 72, y: 320, w: 930, h: 660, color: 'head', font: 'talisman-light', size: 72, lh: 1.28, ls: -0.01, min: 48 },
-        { t: 'text', field: 'naam', x: 72, y: 1090, w: 820, h: 27, color: 'label', ...EYEBROW },
-        { t: 'svg', asset: 'kroon', x: 920, y: 1130, w: 88, h: 102, color: 'mark' }
+        { t: 'text', field: 'naam', x: 72, y: 1090, w: 936, h: 27, color: 'label', ...EYEBROW }
       ],
       story: [
         { t: 'fill', color: 'bg' },
         { t: 'text', field: 'quote', x: 72, y: 560, w: 930, h: 860, color: 'head', font: 'talisman-light', size: 76, lh: 1.28, ls: -0.01, min: 50 },
-        { t: 'text', field: 'naam', x: 72, y: 1500, w: 820, h: 27, color: 'label', ...EYEBROW },
-        { t: 'svg', asset: 'kroon', x: 920, y: 1690, w: 88, h: 102, color: 'mark' }
+        { t: 'text', field: 'naam', x: 72, y: 1500, w: 936, h: 27, color: 'label', ...EYEBROW }
       ]
     }
   },
@@ -175,127 +225,7 @@ export const TEMPLATES = [
       story: [
         { t: 'fill', color: 'bg' },
         { t: 'text', field: 'statement', x: 90, y: 685, w: 900, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
-        { t: 'text', field: 'cta', x: 90, y: 1680, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
-      ]
-    }
-  },
-  {
-    id: 'feitje-vraag',
-    name: 'Feitje · vraag',
-    group: 'Carrousel',
-    fields: [
-      { key: 'label', label: 'Label', def: 'Feitjes over het gebouw' },
-      { key: 'vraag', label: 'Vraag', def: 'Hoe hoog wordt Skymark?', multiline: true }
-    ],
-    media: [],
-    palettes: [pal('pine'), pal('donker', { mark: 'mist-green' }), pal('plum', { mark: 'mist-green' })],
-    layouts: {
-      feed: [
-        { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'label', x: 72, y: 96, w: 900, h: 27, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'vraag', x: 72, y: 420, w: 900, h: 500, color: 'head', font: 'talisman-light', size: 110, lh: 1.1, ls: -0.03, min: 72 },
-        { t: 'svg', asset: 'kroonbogen', x: 440, y: 1020, w: 200, h: 250, color: 'mark' },
-        { t: 'text', x: 72, y: 1210, w: 500, h: 31, color: 'mark', ...HANDLE }
-      ]
-    }
-  },
-  {
-    id: 'feitje-antwoord',
-    name: 'Feitje · antwoord',
-    group: 'Carrousel',
-    fields: [
-      { key: 'label', label: 'Label', def: 'Feitjes over het gebouw' },
-      { key: 'getal', label: 'Getal', def: '101 m' },
-      { key: 'uitleg', label: 'Uitleg', def: 'Ruim twee keer zo hoog als het reuzenrad op de Pier.', multiline: true }
-    ],
-    media: [],
-    palettes: [pal('donker', { body: 'sage-stone', mark: 'mist-green' }), pal('pine', { body: 'mist-green' }), pal('plum', { mark: 'mist-green' })],
-    layouts: {
-      feed: [
-        { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'label', x: 72, y: 96, w: 900, h: 27, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'getal', x: 72, y: 330, w: 936, h: 515, valign: 'middle', align: 'center', nowrap: true, color: 'head', font: 'talisman-compressed', size: 560, lh: 0.92, ls: 0, min: 160 },
-        { t: 'text', field: 'uitleg', x: 72, y: 1040, w: 800, h: 112, color: 'body', font: 'mori-book', size: 40, lh: 1.4, ls: -0.02, min: 30 },
-        { t: 'text', x: 72, y: 1210, w: 500, h: 31, color: 'mark', ...HANDLE }
-      ]
-    }
-  },
-  {
-    id: 'feitje-beeld',
-    name: 'Feitje · beeld',
-    group: 'Carrousel',
-    fields: [{ key: 'bijschrift', label: 'Bijschrift', def: 'Een nieuw perspectief op een vertrouwde stad.', multiline: true }],
-    media: [{ key: 'foto', label: 'Beeld of video' }],
-    palettes: [pal('donker'), pal('pine', { mark: 'golden-yellow' }), pal('plum')],
-    layouts: {
-      feed: [
-        { t: 'fill', color: 'bg' },
-        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1080 },
-        { t: 'text', field: 'bijschrift', x: 72, y: 1140, w: 800, h: 102, color: 'head', font: 'mori-book', size: 36, lh: 1.4, ls: -0.02, min: 28 },
-        { t: 'svg', asset: 'kroon', x: 920, y: 1130, w: 88, h: 102, color: 'mark' }
-      ]
-    }
-  },
-  {
-    id: 'ontwerp-cover',
-    name: 'Ontwerpverhaal · cover',
-    group: 'Carrousel',
-    fields: [
-      { key: 'label', label: 'Label', def: 'Het ontwerpverhaal' },
-      { key: 'kop', label: 'Kop', def: 'Waarom kreeg Skymark een kroon?', multiline: true }
-    ],
-    media: [{ key: 'foto', label: 'Beeld of video' }],
-    palettes: [pal('donker', { mark: 'mist-green' }), pal('pine', { mark: 'mist-green' }), pal('plum', { mark: 'mist-green' })],
-    layouts: {
-      feed: [
-        { t: 'fill', color: 'bg' },
-        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 860 },
-        { t: 'text', field: 'label', x: 72, y: 930, w: 900, h: 27, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'kop', x: 72, y: 1000, w: 940, h: 200, color: 'head', font: 'talisman-light', size: 84, lh: 1.12, ls: -0.03, min: 56 },
-        { t: 'text', x: 72, y: 1250, w: 500, h: 31, color: 'mark', ...HANDLE }
-      ]
-    }
-  },
-  {
-    id: 'ontwerp-uitleg',
-    name: 'Ontwerpverhaal · uitleg',
-    group: 'Carrousel',
-    fields: [
-      { key: 'label', label: 'Label', def: 'Het ontwerpverhaal' },
-      { key: 'kop', label: 'Kop', def: 'De top bepaalt hoe je de toren van een afstand ziet.', multiline: true },
-      { key: 'tekst', label: 'Tekst', def: 'De Zwarte Hond ontwierp een subtiele kroon die Skymark herkenbaar maakt in de Haagse skyline.', multiline: true }
-    ],
-    media: [],
-    palettes: [pal('licht'), pal('wit'), pal('pine', { label: 'golden-yellow', mark: 'mist-green' })],
-    layouts: {
-      feed: [
-        { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'label', x: 72, y: 96, w: 900, h: 27, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'kop', x: 72, y: 380, w: 920, h: 400, color: 'head', font: 'talisman-light', size: 84, lh: 1.15, ls: -0.03, min: 56 },
-        { t: 'text', field: 'tekst', x: 72, y: 880, w: 740, h: 290, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 },
-        { t: 'svg', asset: 'kader', x: 850, y: 1060, w: 160, h: 200, color: 'mark' }
-      ]
-    }
-  },
-  {
-    id: 'maker',
-    name: 'De Binckhorst Maakt',
-    group: 'Beeld',
-    fields: [
-      { key: 'stempel', label: 'Stempel', def: 'De Binckhorst maakt' },
-      { key: 'naam', label: 'Naam', def: 'Naam van de maker' },
-      { key: 'wat', label: 'Omschrijving', def: 'Wat die maakt, en waar in de Binckhorst', multiline: true }
-    ],
-    media: [{ key: 'foto', label: 'Beeld of video' }],
-    palettes: [pal('donker', { label: 'mist-green', body: 'sage-stone' }), pal('pine', { label: 'mist-green', mark: 'golden-yellow' }), pal('plum', { label: 'mist-green' })],
-    layouts: {
-      feed: [
-        { t: 'fill', color: 'bg' },
-        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1010 },
-        { t: 'pill', field: 'stempel', x: 72, y: 72, h: 67, padX: 30, stroke: 2, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'naam', x: 72, y: 1062, w: 800, h: 100, color: 'head', font: 'talisman-light', size: 72, lh: 1.15, ls: -0.03, min: 48 },
-        { t: 'text', field: 'wat', x: 72, y: 1186, w: 800, h: 92, color: 'body', font: 'mori-book', size: 32, lh: 1.4, ls: -0.02, min: 26 },
-        { t: 'svg', asset: 'kroon', x: 920, y: 1130, w: 88, h: 102, color: 'mark' }
+        { t: 'text', field: 'cta', x: 90, y: 1600, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
       ]
     }
   },
@@ -310,15 +240,134 @@ export const TEMPLATES = [
       { key: 'cta', label: 'Actie', def: 'Ontdek de guide →' }
     ],
     media: [],
-    palettes: [pal('licht'), pal('wit'), pal('pine', { label: 'golden-yellow', mark: 'mist-green' })],
+    palettes: [pal('licht'), pal('wit'), pal('pine', { label: 'golden-yellow' })],
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'label', x: 72, y: 96, w: 900, h: 27, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'label', x: 72, y: 96, w: 936, h: 27, color: 'label', ...EYEBROW },
         { t: 'text', field: 'kop', x: 72, y: 400, w: 900, h: 400, color: 'head', font: 'talisman-light', size: 100, lh: 1.12, ls: -0.03, min: 64 },
-        { t: 'text', field: 'tekst', x: 72, y: 860, w: 660, h: 230, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 },
-        { t: 'text', field: 'cta', x: 72, y: 1190, w: 660, h: 32, color: 'label', ...EYEBROW, size: 26 },
-        { t: 'svg', asset: 'stippenovaal', x: 760, y: 960, w: 260, h: 325, color: 'mark' }
+        { t: 'text', field: 'tekst', x: 72, y: 860, w: 800, h: 230, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 },
+        { t: 'text', field: 'cta', x: 72, y: 1190, w: 936, h: 32, color: 'label', ...EYEBROW, size: 26 }
+      ]
+    }
+  },
+
+  /* ---------- Feitjes ---------- */
+  {
+    id: 'feitje-vraag',
+    name: 'Feitje · vraag',
+    group: 'Feitjes',
+    note: 'Definitief (Figma, pagina Final).',
+    fields: [
+      { key: 'label', label: 'Label', def: 'Feitjes over het gebouw' },
+      { key: 'vraag', label: 'Vraag', def: 'Hoe hoog wordt Skymark?', multiline: true }
+    ],
+    media: [],
+    palettes: [pal('pine'), pal('donker', { mark: 'mist-green' }), pal('plum', { mark: 'mist-green' })],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'svg', asset: 'boog-boven', x: 474, y: 8, w: 131, h: 46, color: 'mark' },
+        { t: 'text', field: 'label', x: 90, y: 519, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW },
+        { t: 'text', field: 'vraag', x: 90, y: 589, w: 900, h: 340, align: 'center', color: 'head', font: 'talisman-light', size: 110, lh: 1.1, ls: -0.03, min: 72 },
+        { t: 'svg', asset: 'boog-onder', x: 474, y: 1296, w: 131, h: 46, color: 'mark' }
+      ]
+    }
+  },
+  {
+    id: 'feitje-antwoord',
+    name: 'Feitje · antwoord',
+    group: 'Feitjes',
+    note: 'Definitief (Figma, pagina Final).',
+    fields: [
+      { key: 'getal', label: 'Getal', def: '101 m' },
+      { key: 'uitleg', label: 'Uitleg', def: 'Ruim twee keer zo hoog als het reuzenrad op de Pier.', multiline: true }
+    ],
+    media: [],
+    palettes: [pal('donker', { body: 'sage-stone' }), pal('pine', { body: 'mist-green' }), pal('plum', { body: 'mist-green' })],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'text', field: 'getal', x: 70, y: 330, w: 940, h: 515, valign: 'middle', align: 'center', nowrap: true, color: 'head', font: 'talisman-compressed', size: 560, lh: 0.92, ls: 0, min: 160 },
+        { t: 'text', field: 'uitleg', x: 140, y: 1040, w: 800, h: 112, align: 'center', color: 'body', font: 'mori-book', size: 40, lh: 1.4, ls: -0.02, min: 30 }
+      ]
+    }
+  },
+  {
+    id: 'feitje-licht',
+    name: 'Feitje · getal licht',
+    group: 'Feitjes',
+    note: 'Definitief (Figma, pagina Final).',
+    fields: [
+      { key: 'label', label: 'Label', def: 'Feitjes over het gebouw' },
+      { key: 'getal', label: 'Getal', def: '39.000' },
+      { key: 'uitleg', label: 'Uitleg', def: 'vierkante meter, alle verdiepingen bij elkaar', multiline: true }
+    ],
+    media: [],
+    palettes: [pal('licht'), pal('wit'), pal('pine', { label: 'mist-green', mark: 'mist-green' })],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'frame', x: 70, y: 70, w: 940, h: 1210, stroke: 2, color: 'mark' },
+        { t: 'text', field: 'label', x: 90, y: 130, w: 900, h: 24, align: 'center', color: 'label', font: 'mori-semibold', size: 20, lh: 1.2, ls: 0.2, upper: true },
+        { t: 'text', field: 'getal', x: 90, y: 400, w: 900, h: 396, valign: 'middle', align: 'center', nowrap: true, color: 'head', font: 'talisman-compressed', size: 430, lh: 0.92, ls: 0, min: 140 },
+        { t: 'text', field: 'uitleg', x: 190, y: 860, w: 700, h: 130, align: 'center', color: 'body', font: 'talisman-light', size: 48, lh: 1.3, ls: -0.02, min: 34 }
+      ]
+    }
+  },
+  {
+    id: 'feitje-beeld',
+    name: 'Feitje · beeld',
+    group: 'Feitjes',
+    fields: [{ key: 'bijschrift', label: 'Bijschrift', def: 'Een nieuw perspectief op een vertrouwde stad.', multiline: true }],
+    media: [{ key: 'foto', label: 'Beeld of video' }],
+    palettes: [pal('donker'), pal('pine'), pal('plum')],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1080 },
+        { t: 'text', field: 'bijschrift', x: 72, y: 1140, w: 936, h: 102, color: 'head', font: 'mori-book', size: 36, lh: 1.4, ls: -0.02, min: 28 }
+      ]
+    }
+  },
+
+  /* ---------- Verhaal ---------- */
+  {
+    id: 'ontwerp-cover',
+    name: 'Ontwerpverhaal · cover',
+    group: 'Verhaal',
+    fields: [
+      { key: 'label', label: 'Label', def: 'Het ontwerpverhaal' },
+      { key: 'kop', label: 'Kop', def: 'Waarom kreeg Skymark een kroon?', multiline: true }
+    ],
+    media: [{ key: 'foto', label: 'Beeld of video' }],
+    palettes: [pal('donker'), pal('pine'), pal('plum')],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 860 },
+        { t: 'text', field: 'label', x: 72, y: 930, w: 936, h: 27, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'kop', x: 72, y: 1000, w: 940, h: 260, color: 'head', font: 'talisman-light', size: 84, lh: 1.12, ls: -0.03, min: 56 }
+      ]
+    }
+  },
+  {
+    id: 'ontwerp-uitleg',
+    name: 'Ontwerpverhaal · uitleg',
+    group: 'Verhaal',
+    fields: [
+      { key: 'label', label: 'Label', def: 'Het ontwerpverhaal' },
+      { key: 'kop', label: 'Kop', def: 'De top bepaalt hoe je de toren van een afstand ziet.', multiline: true },
+      { key: 'tekst', label: 'Tekst', def: 'De Zwarte Hond ontwierp een subtiele kroon die Skymark herkenbaar maakt in de Haagse skyline.', multiline: true }
+    ],
+    media: [],
+    palettes: [pal('licht'), pal('wit'), pal('pine', { label: 'golden-yellow' })],
+    layouts: {
+      feed: [
+        { t: 'fill', color: 'bg' },
+        { t: 'text', field: 'label', x: 72, y: 96, w: 936, h: 27, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'kop', x: 72, y: 380, w: 920, h: 400, color: 'head', font: 'talisman-light', size: 84, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'tekst', x: 72, y: 880, w: 820, h: 290, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 }
       ]
     }
   }
