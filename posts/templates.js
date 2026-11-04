@@ -55,6 +55,11 @@ function opBeeld(id, color) {
 /* Typografie uit Figma. ls is letterspatiëring als fractie van de korpsgrootte. */
 const EYEBROW = { font: 'mori-semibold', size: 22, lh: 1.2, ls: 0.18, upper: true };
 
+/* Eén marge voor alle templates: 72 px (1/15 van de breedte).
+   Tekst, beeldranden en kaders aan de buitenkant liggen op deze lijn. */
+const M = 72;
+const W = 1080 - 2 * M;
+
 export const FORMATS = {
   feed:     { id: 'feed', name: 'Feed', ratio: '4:5', w: 1080, h: 1350 },
   story:    { id: 'story', name: 'Story', ratio: '9:16', w: 1080, h: 1920 },
@@ -75,12 +80,12 @@ export const TEMPLATES = [
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1350 },
-        { t: 'text', field: 'kop', x: 70, y: 400, w: 940, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 82, lh: 1.12, ls: -0.03, min: 56 }
+        { t: 'text', field: 'kop', x: M, y: 400, w: W, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 82, lh: 1.12, ls: -0.03, min: 56 }
       ],
       story: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1920 },
-        { t: 'text', field: 'kop', x: 70, y: 685, w: 940, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.12, ls: -0.03, min: 56 }
+        { t: 'text', field: 'kop', x: M, y: 685, w: W, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.12, ls: -0.03, min: 56 }
       ]
     }
   },
@@ -99,14 +104,14 @@ export const TEMPLATES = [
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1350 },
-        { t: 'text', field: 'statement', x: 90, y: 400, w: 900, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
-        { t: 'text', field: 'onderregel', x: 90, y: 1190, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
+        { t: 'text', field: 'statement', x: M, y: 400, w: W, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'onderregel', x: M, y: 1251, w: W, h: 27, align: 'center', color: 'label', ...EYEBROW }
       ],
       story: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1920 },
-        { t: 'text', field: 'statement', x: 90, y: 685, w: 900, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
-        { t: 'text', field: 'onderregel', x: 90, y: 1600, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
+        { t: 'text', field: 'statement', x: M, y: 685, w: W, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'onderregel', x: M, y: 1600, w: W, h: 27, align: 'center', color: 'label', ...EYEBROW }
       ]
     }
   },
@@ -124,15 +129,15 @@ export const TEMPLATES = [
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'media', slot: 'foto', x: 90, y: 90, w: 900, h: 1020 },
-        { t: 'text', field: 'eyebrow', x: 90, y: 1160, w: 900, h: 24, color: 'label', ...EYEBROW, size: 18, lh: 1.3 },
-        { t: 'text', field: 'kop', x: 90, y: 1200, w: 900, h: 116, color: 'head', font: 'talisman-light', size: 48, lh: 1.2, ls: -0.02, min: 36 }
+        { t: 'media', slot: 'foto', x: M, y: M, w: W, h: 1038 },
+        { t: 'text', field: 'eyebrow', x: M, y: 1160, w: W, h: 24, color: 'label', ...EYEBROW, size: 18, lh: 1.3 },
+        { t: 'text', field: 'kop', x: M, y: 1200, w: W, h: 116, color: 'head', font: 'talisman-light', size: 48, lh: 1.2, ls: -0.02, min: 36 }
       ],
       story: [
         { t: 'fill', color: 'bg' },
-        { t: 'media', slot: 'foto', x: 90, y: 90, w: 900, h: 1440 },
-        { t: 'text', field: 'eyebrow', x: 90, y: 1590, w: 900, h: 24, color: 'label', ...EYEBROW, size: 18, lh: 1.3 },
-        { t: 'text', field: 'kop', x: 90, y: 1630, w: 900, h: 120, color: 'head', font: 'talisman-light', size: 52, lh: 1.15, ls: -0.02, min: 38 }
+        { t: 'media', slot: 'foto', x: M, y: M, w: W, h: 1458 },
+        { t: 'text', field: 'eyebrow', x: M, y: 1590, w: W, h: 24, color: 'label', ...EYEBROW, size: 18, lh: 1.3 },
+        { t: 'text', field: 'kop', x: M, y: 1630, w: W, h: 120, color: 'head', font: 'talisman-light', size: 52, lh: 1.15, ls: -0.02, min: 38 }
       ]
     }
   },
@@ -149,13 +154,13 @@ export const TEMPLATES = [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1350 },
         { t: 'gradient', x: 0, y: 790, w: 1080, h: 560, color: 'bg', from: 0, to: 0.78 },
-        { t: 'text', field: 'kop', x: 72, y: 880, w: 940, h: 342, valign: 'bottom', color: 'head', font: 'talisman-light', size: 92, lh: 1.12, ls: -0.03, min: 60 }
+        { t: 'text', field: 'kop', x: M, y: 936, w: W, h: 342, valign: 'bottom', color: 'head', font: 'talisman-light', size: 92, lh: 1.12, ls: -0.03, min: 60 }
       ],
       story: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1920 },
         { t: 'gradient', x: 0, y: 1220, w: 1080, h: 700, color: 'bg', from: 0, to: 0.8 },
-        { t: 'text', field: 'kop', x: 72, y: 1420, w: 940, h: 346, valign: 'bottom', color: 'head', font: 'talisman-light', size: 92, lh: 1.12, ls: -0.03, min: 60 }
+        { t: 'text', field: 'kop', x: M, y: 1420, w: W, h: 346, valign: 'bottom', color: 'head', font: 'talisman-light', size: 92, lh: 1.12, ls: -0.03, min: 60 }
       ]
     }
   },
@@ -174,9 +179,9 @@ export const TEMPLATES = [
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1010 },
-        { t: 'pill', field: 'stempel', x: 72, y: 72, h: 67, padX: 30, stroke: 2, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'naam', x: 72, y: 1062, w: 936, h: 100, color: 'head', font: 'talisman-light', size: 72, lh: 1.15, ls: -0.03, min: 48 },
-        { t: 'text', field: 'wat', x: 72, y: 1186, w: 900, h: 92, color: 'body', font: 'mori-book', size: 32, lh: 1.4, ls: -0.02, min: 26 }
+        { t: 'pill', field: 'stempel', x: M, y: M, h: 67, padX: 30, stroke: 2, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'naam', x: M, y: 1062, w: W, h: 100, color: 'head', font: 'talisman-light', size: 72, lh: 1.15, ls: -0.03, min: 48 },
+        { t: 'text', field: 'wat', x: M, y: 1186, w: 900, h: 92, color: 'body', font: 'mori-book', size: 32, lh: 1.4, ls: -0.02, min: 26 }
       ]
     }
   },
@@ -196,13 +201,13 @@ export const TEMPLATES = [
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'quote', x: 72, y: 320, w: 930, h: 660, color: 'head', font: 'talisman-light', size: 72, lh: 1.28, ls: -0.01, min: 48 },
-        { t: 'text', field: 'naam', x: 72, y: 1090, w: 936, h: 27, color: 'label', ...EYEBROW }
+        { t: 'text', field: 'quote', x: M, y: 320, w: 930, h: 660, color: 'head', font: 'talisman-light', size: 72, lh: 1.28, ls: -0.01, min: 48 },
+        { t: 'text', field: 'naam', x: M, y: 1090, w: W, h: 27, color: 'label', ...EYEBROW }
       ],
       story: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'quote', x: 72, y: 560, w: 930, h: 860, color: 'head', font: 'talisman-light', size: 76, lh: 1.28, ls: -0.01, min: 50 },
-        { t: 'text', field: 'naam', x: 72, y: 1500, w: 936, h: 27, color: 'label', ...EYEBROW }
+        { t: 'text', field: 'quote', x: M, y: 560, w: 930, h: 860, color: 'head', font: 'talisman-light', size: 76, lh: 1.28, ls: -0.01, min: 50 },
+        { t: 'text', field: 'naam', x: M, y: 1500, w: W, h: 27, color: 'label', ...EYEBROW }
       ]
     }
   },
@@ -219,13 +224,13 @@ export const TEMPLATES = [
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'statement', x: 90, y: 400, w: 900, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
-        { t: 'text', field: 'cta', x: 90, y: 1190, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
+        { t: 'text', field: 'statement', x: M, y: 400, w: W, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'cta', x: M, y: 1251, w: W, h: 27, align: 'center', color: 'label', ...EYEBROW }
       ],
       story: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'statement', x: 90, y: 685, w: 900, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
-        { t: 'text', field: 'cta', x: 90, y: 1600, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW }
+        { t: 'text', field: 'statement', x: M, y: 685, w: W, h: 550, valign: 'middle', align: 'center', color: 'head', font: 'talisman-light', size: 88, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'cta', x: M, y: 1600, w: W, h: 27, align: 'center', color: 'label', ...EYEBROW }
       ]
     }
   },
@@ -244,10 +249,10 @@ export const TEMPLATES = [
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'label', x: 72, y: 96, w: 936, h: 27, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'kop', x: 72, y: 400, w: 900, h: 400, color: 'head', font: 'talisman-light', size: 100, lh: 1.12, ls: -0.03, min: 64 },
-        { t: 'text', field: 'tekst', x: 72, y: 860, w: 800, h: 230, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 },
-        { t: 'text', field: 'cta', x: 72, y: 1190, w: 936, h: 32, color: 'label', ...EYEBROW, size: 26 }
+        { t: 'text', field: 'label', x: M, y: M, w: W, h: 27, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'kop', x: M, y: 400, w: 900, h: 400, color: 'head', font: 'talisman-light', size: 100, lh: 1.12, ls: -0.03, min: 64 },
+        { t: 'text', field: 'tekst', x: M, y: 860, w: 800, h: 230, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 },
+        { t: 'text', field: 'cta', x: M, y: 1246, w: W, h: 32, color: 'label', ...EYEBROW, size: 26 }
       ]
     }
   },
@@ -268,8 +273,8 @@ export const TEMPLATES = [
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'svg', asset: 'boog-boven', x: 474, y: 8, w: 131, h: 46, color: 'mark' },
-        { t: 'text', field: 'label', x: 90, y: 519, w: 900, h: 27, align: 'center', color: 'label', ...EYEBROW },
-        { t: 'text', field: 'vraag', x: 90, y: 589, w: 900, h: 340, align: 'center', color: 'head', font: 'talisman-light', size: 110, lh: 1.1, ls: -0.03, min: 72 },
+        { t: 'text', field: 'label', x: M, y: 519, w: W, h: 27, align: 'center', color: 'label', ...EYEBROW },
+        { t: 'text', field: 'vraag', x: M, y: 589, w: W, h: 340, align: 'center', color: 'head', font: 'talisman-light', size: 110, lh: 1.1, ls: -0.03, min: 72 },
         { t: 'svg', asset: 'boog-onder', x: 474, y: 1296, w: 131, h: 46, color: 'mark' }
       ]
     }
@@ -288,7 +293,7 @@ export const TEMPLATES = [
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'getal', x: 70, y: 330, w: 940, h: 515, valign: 'middle', align: 'center', nowrap: true, color: 'head', font: 'talisman-compressed', size: 560, lh: 0.92, ls: 0, min: 160 },
+        { t: 'text', field: 'getal', x: M, y: 330, w: W, h: 515, valign: 'middle', align: 'center', nowrap: true, color: 'head', font: 'talisman-compressed', size: 560, lh: 0.92, ls: 0, min: 160 },
         { t: 'text', field: 'uitleg', x: 140, y: 1040, w: 800, h: 112, align: 'center', color: 'body', font: 'mori-book', size: 40, lh: 1.4, ls: -0.02, min: 30 }
       ]
     }
@@ -308,9 +313,9 @@ export const TEMPLATES = [
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'frame', x: 70, y: 70, w: 940, h: 1210, stroke: 2, color: 'mark' },
-        { t: 'text', field: 'label', x: 90, y: 130, w: 900, h: 24, align: 'center', color: 'label', font: 'mori-semibold', size: 20, lh: 1.2, ls: 0.2, upper: true },
-        { t: 'text', field: 'getal', x: 90, y: 400, w: 900, h: 396, valign: 'middle', align: 'center', nowrap: true, color: 'head', font: 'talisman-compressed', size: 430, lh: 0.92, ls: 0, min: 140 },
+        { t: 'frame', x: M, y: M, w: W, h: 1350 - 2 * M, stroke: 2, color: 'mark' },
+        { t: 'text', field: 'label', x: M + 20, y: 132, w: W - 40, h: 24, align: 'center', color: 'label', font: 'mori-semibold', size: 20, lh: 1.2, ls: 0.2, upper: true },
+        { t: 'text', field: 'getal', x: M + 20, y: 400, w: W - 40, h: 396, valign: 'middle', align: 'center', nowrap: true, color: 'head', font: 'talisman-compressed', size: 430, lh: 0.92, ls: 0, min: 140 },
         { t: 'text', field: 'uitleg', x: 190, y: 860, w: 700, h: 130, align: 'center', color: 'body', font: 'talisman-light', size: 48, lh: 1.3, ls: -0.02, min: 34 }
       ]
     }
@@ -326,7 +331,7 @@ export const TEMPLATES = [
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1080 },
-        { t: 'text', field: 'bijschrift', x: 72, y: 1128, w: 936, h: 174, valign: 'middle', color: 'head', font: 'mori-book', size: 36, lh: 1.4, ls: -0.02, min: 28 }
+        { t: 'text', field: 'bijschrift', x: M, y: 1128, w: W, h: 174, valign: 'middle', color: 'head', font: 'mori-book', size: 36, lh: 1.4, ls: -0.02, min: 28 }
       ]
     }
   },
@@ -346,8 +351,8 @@ export const TEMPLATES = [
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 860 },
-        { t: 'text', field: 'label', x: 72, y: 930, w: 936, h: 27, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'kop', x: 72, y: 1000, w: 940, h: 260, color: 'head', font: 'talisman-light', size: 84, lh: 1.12, ls: -0.03, min: 56 }
+        { t: 'text', field: 'label', x: M, y: 930, w: W, h: 27, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'kop', x: M, y: 1000, w: W, h: 260, color: 'head', font: 'talisman-light', size: 84, lh: 1.12, ls: -0.03, min: 56 }
       ]
     }
   },
@@ -365,9 +370,9 @@ export const TEMPLATES = [
     layouts: {
       feed: [
         { t: 'fill', color: 'bg' },
-        { t: 'text', field: 'label', x: 72, y: 96, w: 936, h: 27, color: 'label', ...EYEBROW },
-        { t: 'text', field: 'kop', x: 72, y: 380, w: 920, h: 400, color: 'head', font: 'talisman-light', size: 84, lh: 1.15, ls: -0.03, min: 56 },
-        { t: 'text', field: 'tekst', x: 72, y: 880, w: 820, h: 290, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 }
+        { t: 'text', field: 'label', x: M, y: M, w: W, h: 27, color: 'label', ...EYEBROW },
+        { t: 'text', field: 'kop', x: M, y: 380, w: 920, h: 400, color: 'head', font: 'talisman-light', size: 84, lh: 1.15, ls: -0.03, min: 56 },
+        { t: 'text', field: 'tekst', x: M, y: 880, w: 820, h: 290, color: 'body', font: 'mori-book', size: 38, lh: 1.5, ls: -0.02, min: 28 }
       ]
     }
   }
