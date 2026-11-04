@@ -326,7 +326,7 @@ export const TEMPLATES = [
       feed: [
         { t: 'fill', color: 'bg' },
         { t: 'media', slot: 'foto', x: 0, y: 0, w: 1080, h: 1080 },
-        { t: 'text', field: 'bijschrift', x: 72, y: 1140, w: 936, h: 102, color: 'head', font: 'mori-book', size: 36, lh: 1.4, ls: -0.02, min: 28 }
+        { t: 'text', field: 'bijschrift', x: 72, y: 1128, w: 936, h: 174, valign: 'middle', color: 'head', font: 'mori-book', size: 36, lh: 1.4, ls: -0.02, min: 28 }
       ]
     }
   },
