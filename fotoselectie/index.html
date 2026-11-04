@@ -1095,8 +1095,18 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       screen.style.transition='opacity .4s ease'; screen.style.opacity='0';
       setTimeout(function(){screen.style.display='none';},400);
     } else {
-      err.textContent='Onjuist wachtwoord, probeer het opnieuw.';
-      field.value=''; field.focus();
+      var bad=function(){ err.textContent='Onjuist wachtwoord, probeer het opnieuw.'; field.value=''; field.focus(); };
+      if(!val){bad();return;}
+      /* makerswachtwoord van de posttool: alleen op de server gecontroleerd */
+      fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:val,action:'whoami'})})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(j){
+          if(!(j&&j.role==='maker')){bad();return;}
+          try{ sessionStorage.setItem('skymark_auth','view'); sessionStorage.setItem('skymark_posts_secret',val); }catch(e){}
+          screen.style.transition='opacity .4s ease'; screen.style.opacity='0';
+          setTimeout(function(){screen.style.display='none';},400);
+        })
+        .catch(bad);
     }
   }
   btn.addEventListener('click',attempt);

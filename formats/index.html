@@ -1080,6 +1080,19 @@ body.editing [data-editable]:focus{outline:2px solid var(--gold)!important;backg
       sessionStorage.removeItem('skymark_editor');
       screen.style.opacity='0';screen.style.transition='opacity .4s ease';
       setTimeout(()=>{screen.style.display='none';document.dispatchEvent(new CustomEvent('skymark-auth',{detail:{type:'view'}}));},400);
+    }else if(val){
+      /* makerswachtwoord van de posttool: alleen op de server gecontroleerd */
+      fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:val,action:'whoami'})})
+        .then(r=>r.ok?r.json():null)
+        .then(j=>{
+          if(!(j&&j.role==='maker')){err.textContent='Incorrect wachtwoord. Probeer opnieuw.';field.value='';field.focus();field.style.borderColor='#c97070';return;}
+          sessionStorage.setItem('skymark_auth','view');
+          sessionStorage.setItem('skymark_posts_secret',val);
+          sessionStorage.removeItem('skymark_editor');
+          screen.style.opacity='0';screen.style.transition='opacity .4s ease';
+          setTimeout(()=>{screen.style.display='none';document.dispatchEvent(new CustomEvent('skymark-auth',{detail:{type:'view'}}));},400);
+        })
+        .catch(()=>{err.textContent='Incorrect wachtwoord. Probeer opnieuw.';});
     }else{
       err.textContent='Incorrect wachtwoord. Probeer opnieuw.';
       field.value='';field.focus();field.style.borderColor='#c97070';
