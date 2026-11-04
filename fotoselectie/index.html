@@ -193,6 +193,7 @@ h1{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,5vw,54
 .triptych.open{display:flex}
 .triptych figure{flex:1 1 0; min-width:0; margin:0; display:flex; flex-direction:column; gap:8px; cursor:zoom-in}
 .triptych figure[hidden]{display:none}
+.modes[hidden],.choices[hidden],.hint[hidden],.feedback .q[hidden]{display:none}
 .triptych img{display:block; width:100%; max-height:62vh; object-fit:contain; background:#0c0d0f; border:1px solid var(--line); border-radius:6px}
 .triptych figcaption{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); text-align:center}
 .triptych figure:hover figcaption{color:var(--fg)}
@@ -743,7 +744,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     var p = pairs[current]; if (!p) return;
     if (mode === "soft") imgAfter.src = p.soft || p.after;
     else if (mode === "after") imgAfter.src = p.after || p.soft;
-    else imgAfter.src = compareSrc(p);
+    else imgAfter.src = compareSrc(p) || p.before;
   }
   var lightbox = $("lightbox"), lbImg = $("lb-img"), lbLabel = $("lb-label");
   var lbVariants = [], lbIndex = 0;
@@ -754,7 +755,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     lbLabel.textContent = lbVariants[lbIndex].label;
   }
   function variantsOf(p){
-    var v = [{ src: p.before, label: "Origineel" }];
+    var v = [{ src: p.before, label: p.single ? "" : "Origineel" }];
     if (p.soft) v.push({ src: p.soft, label: "Zachter \u00b7 60%" });
     if (p.after) v.push({ src: p.after, label: p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt" });
     return v;
@@ -808,6 +809,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
         : (mode === "soft") ? "Zachter \u00b7 60%"
         : (p && p.soft ? "Bewerkt \u00b7 100%" : "Bewerkt");
     }
+    if (p && p.single){ labelL.style.display = "none"; labelR.style.display = "none"; }
   }
   function applySplit(){
     topLayer.style.clipPath = "inset(0 " + (100 - split) + "% 0 0)";
@@ -839,7 +841,14 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     syncChoiceButtons(it);
     syncFeedbackLock();
     renderOthers();
-    split = 50; mode = "triple"; applyVersion(); applyMode();
+    /* losse beelden zonder bewerkte versie: geen vergelijking of versiekeuze */
+    var los = !!p.single;
+    document.querySelector(".modes").hidden = los;
+    $("hint").hidden = los;
+    document.querySelector(".feedback .q").hidden = los;
+    document.querySelector(".choices").hidden = los;
+    split = 50; mode = los ? "before" : "triple"; applyVersion(); applyMode();
+    if (los){ labelL.style.display = "none"; labelR.style.display = "none"; }
     updateSelUI();
     viewer.classList.add("open");
     document.body.style.overflow = "hidden";

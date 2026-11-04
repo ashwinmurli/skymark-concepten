@@ -727,6 +727,55 @@
    "before": "img/104-o.jpg",
    "soft": "img/104-z.jpg",
    "thumb": "thumb/104.jpg"
+  },
+  {
+   "id": "105",
+   "title": "Strand · Pier in de nevel",
+   "before": "img/105.jpg",
+   "thumb": "thumb/105.jpg",
+   "single": true
+  },
+  {
+   "id": "106",
+   "title": "Strand · Handdoeken",
+   "before": "img/106.jpg",
+   "thumb": "thumb/106.jpg",
+   "single": true
+  },
+  {
+   "id": "107",
+   "title": "Strand · Boulevard",
+   "before": "img/107.jpg",
+   "thumb": "thumb/107.jpg",
+   "single": true
+  },
+  {
+   "id": "108",
+   "title": "Strand · Gele parasol",
+   "before": "img/108.jpg",
+   "thumb": "thumb/108.jpg",
+   "single": true
+  },
+  {
+   "id": "109",
+   "title": "Strand · Pier",
+   "before": "img/109.jpg",
+   "thumb": "thumb/109.jpg",
+   "single": true
+  },
+  {
+   "id": "110",
+   "title": "Strand · Pier en reuzenrad",
+   "before": "img/110.jpg",
+   "thumb": "thumb/110.jpg",
+   "single": true
+  },
+  {
+   "id": "111",
+   "title": "Strand · Bungytoren",
+   "before": "img/111.jpg",
+   "thumb": "thumb/111.jpg",
+   "single": true
   }
  ]
 }
