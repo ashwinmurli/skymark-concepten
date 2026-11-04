@@ -316,7 +316,7 @@ export default async function handler(req) {
       if (!/^posts\/media\/[\w-]{6,40}\/v\d{1,3}\/[\w.-]{1,64}$/.test(path)) return json({ error: 'bad path' }, 400);
       const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, { headers: ghHeaders(token, { Accept: 'application/vnd.github.raw' }) });
       if (!r.ok) return json({ error: `github ${r.status}` }, r.status === 404 ? 404 : 500);
-      const type = /\.mp4/.test(path) ? 'video/mp4' : /\.png/.test(path) ? 'image/png' : 'image/jpeg';
+      const type = /\.mp4/.test(path) ? 'video/mp4' : /\.mov/.test(path) ? 'video/quicktime' : /\.webm/.test(path) ? 'video/webm' : /\.png/.test(path) ? 'image/png' : 'image/jpeg';
       return new Response(r.body, { headers: { 'Content-Type': type, 'Cache-Control': 'private, max-age=31536000, immutable' } });
     }
 
@@ -389,7 +389,7 @@ export default async function handler(req) {
           const g = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, { headers: ghHeaders(token) });
           if (g.ok) sha = (await g.json()).sha;
         }
-        const body = { message: `Posttool: preview ${path.split('/').slice(2).join('/')}`, content: b64, branch: BRANCH };
+        const body = { message: `Posttool: ${/\/v0\//.test(path) ? 'beeld' : 'preview'} ${path.split('/').slice(2).join('/')}`, content: b64, branch: BRANCH };
         if (sha) body.sha = sha;
         const put = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
           method: 'PUT', headers: ghHeaders(token, { 'Content-Type': 'application/json' }), body: JSON.stringify(body)

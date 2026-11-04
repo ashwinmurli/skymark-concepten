@@ -387,7 +387,7 @@ function renderStrip() {
     el('button', { class: 'icon-btn', title: 'Dupliceer slide', disabled: post.slides.length >= 20, onclick: () => {
       const copy = JSON.parse(JSON.stringify(slide()));
       copy.id = uid();
-      for (const [k, m] of Object.entries(slide().media)) if (m) copy.media[k].src = m.src;
+      for (const [k, m] of Object.entries(slide().media)) if (m) { copy.media[k].src = m.src; if (m.blob) copy.media[k].blob = m.blob; }
       post.slides.splice(current + 1, 0, copy);
       current++;
       changed(true);
@@ -563,7 +563,7 @@ function renderInspector() {
       m ? el('button', { class: 'btn', onclick: () => { delete s.media[slot.key]; changed(true); } }, 'Verwijder') : null
     )));
 
-    if (m && m.missing) msec.append(el('p', { class: 'missing' }, `“${m.ref.name}” stond op een andere computer of is herladen. Kies het bestand opnieuw.`));
+    if (m && m.missing) msec.append(el('p', { class: 'missing' }, `“${m.ref.name}” is niet online bewaard. Kies het bestand opnieuw en bewaar de post.`));
 
     if (m && m.src) {
       const zoom = el('input', { type: 'range', min: 100, max: 300, step: 1, 'data-zoom': slot.key });
@@ -739,13 +739,82 @@ $('#file-input').addEventListener('change', e => {
   if (!f) return;
   const kind = f.type.startsWith('video') ? 'video' : 'image';
   const src = URL.createObjectURL(f);
-  slide().media[pickSlot] = { kind, src, ref: { type: 'upload', name: f.name }, zoom: 1, pos: { x: 0, y: 0 }, in: 0, out: null, sound: true, overlay: 0 };
+  slide().media[pickSlot] = { kind, src, blob: f, ref: { type: 'upload', name: f.name }, zoom: 1, pos: { x: 0, y: 0 }, in: 0, out: null, sound: true, overlay: 0 };
   if (kind === 'video' && !isVideo()) {
     post.mode = 'video';
     toast('Video toegevoegd: de post staat nu in videomodus. Terugzetten kan bovenin.');
   }
   changed(true);
 });
+
+/* ---------- eigen foto's en video's online bewaren ----------
+   Bij Bewaren gaat elk nieuw bestand één keer naar posts/media/<post>/v0/.
+   De naam is een hash van de inhoud, dus hetzelfde bestand wordt niet opnieuw geüpload. */
+
+const MAX_SOURCE = 115_000_000;
+const MAX_IMAGE = 6_000_000;
+
+async function shrinkImage(file) {
+  if (file.size <= MAX_IMAGE) return file;
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 4000 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(bmp, 0, 0, c.width, c.height);
+  bmp.close && bmp.close();
+  return await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92));
+}
+
+function extOf(blob, kind) {
+  const t = blob.type || '';
+  if (kind === 'image') return t === 'image/png' ? 'png' : 'jpg';
+  return t === 'video/quicktime' ? 'mov' : t === 'video/webm' ? 'webm' : 'mp4';
+}
+
+async function storeUploads(onStep) {
+  const todo = [];
+  for (const s of post.slides) for (const m of Object.values(s.media)) {
+    if (m && m.ref && m.ref.type === 'upload' && m.blob && !m.ref.file) todo.push(m);
+  }
+  let skipped = 0;
+  for (let i = 0; i < todo.length; i++) {
+    const m = todo[i];
+    onStep && onStep(i, todo.length);
+    const blob = m.kind === 'image' ? await shrinkImage(m.blob) : m.blob;
+    if (blob.size > MAX_SOURCE) { skipped++; continue; }
+    const hash = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer())))
+      .slice(0, 10).map(b => b.toString(16).padStart(2, '0')).join('');
+    const rel = `${post.id}/v0/u-${hash}.${extOf(blob, m.kind)}`;
+    const up = await uploadPreview(rel, blob, m.kind);
+    const file = { path: up.path, parts: up.parts, type: m.kind, mime: blob.type || (m.kind === 'image' ? 'image/jpeg' : 'video/mp4') };
+    /* hetzelfde bestand kan in meer slides staan */
+    for (const s of post.slides) for (const mm of Object.values(s.media)) if (mm && mm.blob === m.blob) mm.ref = Object.assign({}, mm.ref, { file });
+    remoteCache.set(file.path, Promise.resolve(m.src));
+  }
+  return { count: todo.length, skipped };
+}
+
+const remoteCache = new Map();
+function remoteURL(file) {
+  if (remoteCache.has(file.path)) return remoteCache.get(file.path);
+  const p = (async () => {
+    const parts = [];
+    for (let i = 0; i < (file.parts || 1); i++) parts.push(await apiBlob({ action: 'media', path: file.parts > 1 ? `${file.path}.p${i}` : file.path }));
+    return URL.createObjectURL(new Blob(parts, { type: file.mime || (file.type === 'video' ? 'video/mp4' : 'image/jpeg') }));
+  })();
+  remoteCache.set(file.path, p);
+  p.catch(() => remoteCache.delete(file.path));
+  return p;
+}
+
+async function resolveRemote(p) {
+  const jobs = [];
+  for (const s of p.slides) for (const m of Object.values(s.media)) {
+    if (!m || !m.remote) continue;
+    jobs.push(remoteURL(m.remote).then(u => { m.src = u; delete m.remote; }).catch(() => { m.missing = true; delete m.remote; }));
+  }
+  await Promise.all(jobs);
+}
 
 /* ---------- opslaan ---------- */
 
@@ -793,7 +862,8 @@ function hydrate(data) {
         const ph = photos.find(x => x.id === m.ref.id);
         mm.src = ph ? photoSrc(ph) : null;
         if (!ph) continue;
-      } else { mm.src = null; mm.missing = true; }
+      } else if (m.ref.file) { mm.src = null; mm.remote = m.ref.file; }
+      else { mm.src = null; mm.missing = true; }
       ns.media[k] = mm;
     }
     p.slides.push(ns);
@@ -860,13 +930,14 @@ async function saveDraft() {
   btn.disabled = true;
   $('#save-state').textContent = 'Bewaren...';
   try {
+    const up = await storeUploads((i, n) => { $('#save-state').textContent = `Beeld ${i + 1} van ${n} uploaden...`; });
+    $('#save-state').textContent = 'Bewaren...';
     const res = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
     post.review = reviewOf(res.draft);
     dirty = false;
     renderInspector();
     $('#save-state').textContent = 'Bewaard';
-    const uploads = post.slides.some(s => Object.values(s.media).some(m => m && m.ref && m.ref.type === 'upload'));
-    toast(uploads ? 'Concept bewaard. Eigen foto’s en video’s gaan niet mee; die kies je bij openen opnieuw.' : 'Concept bewaard. Celine en jij zien het onder Concepten.');
+    toast(up.skipped ? `Concept bewaard. ${up.skipped === 1 ? 'Eén video was' : up.skipped + ' video’s waren'} te groot om online te bewaren (max. 115 MB); die kies je bij openen opnieuw.` : 'Concept bewaard, met alle beelden. Celine en jij zien het onder Concepten.');
   } catch (e) {
     $('#save-state').textContent = 'Niet bewaard';
     toast('Bewaren lukte niet: ' + e.message);
@@ -1075,7 +1146,10 @@ async function openDraft(id) {
   if (dirty && !confirm('Je huidige post is niet bewaard. Toch deze post openen?')) return false;
   const { draft } = await api({ action: 'get', id });
   if (playing) stop();
-  post = hydrate(draft); current = 0; dirty = false;
+  const p = hydrate(draft);
+  $('#save-state').textContent = 'Beelden laden...';
+  await resolveRemote(p);
+  post = p; current = 0; dirty = false;
   setView('make');
   refreshAll();
   $('#save-state').textContent = 'Geopend';
@@ -1160,6 +1234,7 @@ async function submitForApproval(note) {
   const ui = exportModal('Ter goedkeuring aanbieden');
   try {
     ui.set('Post bewaren', 0.02);
+    await storeUploads((i, n) => ui.set(`Beeld ${i + 1} van ${n} uploaden`, 0.02));
     const saved = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
     post.review = reviewOf(saved.draft);
     dirty = false;
@@ -1240,6 +1315,7 @@ function waitForMedia(s) {
 async function renderLocal(draft, opts = {}) {
   await loadFonts();
   const p = hydrate(draft);
+  await resolveRemote(opts.thumb ? { slides: p.slides.slice(0, 1) } : p);
   const size = sizeOf(p.format);
   const urls = [];
   for (const s of opts.thumb ? p.slides.slice(0, 1) : p.slides) {

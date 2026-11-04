@@ -278,7 +278,7 @@ function renderDetail() {
       el('p', { class: 'muted' }, [FORMAT[d.format], d.mode === 'video' ? 'video' : 'afbeelding', n > 1 ? `${n} slides` : null].filter(Boolean).join(' · ')),
       d.date ? el('p', {}, el('b', {}, 'Gepland: '), day(d.date)) : null,
       el('p', { class: 'muted' }, `Laatst bewaard ${when(d.updated)} door ${d.author || 'onbekend'}`),
-      el('p', { class: 'muted', style: 'font-size:12.5px' }, 'Concept, nog niet aangeboden. Dit voorbeeld wordt live getekend. Een eigen foto of video die alleen op een andere computer staat, zie je als leeg vlak.')
+      el('p', { class: 'muted', style: 'font-size:12.5px' }, 'Concept, nog niet aangeboden. Dit voorbeeld wordt live getekend uit de laatst bewaarde versie.')
     ));
     if (d.caption) side.append(el('div', { class: 'rv-sec' }, el('p', { class: 'eyebrow' }, 'Bijschrift voor Instagram'), el('p', { class: 'rv-caption' }, d.caption)));
     side.append(el('div', { class: 'rv-sec' }, el('div', { class: 'rv-btns' },
