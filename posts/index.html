@@ -113,6 +113,8 @@ button{cursor:pointer;}
 .icon-btn{width:32px;height:32px;border:1px solid var(--line2);background:none;color:var(--mist);display:grid;place-items:center;font-size:15px;line-height:1;}
 .icon-btn:hover{border-color:var(--mist);}
 .icon-btn:disabled{opacity:.3;cursor:default;}
+.undo-btns{display:flex;gap:4px;}
+.undo-btns .icon-btn{width:36px;height:36px;font-size:17px;}
 .add-slide{width:76px;height:95px;border:1px dashed var(--line2);background:none;color:var(--stone);font-size:24px;flex:none;}
 .add-slide:hover{color:var(--mist);border-color:var(--mist);}
 .strip{position:relative;}
@@ -317,6 +319,10 @@ body.booting .app, body.booting .review{visibility:hidden;}
       <button class="btn" id="btn-save">Bewaar</button>
       <button class="btn" id="btn-review">Goedkeuring</button>
       <span class="sep"></span>
+      <span class="undo-btns">
+        <button class="icon-btn" id="btn-undo" title="Ongedaan maken (⌘Z)" aria-label="Ongedaan maken" disabled>&#8630;</button>
+        <button class="icon-btn" id="btn-redo" title="Opnieuw (⇧⌘Z)" aria-label="Opnieuw" disabled>&#8631;</button>
+      </span>
       <div class="mode" id="mode" role="group" aria-label="Exportmodus">
         <button data-m="static">Afbeelding</button>
         <button data-m="video">Video</button>

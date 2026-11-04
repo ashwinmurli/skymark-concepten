@@ -774,11 +774,15 @@ function extOf(blob, kind) {
 async function storeUploads(onStep) {
   const todo = [];
   for (const s of post.slides) for (const m of Object.values(s.media)) {
-    if (m && m.ref && m.ref.type === 'upload' && m.blob && !m.ref.file) todo.push(m);
+    if (m && m.ref && m.ref.type === 'upload' && m.blob && !m.ref.file) {
+      if (uploadedBlobs.has(m.blob)) m.ref = Object.assign({}, m.ref, { file: uploadedBlobs.get(m.blob) });
+      else todo.push(m);
+    }
   }
   let skipped = 0;
   for (let i = 0; i < todo.length; i++) {
     const m = todo[i];
+    if (m.ref.file) continue;
     onStep && onStep(i, todo.length);
     const blob = m.kind === 'image' ? await shrinkImage(m.blob) : m.blob;
     if (blob.size > MAX_SOURCE) { skipped++; continue; }
@@ -788,12 +792,14 @@ async function storeUploads(onStep) {
     const up = await uploadPreview(rel, blob, m.kind);
     const file = { path: up.path, parts: up.parts, type: m.kind, mime: blob.type || (m.kind === 'image' ? 'image/jpeg' : 'video/mp4') };
     /* hetzelfde bestand kan in meer slides staan */
+    uploadedBlobs.set(m.blob, file);
     for (const s of post.slides) for (const mm of Object.values(s.media)) if (mm && mm.blob === m.blob) mm.ref = Object.assign({}, mm.ref, { file });
     remoteCache.set(file.path, Promise.resolve(m.src));
   }
   return { count: todo.length, skipped };
 }
 
+const uploadedBlobs = new WeakMap();
 const remoteCache = new Map();
 function remoteURL(file) {
   if (remoteCache.has(file.path)) return remoteCache.get(file.path);
@@ -873,7 +879,84 @@ function hydrate(data) {
 }
 
 let saveTimer = null;
+/* ---------- ongedaan maken ----------
+   Elke wijziging loopt via changed(). Snelle reeksen (typen, schuiven, slepen)
+   binnen 0,7 s tellen als één stap. Beeldbestanden zelf worden niet gekopieerd,
+   alleen de verwijzing ernaar. */
+
+const HISTORY_MAX = 50;
+const BURST_MS = 700;
+let undoStack = [], redoStack = [], stable = null, lastChange = 0;
+
+function cloneState(src, cur) {
+  return {
+    current: cur,
+    post: Object.assign({}, src, {
+      transition: src.transition ? Object.assign({}, src.transition) : src.transition,
+      slides: src.slides.map(s => Object.assign({}, s, {
+        texts: Object.assign({}, s.texts),
+        media: Object.fromEntries(Object.entries(s.media).map(([k, m]) => [k, m ? Object.assign({}, m, {
+          pos: m.pos ? Object.assign({}, m.pos) : m.pos,
+          ref: m.ref ? Object.assign({}, m.ref) : m.ref
+        }) : m]))
+      }))
+    })
+  };
+}
+const snapshot = () => cloneState(post, current);
+
+function resetHistory() {
+  undoStack = []; redoStack = []; lastChange = 0;
+  stable = snapshot();
+  updateUndoUI();
+}
+
+function recordHistory() {
+  const now = Date.now();
+  if (stable && now - lastChange > BURST_MS) {
+    undoStack.push(stable);
+    if (undoStack.length > HISTORY_MAX) undoStack.shift();
+    redoStack = [];
+  }
+  lastChange = now;
+  stable = snapshot();
+  updateUndoUI();
+}
+
+function restoreState(snap) {
+  if (playing) stop();
+  const s = cloneState(snap.post, snap.current);
+  post = Object.assign(s.post, { review: post.review });
+  current = Math.max(0, Math.min(s.current, post.slides.length - 1));
+  stable = snapshot();
+  lastChange = 0;
+  markDirty(true);
+  updateUndoUI();
+}
+
+function undo() {
+  if (!undoStack.length) return;
+  redoStack.push(snapshot());
+  restoreState(undoStack.pop());
+}
+function redo() {
+  if (!redoStack.length) return;
+  undoStack.push(snapshot());
+  restoreState(redoStack.pop());
+}
+
+function updateUndoUI() {
+  const u = $('#btn-undo'), r = $('#btn-redo');
+  if (u) u.disabled = !undoStack.length;
+  if (r) r.disabled = !redoStack.length;
+}
+
 function changed(structural) {
+  recordHistory();
+  markDirty(structural);
+}
+
+function markDirty(structural) {
   dirty = true;
   $('#save-state').textContent = 'Niet bewaard';
   clearTimeout(saveTimer);
@@ -1110,9 +1193,12 @@ function bind() {
     if (playing) stop();
     post = newPost(post.format); current = 0; dirty = false;
     $('#save-state').textContent = '';
+    resetHistory();
     refreshAll();
   });
   $('#btn-save').addEventListener('click', saveDraft);
+  $('#btn-undo').addEventListener('click', undo);
+  $('#btn-redo').addEventListener('click', redo);
   $('#btn-review').addEventListener('click', () => setView('review'));
   $('#btn-drafts').addEventListener('click', openDrafts);
   document.querySelectorAll('#mode button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
@@ -1124,6 +1210,14 @@ function bind() {
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m && m.id !== 'm-export' && m.id !== 'm-name') m.classList.remove('show'); }));
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(m => { if (m.id !== 'm-export') m.classList.remove('show'); });
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key.toLowerCase() === 'z' || (e.key.toLowerCase() === 'y' && e.ctrlKey))) {
+      const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+      const elsewhere = document.body.classList.contains('view-review') || document.querySelector('.modal.show');
+      if (!typing && !elsewhere) {
+        e.preventDefault();
+        (e.shiftKey || e.key.toLowerCase() === 'y') ? redo() : undo();
+      }
+    }
     if (e.key === ' ' && isVideo() && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); playing ? stop() : play(); }
   });
   window.addEventListener('resize', fitStage);
@@ -1150,6 +1244,7 @@ async function openDraft(id) {
   $('#save-state').textContent = 'Beelden laden...';
   await resolveRemote(p);
   post = p; current = 0; dirty = false;
+  resetHistory();
   setView('make');
   refreshAll();
   $('#save-state').textContent = 'Geopend';
@@ -1385,10 +1480,11 @@ async function init() {
   try { saved = JSON.parse(localStorage.getItem(LS_POST)); } catch (e) {}
   post = saved ? hydrate(saved) : newPost('feed');
   bind();
+  resetHistory();
   document.body.classList.remove('booting');
   refreshAll();
   if (/post=/.test(location.hash)) setView('review');
-  window.__posts = { get post() { return post; }, set post(p) { post = p; refreshAll(); }, hydrate, refreshAll, getMedia, exportVideo, exportImage, setCurrent: i => { current = i; refreshAll(); } };
+  window.__posts = { get post() { return post; }, set post(p) { post = p; resetHistory(); refreshAll(); }, hydrate, refreshAll, getMedia, exportVideo, exportImage, setCurrent: i => { current = i; refreshAll(); } };
 }
 
 init();
