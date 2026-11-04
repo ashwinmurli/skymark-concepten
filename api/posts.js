@@ -152,6 +152,8 @@ function summary(d) {
     date: d.date || '', status: r.status, version: r.version, editedSinceSubmit: r.editedSinceSubmit,
     openFeedback: open, approvals: r.approvals.filter(a => a.version === r.version),
     thumb: sub && sub.previews && sub.previews[0] ? sub.previews[0].still : null,
+    /* voor makers: eerste slide om een concept zonder previews live te tekenen */
+    firstSlide: d.slides && d.slides[0] ? d.slides[0] : null,
     submittedAt: sub ? sub.at : null
   };
 }

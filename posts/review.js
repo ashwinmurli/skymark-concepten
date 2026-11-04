@@ -141,6 +141,7 @@ function renderGrid(t) {
   for (const d of list) {
     const img = el('div', { class: 'rv-thumb' + (d.format === 'story' ? ' story' : '') });
     if (d.thumb) mediaURL(d.thumb).then(u => { img.style.backgroundImage = `url("${u}")`; }).catch(() => {});
+    else if (d.firstSlide && ctx.renderLocal) liveThumb(d).then(u => { img.style.backgroundImage = `url("${u}")`; }).catch(() => {});
     else img.append(el('span', {}, 'Nog niet aangeboden'));
     if (d.count > 1) img.append(el('em', {}, d.count + ' slides'));
     const meta = [FORMAT[d.format], d.mode === 'video' ? 'video' : null, d.date ? 'gepland ' + day(d.date) : null].filter(Boolean).join(' · ');
@@ -159,6 +160,14 @@ function renderGrid(t) {
 }
 
 /* ---------- media ---------- */
+
+/* Concepten zonder previews tekenen we live, met dezelfde motor als de editor. */
+const thumbCache = new Map();
+function liveThumb(d) {
+  const key = d.id + ':' + d.updated;
+  if (!thumbCache.has(key)) thumbCache.set(key, ctx.renderLocal({ format: d.format, slides: [d.firstSlide] }, { thumb: true }).then(u => u[0]));
+  return thumbCache.get(key);
+}
 
 export function mediaURL(file) {
   if (!file) return Promise.reject(new Error('geen bestand'));
@@ -179,6 +188,7 @@ export function mediaURL(file) {
 
 let cur = null;
 let idx = 0;
+let local = null;
 
 async function openDetail(id) {
   $('#m-rv').classList.add('show');
@@ -189,7 +199,12 @@ async function openDetail(id) {
     const { draft } = await ctx.api({ action: 'get', id });
     cur = draft;
     idx = 0;
+    local = null;
     renderDetail();
+    if (!draft.submitted && ctx.renderLocal) {
+      local = await ctx.renderLocal(draft);
+      if (cur === draft) renderDetail();
+    }
   } catch (e) {
     $('#rv-title').textContent = 'Openen lukte niet';
     $('#rv-side').append(el('p', { class: 'muted' }, e.message));
@@ -204,7 +219,7 @@ function closeDetail() {
 
 function frames() {
   const s = cur.submitted;
-  if (!s) return [];
+  if (!s) return (local || []).map((u, i, a) => ({ localUrl: u, label: a.length > 1 ? `Slide ${i + 1}` : '' }));
   if (s.sequence) return [{ video: s.sequence, still: s.previews[0] && s.previews[0].still, label: 'Doorlopende video' }];
   return s.previews.map((p, i) => ({ ...p, label: s.previews.length > 1 ? `Slide ${i + 1}` : '' }));
 }
@@ -223,8 +238,10 @@ function renderMedia() {
   const f = frames();
   const fr = f[idx];
   box.classList.toggle('story', cur.format === 'story');
-  if (!fr) { box.append(el('p', { class: 'muted' }, 'Deze post is nog niet aangeboden.')); return; }
-  if (fr.video) {
+  if (!fr) { box.append(el('p', { class: 'muted' }, cur.submitted ? '' : 'Voorbeeld maken...')); return; }
+  if (fr.localUrl) {
+    box.append(el('img', { src: fr.localUrl, alt: fr.label || cur.name }));
+  } else if (fr.video) {
     const v = el('video', { controls: true, playsinline: true, loop: true, muted: true, autoplay: true, preload: 'auto' });
     v.muted = true;
     if (fr.still) mediaURL(fr.still).then(u => { v.poster = u; }).catch(() => {});
@@ -254,6 +271,21 @@ function renderDetail() {
 
   const side = $('#rv-side');
   side.innerHTML = '';
+  if (!s) {
+    /* concept: live voorbeeld, nog niets om op te reageren */
+    const n = (d.slides || []).length;
+    side.append(el('div', { class: 'rv-sec' },
+      el('p', { class: 'muted' }, [FORMAT[d.format], d.mode === 'video' ? 'video' : 'afbeelding', n > 1 ? `${n} slides` : null].filter(Boolean).join(' · ')),
+      d.date ? el('p', {}, el('b', {}, 'Gepland: '), day(d.date)) : null,
+      el('p', { class: 'muted' }, `Laatst bewaard ${when(d.updated)} door ${d.author || 'onbekend'}`),
+      el('p', { class: 'muted', style: 'font-size:12.5px' }, 'Concept, nog niet aangeboden. Dit voorbeeld wordt live getekend. Een eigen foto of video die alleen op een andere computer staat, zie je als leeg vlak.')
+    ));
+    if (d.caption) side.append(el('div', { class: 'rv-sec' }, el('p', { class: 'eyebrow' }, 'Bijschrift voor Instagram'), el('p', { class: 'rv-caption' }, d.caption)));
+    side.append(el('div', { class: 'rv-sec' }, el('div', { class: 'rv-btns' },
+      el('button', { class: 'btn gold', onclick: () => { closeDetail(); ctx.openInEditor(d.id); } }, 'Open in editor'))));
+    renderMedia();
+    return;
+  }
   const meta = [FORMAT[d.format], s && s.mode === 'video' ? 'video' : 'afbeelding', s && s.previews.length > 1 && !s.sequence ? `${s.previews.length} slides` : null].filter(Boolean).join(' · ');
   side.append(el('div', { class: 'rv-sec' },
     el('p', { class: 'muted' }, meta),

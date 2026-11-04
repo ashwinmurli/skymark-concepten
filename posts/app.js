@@ -1218,6 +1218,50 @@ function makerLogin() {
   inp.onkeydown = e => { if (e.key === 'Enter') go(); };
 }
 
+/* ---------- live voorbeelden voor de goedkeuringsweergave ---------- */
+
+function waitForMedia(s) {
+  return Promise.all(Object.entries(s.media).map(([slot, m]) => new Promise(res => {
+    const e = mediaEl(slot, m);
+    if (!e) return res();
+    setTimeout(res, 8000);
+    if (e instanceof HTMLImageElement) {
+      if (e.complete && e.naturalWidth) return res();
+      e.addEventListener('load', res, { once: true });
+      e.addEventListener('error', res, { once: true });
+    } else {
+      if (e.readyState >= 2) return res();
+      e.addEventListener('loadeddata', res, { once: true });
+      e.addEventListener('error', res, { once: true });
+    }
+  })));
+}
+
+async function renderLocal(draft, opts = {}) {
+  await loadFonts();
+  const p = hydrate(draft);
+  const size = sizeOf(p.format);
+  const urls = [];
+  for (const s of opts.thumb ? p.slides.slice(0, 1) : p.slides) {
+    await prepareSlide(s, p.format);
+    await waitForMedia(s);
+    const c = document.createElement('canvas');
+    c.width = size.w; c.height = size.h;
+    renderSlide(c.getContext('2d'), s, p.format, { t: null, getMedia, placeholders: true });
+    let out = c;
+    if (opts.thumb) {
+      out = document.createElement('canvas');
+      out.width = 432; out.height = Math.round(size.h * 432 / size.w);
+      const x = out.getContext('2d');
+      x.imageSmoothingQuality = 'high';
+      x.drawImage(c, 0, 0, out.width, out.height);
+    }
+    const blob = await new Promise(r => out.toBlob(r, 'image/jpeg', 0.9));
+    urls.push(URL.createObjectURL(blob));
+  }
+  return urls;
+}
+
 async function resolveRole() {
   if (!window.__skyAuthed) await new Promise(r => window.addEventListener('skymark-auth', r, { once: true }));
   let s = null;
@@ -1242,6 +1286,7 @@ async function init() {
     askName: () => askAuthor(),
     makerLogin,
     openInEditor: id => openDraft(id),
+    renderLocal: ROLE === 'maker' ? renderLocal : null,
     backToEditor: () => setView('make')
   });
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').classList.remove('show')));
