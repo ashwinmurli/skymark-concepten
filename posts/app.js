@@ -115,7 +115,7 @@ function getMedia(slot, m) {
   return e;
 }
 
-function photoSrc(p) { return '/fotoselectie/' + (p.soft || p.before); }
+function photoSrc(p) { return '/fotoselectie/' + (p.after || p.soft || p.before); }
 
 /* ---------- canvas en stage ---------- */
 
@@ -1500,7 +1500,7 @@ async function init() {
     loadAssets(),
     fetch('/fotoselectie/pairs.json').then(r => r.json()).catch(() => ({ pairs: [] }))
   ]);
-  photos = (pj.pairs || []).filter(p => p.soft || p.single);
+  photos = (pj.pairs || []).filter(p => p.after || p.soft || p.single);
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(LS_POST)); } catch (e) {}
   post = saved ? hydrate(saved) : newPost('feed');
