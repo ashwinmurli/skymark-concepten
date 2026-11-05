@@ -3,758 +3,709 @@
   {
    "id": "01",
    "title": "DSCF1178",
-   "before": "img/01-o.jpg",
-   "after": "img/01-b.jpg",
+   "before": "img/01.jpg",
    "thumb": "thumb/01.jpg",
-   "soft": "img/01-z.jpg"
+   "single": true
   },
   {
    "id": "02",
    "title": "DSCF1252",
-   "before": "img/02-o.jpg",
-   "after": "img/02-b.jpg",
+   "before": "img/02.jpg",
    "thumb": "thumb/02.jpg",
-   "soft": "img/02-z.jpg"
+   "single": true
   },
   {
    "id": "03",
    "title": "DSCF1284",
-   "before": "img/03-o.jpg",
-   "after": "img/03-b.jpg",
+   "before": "img/03.jpg",
    "thumb": "thumb/03.jpg",
-   "soft": "img/03-z.jpg"
+   "single": true
   },
   {
    "id": "04",
    "title": "DSCF1292",
-   "before": "img/04-o.jpg",
-   "after": "img/04-b.jpg",
+   "before": "img/04.jpg",
    "thumb": "thumb/04.jpg",
-   "soft": "img/04-z.jpg"
+   "single": true
   },
   {
    "id": "05",
    "title": "DSCF1296",
-   "before": "img/05-o.jpg",
-   "after": "img/05-b.jpg",
+   "before": "img/05.jpg",
    "thumb": "thumb/05.jpg",
-   "soft": "img/05-z.jpg"
-  },
-  {
-   "id": "06",
-   "title": "DSCF1374",
-   "before": "img/06-o.jpg",
-   "after": "img/06-b.jpg",
-   "thumb": "thumb/06.jpg",
-   "soft": "img/06-z.jpg"
+   "single": true
   },
   {
    "id": "07",
    "title": "DSCF1375",
-   "before": "img/07-o.jpg",
-   "after": "img/07-b.jpg",
+   "before": "img/07.jpg",
    "thumb": "thumb/07.jpg",
-   "soft": "img/07-z.jpg"
+   "single": true
   },
   {
    "id": "08",
    "title": "DSCF1380",
-   "before": "img/08-o.jpg",
-   "after": "img/08-b.jpg",
+   "before": "img/08.jpg",
    "thumb": "thumb/08.jpg",
-   "soft": "img/08-z.jpg"
+   "single": true
   },
   {
    "id": "09",
    "title": "DSCF1391",
-   "before": "img/09-o.jpg",
-   "after": "img/09-b.jpg",
+   "before": "img/09.jpg",
    "thumb": "thumb/09.jpg",
-   "soft": "img/09-z.jpg"
+   "single": true
   },
   {
    "id": "10",
    "title": "DSCF1424",
-   "before": "img/10-o.jpg",
-   "after": "img/10-b.jpg",
+   "before": "img/10.jpg",
    "thumb": "thumb/10.jpg",
-   "soft": "img/10-z.jpg"
+   "single": true
   },
   {
    "id": "11",
    "title": "DSCF1436",
-   "before": "img/11-o.jpg",
-   "after": "img/11-b.jpg",
+   "before": "img/11.jpg",
    "thumb": "thumb/11.jpg",
-   "soft": "img/11-z.jpg"
+   "single": true
   },
   {
    "id": "12",
    "title": "DSCF1492",
-   "before": "img/12-o.jpg",
-   "after": "img/12-b.jpg",
+   "before": "img/12.jpg",
    "thumb": "thumb/12.jpg",
-   "soft": "img/12-z.jpg"
+   "single": true
   },
   {
    "id": "13",
    "title": "DSCF1499",
-   "before": "img/13-o.jpg",
-   "after": "img/13-b.jpg",
+   "before": "img/13.jpg",
    "thumb": "thumb/13.jpg",
-   "soft": "img/13-z.jpg"
+   "single": true
   },
   {
    "id": "14",
    "title": "DSCF1570",
-   "before": "img/14-o.jpg",
-   "after": "img/14-b.jpg",
+   "before": "img/14.jpg",
    "thumb": "thumb/14.jpg",
-   "soft": "img/14-z.jpg"
+   "single": true
   },
   {
    "id": "15",
    "title": "DSCF1572",
-   "before": "img/15-o.jpg",
-   "after": "img/15-b.jpg",
+   "before": "img/15.jpg",
    "thumb": "thumb/15.jpg",
-   "soft": "img/15-z.jpg"
+   "single": true
   },
   {
    "id": "16",
    "title": "DSCF1575",
-   "before": "img/16-o.jpg",
-   "after": "img/16-b.jpg",
+   "before": "img/16.jpg",
    "thumb": "thumb/16.jpg",
-   "soft": "img/16-z.jpg"
+   "single": true
   },
   {
    "id": "17",
    "title": "DSCF1609",
-   "before": "img/17-o.jpg",
-   "after": "img/17-b.jpg",
+   "before": "img/17.jpg",
    "thumb": "thumb/17.jpg",
-   "soft": "img/17-z.jpg"
+   "single": true
   },
   {
    "id": "18",
    "title": "DSCF1679",
-   "before": "img/18-o.jpg",
-   "after": "img/18-b.jpg",
+   "before": "img/18.jpg",
    "thumb": "thumb/18.jpg",
-   "soft": "img/18-z.jpg"
+   "single": true
   },
   {
    "id": "19",
    "title": "DSCF1694",
-   "before": "img/19-o.jpg",
-   "after": "img/19-b.jpg",
+   "before": "img/19.jpg",
    "thumb": "thumb/19.jpg",
-   "soft": "img/19-z.jpg"
+   "single": true
   },
   {
    "id": "20",
    "title": "DSCF1699",
-   "before": "img/20-o.jpg",
-   "after": "img/20-b.jpg",
+   "before": "img/20.jpg",
    "thumb": "thumb/20.jpg",
-   "soft": "img/20-z.jpg"
+   "single": true
   },
   {
    "id": "21",
    "title": "DSCF1702",
-   "before": "img/21-o.jpg",
-   "after": "img/21-b.jpg",
+   "before": "img/21.jpg",
    "thumb": "thumb/21.jpg",
-   "soft": "img/21-z.jpg"
+   "single": true
   },
   {
    "id": "22",
    "title": "DSCF1705",
-   "before": "img/22-o.jpg",
-   "after": "img/22-b.jpg",
+   "before": "img/22.jpg",
    "thumb": "thumb/22.jpg",
-   "soft": "img/22-z.jpg"
+   "single": true
   },
   {
    "id": "23",
    "title": "DSCF1707",
-   "before": "img/23-o.jpg",
-   "after": "img/23-b.jpg",
+   "before": "img/23.jpg",
    "thumb": "thumb/23.jpg",
-   "soft": "img/23-z.jpg"
+   "single": true
   },
   {
    "id": "24",
    "title": "DSCF1729",
-   "before": "img/24-o.jpg",
-   "after": "img/24-b.jpg",
+   "before": "img/24.jpg",
    "thumb": "thumb/24.jpg",
-   "soft": "img/24-z.jpg"
-  },
-  {
-   "id": "25",
-   "title": "DSCF1734",
-   "before": "img/25-o.jpg",
-   "after": "img/25-b.jpg",
-   "thumb": "thumb/25.jpg",
-   "soft": "img/25-z.jpg"
+   "single": true
   },
   {
    "id": "26",
    "title": "DSCF1805",
-   "before": "img/26-o.jpg",
-   "after": "img/26-b.jpg",
+   "before": "img/26.jpg",
    "thumb": "thumb/26.jpg",
-   "soft": "img/26-z.jpg"
+   "single": true
   },
   {
    "id": "27",
    "title": "DSCF1811",
-   "before": "img/27-o.jpg",
-   "after": "img/27-b.jpg",
+   "before": "img/27.jpg",
    "thumb": "thumb/27.jpg",
-   "soft": "img/27-z.jpg"
-  },
-  {
-   "id": "28",
-   "title": "DSCF1430",
-   "before": "img/28-o.jpg",
-   "after": "img/28-b.jpg",
-   "thumb": "thumb/28.jpg",
-   "soft": "img/28-z.jpg"
+   "single": true
   },
   {
    "id": "29",
    "title": "DSCF3392",
-   "before": "img/29-o.jpg",
-   "soft": "img/29-z.jpg",
-   "thumb": "thumb/29.jpg"
+   "before": "img/29.jpg",
+   "thumb": "thumb/29.jpg",
+   "single": true
   },
   {
    "id": "30",
    "title": "DSCF3394",
-   "before": "img/30-o.jpg",
-   "soft": "img/30-z.jpg",
-   "thumb": "thumb/30.jpg"
+   "before": "img/30.jpg",
+   "thumb": "thumb/30.jpg",
+   "single": true
   },
   {
    "id": "31",
    "title": "DSCF3402",
-   "before": "img/31-o.jpg",
-   "soft": "img/31-z.jpg",
-   "thumb": "thumb/31.jpg"
+   "before": "img/31.jpg",
+   "thumb": "thumb/31.jpg",
+   "single": true
   },
   {
    "id": "32",
    "title": "DSCF3403",
-   "before": "img/32-o.jpg",
-   "soft": "img/32-z.jpg",
-   "thumb": "thumb/32.jpg"
+   "before": "img/32.jpg",
+   "thumb": "thumb/32.jpg",
+   "single": true
   },
   {
    "id": "33",
    "title": "DSCF3404",
-   "before": "img/33-o.jpg",
-   "soft": "img/33-z.jpg",
-   "thumb": "thumb/33.jpg"
+   "before": "img/33.jpg",
+   "thumb": "thumb/33.jpg",
+   "single": true
   },
   {
    "id": "34",
    "title": "DSCF3408",
-   "before": "img/34-o.jpg",
-   "soft": "img/34-z.jpg",
-   "thumb": "thumb/34.jpg"
+   "before": "img/34.jpg",
+   "thumb": "thumb/34.jpg",
+   "single": true
   },
   {
    "id": "35",
    "title": "DSCF3410",
-   "before": "img/35-o.jpg",
-   "soft": "img/35-z.jpg",
-   "thumb": "thumb/35.jpg"
+   "before": "img/35.jpg",
+   "thumb": "thumb/35.jpg",
+   "single": true
   },
   {
    "id": "36",
    "title": "DSCF3424",
-   "before": "img/36-o.jpg",
-   "soft": "img/36-z.jpg",
-   "thumb": "thumb/36.jpg"
+   "before": "img/36.jpg",
+   "thumb": "thumb/36.jpg",
+   "single": true
   },
   {
    "id": "37",
    "title": "DSCF3426",
-   "before": "img/37-o.jpg",
-   "soft": "img/37-z.jpg",
-   "thumb": "thumb/37.jpg"
+   "before": "img/37.jpg",
+   "thumb": "thumb/37.jpg",
+   "single": true
   },
   {
    "id": "38",
    "title": "DSCF3433",
-   "before": "img/38-o.jpg",
-   "soft": "img/38-z.jpg",
-   "thumb": "thumb/38.jpg"
+   "before": "img/38.jpg",
+   "thumb": "thumb/38.jpg",
+   "single": true
   },
   {
    "id": "39",
    "title": "DSCF3436",
-   "before": "img/39-o.jpg",
-   "soft": "img/39-z.jpg",
-   "thumb": "thumb/39.jpg"
+   "before": "img/39.jpg",
+   "thumb": "thumb/39.jpg",
+   "single": true
   },
   {
    "id": "40",
    "title": "DSCF3441",
-   "before": "img/40-o.jpg",
-   "soft": "img/40-z.jpg",
-   "thumb": "thumb/40.jpg"
+   "before": "img/40.jpg",
+   "thumb": "thumb/40.jpg",
+   "single": true
   },
   {
    "id": "41",
    "title": "DSCF3449",
-   "before": "img/41-o.jpg",
-   "soft": "img/41-z.jpg",
-   "thumb": "thumb/41.jpg"
+   "before": "img/41.jpg",
+   "thumb": "thumb/41.jpg",
+   "single": true
   },
   {
    "id": "42",
    "title": "DSCF3452",
-   "before": "img/42-o.jpg",
-   "soft": "img/42-z.jpg",
-   "thumb": "thumb/42.jpg"
+   "before": "img/42.jpg",
+   "thumb": "thumb/42.jpg",
+   "single": true
   },
   {
    "id": "43",
    "title": "DSCF3458",
-   "before": "img/43-o.jpg",
-   "soft": "img/43-z.jpg",
-   "thumb": "thumb/43.jpg"
+   "before": "img/43.jpg",
+   "thumb": "thumb/43.jpg",
+   "single": true
   },
   {
    "id": "44",
    "title": "DSCF3460",
-   "before": "img/44-o.jpg",
-   "soft": "img/44-z.jpg",
-   "thumb": "thumb/44.jpg"
+   "before": "img/44.jpg",
+   "thumb": "thumb/44.jpg",
+   "single": true
   },
   {
    "id": "45",
    "title": "DSCF3463",
-   "before": "img/45-o.jpg",
-   "soft": "img/45-z.jpg",
-   "thumb": "thumb/45.jpg"
+   "before": "img/45.jpg",
+   "thumb": "thumb/45.jpg",
+   "single": true
   },
   {
    "id": "46",
    "title": "DSCF3473",
-   "before": "img/46-o.jpg",
-   "soft": "img/46-z.jpg",
-   "thumb": "thumb/46.jpg"
+   "before": "img/46.jpg",
+   "thumb": "thumb/46.jpg",
+   "single": true
   },
   {
    "id": "47",
    "title": "DSCF3481",
-   "before": "img/47-o.jpg",
-   "soft": "img/47-z.jpg",
-   "thumb": "thumb/47.jpg"
+   "before": "img/47.jpg",
+   "thumb": "thumb/47.jpg",
+   "single": true
   },
   {
    "id": "48",
    "title": "DSCF3485",
-   "before": "img/48-o.jpg",
-   "soft": "img/48-z.jpg",
-   "thumb": "thumb/48.jpg"
+   "before": "img/48.jpg",
+   "thumb": "thumb/48.jpg",
+   "single": true
   },
   {
    "id": "49",
    "title": "DSCF3487",
-   "before": "img/49-o.jpg",
-   "soft": "img/49-z.jpg",
-   "thumb": "thumb/49.jpg"
+   "before": "img/49.jpg",
+   "thumb": "thumb/49.jpg",
+   "single": true
   },
   {
    "id": "50",
    "title": "DSCF3492",
-   "before": "img/50-o.jpg",
-   "soft": "img/50-z.jpg",
-   "thumb": "thumb/50.jpg"
+   "before": "img/50.jpg",
+   "thumb": "thumb/50.jpg",
+   "single": true
   },
   {
    "id": "51",
    "title": "DSCF3493",
-   "before": "img/51-o.jpg",
-   "soft": "img/51-z.jpg",
-   "thumb": "thumb/51.jpg"
+   "before": "img/51.jpg",
+   "thumb": "thumb/51.jpg",
+   "single": true
   },
   {
    "id": "52",
    "title": "DSCF3496",
-   "before": "img/52-o.jpg",
-   "soft": "img/52-z.jpg",
-   "thumb": "thumb/52.jpg"
+   "before": "img/52.jpg",
+   "thumb": "thumb/52.jpg",
+   "single": true
   },
   {
    "id": "53",
    "title": "DSCF3498",
-   "before": "img/53-o.jpg",
-   "soft": "img/53-z.jpg",
-   "thumb": "thumb/53.jpg"
+   "before": "img/53.jpg",
+   "thumb": "thumb/53.jpg",
+   "single": true
   },
   {
    "id": "54",
    "title": "DSCF3500",
-   "before": "img/54-o.jpg",
-   "soft": "img/54-z.jpg",
-   "thumb": "thumb/54.jpg"
+   "before": "img/54.jpg",
+   "thumb": "thumb/54.jpg",
+   "single": true
   },
   {
    "id": "55",
    "title": "DSCF3511",
-   "before": "img/55-o.jpg",
-   "soft": "img/55-z.jpg",
-   "thumb": "thumb/55.jpg"
+   "before": "img/55.jpg",
+   "thumb": "thumb/55.jpg",
+   "single": true
   },
   {
    "id": "56",
    "title": "DSCF3517",
-   "before": "img/56-o.jpg",
-   "soft": "img/56-z.jpg",
-   "thumb": "thumb/56.jpg"
+   "before": "img/56.jpg",
+   "thumb": "thumb/56.jpg",
+   "single": true
   },
   {
    "id": "57",
    "title": "DSCF3522",
-   "before": "img/57-o.jpg",
-   "soft": "img/57-z.jpg",
-   "thumb": "thumb/57.jpg"
+   "before": "img/57.jpg",
+   "thumb": "thumb/57.jpg",
+   "single": true
   },
   {
    "id": "58",
    "title": "DSCF3525",
-   "before": "img/58-o.jpg",
-   "soft": "img/58-z.jpg",
-   "thumb": "thumb/58.jpg"
+   "before": "img/58.jpg",
+   "thumb": "thumb/58.jpg",
+   "single": true
   },
   {
    "id": "59",
    "title": "DSCF3531",
-   "before": "img/59-o.jpg",
-   "soft": "img/59-z.jpg",
-   "thumb": "thumb/59.jpg"
+   "before": "img/59.jpg",
+   "thumb": "thumb/59.jpg",
+   "single": true
   },
   {
    "id": "60",
    "title": "DSCF3533",
-   "before": "img/60-o.jpg",
-   "soft": "img/60-z.jpg",
-   "thumb": "thumb/60.jpg"
+   "before": "img/60.jpg",
+   "thumb": "thumb/60.jpg",
+   "single": true
   },
   {
    "id": "61",
    "title": "DSCF3539",
-   "before": "img/61-o.jpg",
-   "soft": "img/61-z.jpg",
-   "thumb": "thumb/61.jpg"
+   "before": "img/61.jpg",
+   "thumb": "thumb/61.jpg",
+   "single": true
   },
   {
    "id": "62",
    "title": "DSCF3541",
-   "before": "img/62-o.jpg",
-   "soft": "img/62-z.jpg",
-   "thumb": "thumb/62.jpg"
+   "before": "img/62.jpg",
+   "thumb": "thumb/62.jpg",
+   "single": true
   },
   {
    "id": "63",
    "title": "DSCF3543",
-   "before": "img/63-o.jpg",
-   "soft": "img/63-z.jpg",
-   "thumb": "thumb/63.jpg"
+   "before": "img/63.jpg",
+   "thumb": "thumb/63.jpg",
+   "single": true
   },
   {
    "id": "64",
    "title": "DSCF3544",
-   "before": "img/64-o.jpg",
-   "soft": "img/64-z.jpg",
-   "thumb": "thumb/64.jpg"
+   "before": "img/64.jpg",
+   "thumb": "thumb/64.jpg",
+   "single": true
   },
   {
    "id": "65",
    "title": "DSCF3546",
-   "before": "img/65-o.jpg",
-   "soft": "img/65-z.jpg",
-   "thumb": "thumb/65.jpg"
+   "before": "img/65.jpg",
+   "thumb": "thumb/65.jpg",
+   "single": true
   },
   {
    "id": "66",
    "title": "DSCF3550",
-   "before": "img/66-o.jpg",
-   "soft": "img/66-z.jpg",
-   "thumb": "thumb/66.jpg"
+   "before": "img/66.jpg",
+   "thumb": "thumb/66.jpg",
+   "single": true
   },
   {
    "id": "67",
    "title": "DSCF3554",
-   "before": "img/67-o.jpg",
-   "soft": "img/67-z.jpg",
-   "thumb": "thumb/67.jpg"
+   "before": "img/67.jpg",
+   "thumb": "thumb/67.jpg",
+   "single": true
   },
   {
    "id": "68",
    "title": "DSCF3556",
-   "before": "img/68-o.jpg",
-   "soft": "img/68-z.jpg",
-   "thumb": "thumb/68.jpg"
+   "before": "img/68.jpg",
+   "thumb": "thumb/68.jpg",
+   "single": true
   },
   {
    "id": "69",
    "title": "DSCF3565",
-   "before": "img/69-o.jpg",
-   "soft": "img/69-z.jpg",
-   "thumb": "thumb/69.jpg"
+   "before": "img/69.jpg",
+   "thumb": "thumb/69.jpg",
+   "single": true
   },
   {
    "id": "70",
    "title": "DSCF3567",
-   "before": "img/70-o.jpg",
-   "soft": "img/70-z.jpg",
-   "thumb": "thumb/70.jpg"
+   "before": "img/70.jpg",
+   "thumb": "thumb/70.jpg",
+   "single": true
   },
   {
    "id": "71",
    "title": "DSCF3574",
-   "before": "img/71-o.jpg",
-   "soft": "img/71-z.jpg",
-   "thumb": "thumb/71.jpg"
+   "before": "img/71.jpg",
+   "thumb": "thumb/71.jpg",
+   "single": true
   },
   {
    "id": "72",
    "title": "DSCF3575",
-   "before": "img/72-o.jpg",
-   "soft": "img/72-z.jpg",
-   "thumb": "thumb/72.jpg"
+   "before": "img/72.jpg",
+   "thumb": "thumb/72.jpg",
+   "single": true
   },
   {
    "id": "73",
    "title": "DSCF3580",
-   "before": "img/73-o.jpg",
-   "soft": "img/73-z.jpg",
-   "thumb": "thumb/73.jpg"
+   "before": "img/73.jpg",
+   "thumb": "thumb/73.jpg",
+   "single": true
   },
   {
    "id": "74",
    "title": "DSCF3582",
-   "before": "img/74-o.jpg",
-   "soft": "img/74-z.jpg",
-   "thumb": "thumb/74.jpg"
+   "before": "img/74.jpg",
+   "thumb": "thumb/74.jpg",
+   "single": true
   },
   {
    "id": "75",
    "title": "DSCF3602",
-   "before": "img/75-o.jpg",
-   "soft": "img/75-z.jpg",
-   "thumb": "thumb/75.jpg"
+   "before": "img/75.jpg",
+   "thumb": "thumb/75.jpg",
+   "single": true
   },
   {
    "id": "76",
    "title": "DSCF3603",
-   "before": "img/76-o.jpg",
-   "soft": "img/76-z.jpg",
-   "thumb": "thumb/76.jpg"
+   "before": "img/76.jpg",
+   "thumb": "thumb/76.jpg",
+   "single": true
   },
   {
    "id": "77",
    "title": "DSCF3605",
-   "before": "img/77-o.jpg",
-   "soft": "img/77-z.jpg",
-   "thumb": "thumb/77.jpg"
+   "before": "img/77.jpg",
+   "thumb": "thumb/77.jpg",
+   "single": true
   },
   {
    "id": "78",
    "title": "DSCF3611",
-   "before": "img/78-o.jpg",
-   "soft": "img/78-z.jpg",
-   "thumb": "thumb/78.jpg"
+   "before": "img/78.jpg",
+   "thumb": "thumb/78.jpg",
+   "single": true
   },
   {
    "id": "79",
    "title": "DSCF3613",
-   "before": "img/79-o.jpg",
-   "soft": "img/79-z.jpg",
-   "thumb": "thumb/79.jpg"
+   "before": "img/79.jpg",
+   "thumb": "thumb/79.jpg",
+   "single": true
   },
   {
    "id": "80",
    "title": "DSCF3621",
-   "before": "img/80-o.jpg",
-   "soft": "img/80-z.jpg",
-   "thumb": "thumb/80.jpg"
+   "before": "img/80.jpg",
+   "thumb": "thumb/80.jpg",
+   "single": true
   },
   {
    "id": "81",
    "title": "DSCF3627",
-   "before": "img/81-o.jpg",
-   "soft": "img/81-z.jpg",
-   "thumb": "thumb/81.jpg"
+   "before": "img/81.jpg",
+   "thumb": "thumb/81.jpg",
+   "single": true
   },
   {
    "id": "82",
    "title": "DSCF3628",
-   "before": "img/82-o.jpg",
-   "soft": "img/82-z.jpg",
-   "thumb": "thumb/82.jpg"
+   "before": "img/82.jpg",
+   "thumb": "thumb/82.jpg",
+   "single": true
   },
   {
    "id": "83",
    "title": "DSCF3629",
-   "before": "img/83-o.jpg",
-   "soft": "img/83-z.jpg",
-   "thumb": "thumb/83.jpg"
+   "before": "img/83.jpg",
+   "thumb": "thumb/83.jpg",
+   "single": true
   },
   {
    "id": "84",
    "title": "DSCF3637",
-   "before": "img/84-o.jpg",
-   "soft": "img/84-z.jpg",
-   "thumb": "thumb/84.jpg"
+   "before": "img/84.jpg",
+   "thumb": "thumb/84.jpg",
+   "single": true
   },
   {
    "id": "85",
    "title": "DSCF3640",
-   "before": "img/85-o.jpg",
-   "soft": "img/85-z.jpg",
-   "thumb": "thumb/85.jpg"
+   "before": "img/85.jpg",
+   "thumb": "thumb/85.jpg",
+   "single": true
   },
   {
    "id": "86",
    "title": "DSCF3641",
-   "before": "img/86-o.jpg",
-   "soft": "img/86-z.jpg",
-   "thumb": "thumb/86.jpg"
+   "before": "img/86.jpg",
+   "thumb": "thumb/86.jpg",
+   "single": true
   },
   {
    "id": "87",
    "title": "DSCF3644",
-   "before": "img/87-o.jpg",
-   "soft": "img/87-z.jpg",
-   "thumb": "thumb/87.jpg"
+   "before": "img/87.jpg",
+   "thumb": "thumb/87.jpg",
+   "single": true
   },
   {
    "id": "88",
    "title": "DSCF3653",
-   "before": "img/88-o.jpg",
-   "soft": "img/88-z.jpg",
-   "thumb": "thumb/88.jpg"
+   "before": "img/88.jpg",
+   "thumb": "thumb/88.jpg",
+   "single": true
   },
   {
    "id": "89",
    "title": "DSCF3684",
-   "before": "img/89-o.jpg",
-   "soft": "img/89-z.jpg",
-   "thumb": "thumb/89.jpg"
+   "before": "img/89.jpg",
+   "thumb": "thumb/89.jpg",
+   "single": true
   },
   {
    "id": "90",
    "title": "DSCF3686",
-   "before": "img/90-o.jpg",
-   "soft": "img/90-z.jpg",
-   "thumb": "thumb/90.jpg"
+   "before": "img/90.jpg",
+   "thumb": "thumb/90.jpg",
+   "single": true
   },
   {
    "id": "91",
    "title": "DSCF3688",
-   "before": "img/91-o.jpg",
-   "soft": "img/91-z.jpg",
-   "thumb": "thumb/91.jpg"
+   "before": "img/91.jpg",
+   "thumb": "thumb/91.jpg",
+   "single": true
   },
   {
    "id": "92",
    "title": "DSCF3696",
-   "before": "img/92-o.jpg",
-   "soft": "img/92-z.jpg",
-   "thumb": "thumb/92.jpg"
+   "before": "img/92.jpg",
+   "thumb": "thumb/92.jpg",
+   "single": true
   },
   {
    "id": "93",
    "title": "DSCF3705",
-   "before": "img/93-o.jpg",
-   "soft": "img/93-z.jpg",
-   "thumb": "thumb/93.jpg"
+   "before": "img/93.jpg",
+   "thumb": "thumb/93.jpg",
+   "single": true
   },
   {
    "id": "94",
    "title": "DSCF3714",
-   "before": "img/94-o.jpg",
-   "soft": "img/94-z.jpg",
-   "thumb": "thumb/94.jpg"
+   "before": "img/94.jpg",
+   "thumb": "thumb/94.jpg",
+   "single": true
   },
   {
    "id": "95",
    "title": "DSCF3716",
-   "before": "img/95-o.jpg",
-   "soft": "img/95-z.jpg",
-   "thumb": "thumb/95.jpg"
+   "before": "img/95.jpg",
+   "thumb": "thumb/95.jpg",
+   "single": true
   },
   {
    "id": "96",
    "title": "DSCF3720",
-   "before": "img/96-o.jpg",
-   "soft": "img/96-z.jpg",
-   "thumb": "thumb/96.jpg"
+   "before": "img/96.jpg",
+   "thumb": "thumb/96.jpg",
+   "single": true
   },
   {
    "id": "97",
    "title": "DSCF3724",
-   "before": "img/97-o.jpg",
-   "soft": "img/97-z.jpg",
-   "thumb": "thumb/97.jpg"
+   "before": "img/97.jpg",
+   "thumb": "thumb/97.jpg",
+   "single": true
   },
   {
    "id": "98",
    "title": "DSCF3728",
-   "before": "img/98-o.jpg",
-   "soft": "img/98-z.jpg",
-   "thumb": "thumb/98.jpg"
+   "before": "img/98.jpg",
+   "thumb": "thumb/98.jpg",
+   "single": true
   },
   {
    "id": "99",
    "title": "DSCF3731",
-   "before": "img/99-o.jpg",
-   "soft": "img/99-z.jpg",
-   "thumb": "thumb/99.jpg"
+   "before": "img/99.jpg",
+   "thumb": "thumb/99.jpg",
+   "single": true
   },
   {
    "id": "100",
    "title": "DSCF3735",
-   "before": "img/100-o.jpg",
-   "soft": "img/100-z.jpg",
-   "thumb": "thumb/100.jpg"
+   "before": "img/100.jpg",
+   "thumb": "thumb/100.jpg",
+   "single": true
   },
   {
    "id": "101",
    "title": "DSCF3742",
-   "before": "img/101-o.jpg",
-   "soft": "img/101-z.jpg",
-   "thumb": "thumb/101.jpg"
+   "before": "img/101.jpg",
+   "thumb": "thumb/101.jpg",
+   "single": true
   },
   {
    "id": "102",
    "title": "DSCF3745",
-   "before": "img/102-o.jpg",
-   "soft": "img/102-z.jpg",
-   "thumb": "thumb/102.jpg"
+   "before": "img/102.jpg",
+   "thumb": "thumb/102.jpg",
+   "single": true
   },
   {
    "id": "103",
    "title": "DSCF3750",
-   "before": "img/103-o.jpg",
-   "soft": "img/103-z.jpg",
-   "thumb": "thumb/103.jpg"
+   "before": "img/103.jpg",
+   "thumb": "thumb/103.jpg",
+   "single": true
   },
   {
    "id": "104",
    "title": "DSCF3767",
-   "before": "img/104-o.jpg",
-   "soft": "img/104-z.jpg",
-   "thumb": "thumb/104.jpg"
+   "before": "img/104.jpg",
+   "thumb": "thumb/104.jpg",
+   "single": true
   },
   {
    "id": "105",
@@ -803,6 +754,76 @@
    "title": "Strand · Bungytoren",
    "before": "img/111.jpg",
    "thumb": "thumb/111.jpg",
+   "single": true
+  },
+  {
+   "id": "112",
+   "title": "BF_00022",
+   "before": "img/112.jpg",
+   "thumb": "thumb/112.jpg",
+   "single": true
+  },
+  {
+   "id": "113",
+   "title": "BF_00106",
+   "before": "img/113.jpg",
+   "thumb": "thumb/113.jpg",
+   "single": true
+  },
+  {
+   "id": "114",
+   "title": "BF_00108",
+   "before": "img/114.jpg",
+   "thumb": "thumb/114.jpg",
+   "single": true
+  },
+  {
+   "id": "115",
+   "title": "BF_00202",
+   "before": "img/115.jpg",
+   "thumb": "thumb/115.jpg",
+   "single": true
+  },
+  {
+   "id": "116",
+   "title": "BF_00204",
+   "before": "img/116.jpg",
+   "thumb": "thumb/116.jpg",
+   "single": true
+  },
+  {
+   "id": "117",
+   "title": "BF_00206",
+   "before": "img/117.jpg",
+   "thumb": "thumb/117.jpg",
+   "single": true
+  },
+  {
+   "id": "118",
+   "title": "BF_00226",
+   "before": "img/118.jpg",
+   "thumb": "thumb/118.jpg",
+   "single": true
+  },
+  {
+   "id": "119",
+   "title": "BF_00251",
+   "before": "img/119.jpg",
+   "thumb": "thumb/119.jpg",
+   "single": true
+  },
+  {
+   "id": "120",
+   "title": "BF_00254",
+   "before": "img/120.jpg",
+   "thumb": "thumb/120.jpg",
+   "single": true
+  },
+  {
+   "id": "121",
+   "title": "BF_00257",
+   "before": "img/121.jpg",
+   "thumb": "thumb/121.jpg",
    "single": true
   }
  ]
