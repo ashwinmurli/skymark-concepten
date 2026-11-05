@@ -956,11 +956,61 @@ function changed(structural) {
   markDirty(structural);
 }
 
+function persistLocal() {
+  try { localStorage.setItem(LS_POST, JSON.stringify(Object.assign(serialize(), { unsaved: dirty }))); } catch (e) {}
+}
+
+/* niet-bewaarde post uit deze browser, voor "Verder waar je was" in het overzicht */
+function localUnsaved() {
+  if (dirty) return { name: post.name, live: true };
+  try {
+    const p = JSON.parse(localStorage.getItem(LS_POST));
+    if (p && p.unsaved) return { name: p.name, live: false };
+  } catch (e) {}
+  return null;
+}
+
+function resumeLocal() {
+  if (!dirty) {
+    try {
+      const p = JSON.parse(localStorage.getItem(LS_POST));
+      if (p) { post = hydrate(p); current = 0; dirty = true; resetHistory(); $('#save-state').textContent = 'Niet bewaard'; resolveRemote(post).then(() => refreshAll()); }
+    } catch (e) {}
+  }
+  setView('make');
+  refreshAll();
+}
+
+function startNew() {
+  const m = $('#m-new');
+  $('#new-name').value = '';
+  $('#new-date').value = '';
+  m.classList.add('show');
+  setTimeout(() => $('#new-name').focus(), 50);
+}
+
+function createNew() {
+  if (dirty && !confirm('Je vorige post is niet bewaard. Toch een nieuwe beginnen?')) return;
+  if (playing) stop();
+  const f = $('#new-fmt button.on').dataset.f;
+  post = newPost(f);
+  const name = $('#new-name').value.trim();
+  if (name) post.name = name;
+  post.date = $('#new-date').value || '';
+  current = 0; dirty = false;
+  $('#save-state').textContent = '';
+  persistLocal();
+  resetHistory();
+  $('#m-new').classList.remove('show');
+  setView('make');
+  refreshAll();
+}
+
 function markDirty(structural) {
   dirty = true;
   $('#save-state').textContent = 'Niet bewaard';
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => { try { localStorage.setItem(LS_POST, JSON.stringify(serialize())); } catch (e) {} }, 400);
+  saveTimer = setTimeout(persistLocal, 400);
   if (structural) refreshAll();
   else { updateThumbs(); }
 }
@@ -1018,6 +1068,7 @@ async function saveDraft() {
     const res = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
     post.review = reviewOf(res.draft);
     dirty = false;
+    persistLocal();
     renderInspector();
     $('#save-state').textContent = 'Bewaard';
     toast(up.skipped ? `Concept bewaard. ${up.skipped === 1 ? 'Eén video was' : up.skipped + ' video’s waren'} te groot om online te bewaren (max. 115 MB); die kies je bij openen opnieuw.` : 'Concept bewaard, met alle beelden. Celine en jij zien het onder Concepten.');
@@ -1025,32 +1076,6 @@ async function saveDraft() {
     $('#save-state').textContent = 'Niet bewaard';
     toast('Bewaren lukte niet: ' + e.message);
   } finally { btn.disabled = false; }
-}
-
-async function openDrafts() {
-  const list = $('#draft-list');
-  list.innerHTML = '<li class="muted">Laden...</li>';
-  $('#m-drafts').classList.add('show');
-  try {
-    const { drafts } = await api({ action: 'list' });
-    list.innerHTML = '';
-    if (!drafts.length) list.append(el('li', { class: 'muted' }, 'Nog geen concepten.'));
-    for (const d of drafts) {
-      const when = new Date(d.updated).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-      list.append(el('li', {},
-        el('div', {}, el('b', {}, d.name), el('small', {}, `${FORMATS[d.format].name}${d.count > 1 ? ' · ' + d.count + ' slides' : ''} · ${d.author || 'onbekend'} · ${when}`), el('div', { style: 'margin-top:5px' }, statusPill(d.status))),
-        el('button', { class: 'btn', onclick: async () => { if (await openDraft(d.id)) $('#m-drafts').classList.remove('show'); } }, 'Open'),
-        el('button', { class: 'close', title: 'Verwijder', onclick: async () => {
-          if (!confirm(`“${d.name}” verwijderen?`)) return;
-          await api({ action: 'delete', id: d.id });
-          openDrafts();
-        } }, '×')
-      ));
-    }
-  } catch (e) {
-    list.innerHTML = '';
-    list.append(el('li', { class: 'muted' }, 'Concepten laden lukte niet: ' + e.message));
-  }
 }
 
 /* ---------- exporteren ---------- */
@@ -1188,19 +1213,15 @@ function bind() {
   $('#play').innerHTML = ICON_PLAY;
   $('#play').addEventListener('click', () => (playing ? stop() : play()));
   $('#safe-toggle').addEventListener('change', fitStage);
-  $('#btn-new').addEventListener('click', () => {
-    if (dirty && !confirm('Je huidige post is niet bewaard. Toch een nieuwe beginnen?')) return;
-    if (playing) stop();
-    post = newPost(post.format); current = 0; dirty = false;
-    $('#save-state').textContent = '';
-    resetHistory();
-    refreshAll();
-  });
+  $('#btn-overview').addEventListener('click', () => { if (dirty) persistLocal(); setView('review'); });
+  document.querySelectorAll('#new-fmt button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('#new-fmt button').forEach(x => x.classList.toggle('on', x === b));
+  }));
+  $('#new-ok').addEventListener('click', createNew);
+  $('#new-name').addEventListener('keydown', e => { if (e.key === 'Enter') createNew(); });
   $('#btn-save').addEventListener('click', saveDraft);
   $('#btn-undo').addEventListener('click', undo);
   $('#btn-redo').addEventListener('click', redo);
-  $('#btn-review').addEventListener('click', () => setView('review'));
-  $('#btn-drafts').addEventListener('click', openDrafts);
   document.querySelectorAll('#mode button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
   $('#btn-slide').addEventListener('click', exportSlide);
   $('#btn-export').addEventListener('click', exportMain);
@@ -1244,6 +1265,7 @@ async function openDraft(id) {
   $('#save-state').textContent = 'Beelden laden...';
   await resolveRemote(p);
   post = p; current = 0; dirty = false;
+  persistLocal();
   resetHistory();
   setView('make');
   refreshAll();
@@ -1333,6 +1355,7 @@ async function submitForApproval(note) {
     const saved = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
     post.review = reviewOf(saved.draft);
     dirty = false;
+    persistLocal();
     const version = post.review.version + 1;
     const base = `${post.id}/v${version}`;
     const n = post.slides.length;
@@ -1458,7 +1481,9 @@ async function init() {
     makerLogin,
     openInEditor: id => openDraft(id),
     renderLocal: ROLE === 'maker' ? renderLocal : null,
-    backToEditor: () => setView('make')
+    newPost: startNew,
+    unsaved: localUnsaved,
+    resume: resumeLocal
   });
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').classList.remove('show')));
   if (ROLE !== 'maker') {
@@ -1483,7 +1508,8 @@ async function init() {
   resetHistory();
   document.body.classList.remove('booting');
   refreshAll();
-  if (/post=/.test(location.hash)) setView('review');
+  /* makers beginnen in het overzicht */
+  setView('review');
   window.__posts = { get post() { return post; }, set post(p) { post = p; resetHistory(); refreshAll(); }, hydrate, refreshAll, getMedia, exportVideo, exportImage, setCurrent: i => { current = i; refreshAll(); } };
 }
 

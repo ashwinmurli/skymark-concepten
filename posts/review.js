@@ -37,7 +37,7 @@ let drafts = [];
 let tab = null;
 const mediaCache = new Map();
 
-/* ctx: { role, api, apiBlob, me, askName, toast, openInEditor, backToEditor } */
+/* ctx: { role, api, apiBlob, me, askName, toast, openInEditor, renderLocal, newPost, unsaved, resume } */
 export function initReview(c) {
   ctx = c;
   document.querySelectorAll('#m-rv [data-close], #m-rv').forEach(n => n.addEventListener('click', e => {
@@ -58,8 +58,23 @@ function tabsFor(role) {
     { id: 'changes', label: role === 'maker' ? 'Feedback verwerken' : 'Feedback gegeven', test: d => d.status === 'changes' },
     { id: 'approved', label: 'Goedgekeurd', test: d => d.status === 'approved' }
   ];
-  if (role === 'maker') t.unshift({ id: 'concept', label: 'Concepten', test: d => d.status === 'concept' });
+  if (role === 'maker') {
+    t.unshift({ id: 'concept', label: 'Concepten', test: d => d.status === 'concept' });
+    t.unshift({ id: 'all', label: 'Alle posts', test: () => true });
+  }
   return t;
+}
+
+function removeBtn(d) {
+  return el('button', { class: 'btn rv-remove', onclick: async () => {
+    if (!confirm(`“${d.name}” verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return;
+    try {
+      await ctx.api({ action: 'delete', id: d.id });
+      closeDetail();
+      ctx.toast(`“${d.name}” is verwijderd.`);
+      refreshReview();
+    } catch (e) { ctx.toast('Verwijderen lukte niet: ' + e.message); }
+  } }, 'Verwijder');
 }
 
 export async function refreshReview() {
@@ -67,6 +82,7 @@ export async function refreshReview() {
   grid.innerHTML = '';
   grid.append(el('p', { class: 'muted' }, 'Laden...'));
   renderWho();
+  $('#rv-h1').textContent = ctx.role === 'maker' ? 'Posts' : 'Goedkeuring';
   try {
     const r = await ctx.api({ action: 'list' });
     drafts = r.drafts;
@@ -77,7 +93,7 @@ export async function refreshReview() {
   }
   const tabs = tabsFor(ctx.role);
   if (!tab || !tabs.find(t => t.id === tab)) {
-    const pref = ctx.role === 'maker' ? ['changes', 'review', 'concept'] : ['review', 'changes', 'approved'];
+    const pref = ctx.role === 'maker' ? ['all'] : ['review', 'changes', 'approved'];
     tab = pref.find(id => drafts.some(tabs.find(t => t.id === id).test)) || pref[0];
   }
   renderTabs(tabs);
@@ -95,6 +111,10 @@ function renderWho() {
   who.innerHTML = '';
   const me = ctx.me();
   if (ctx.role === 'maker') {
+    const local = ctx.unsaved && ctx.unsaved();
+    who.classList.add('rv-actions');
+    if (local) who.append(el('span', { class: 'rv-resume' }, 'Niet bewaard: ',
+      el('a', { href: '#', onclick: e => { e.preventDefault(); ctx.resume(); } }, `verder met “${local.name || 'Naamloze post'}”`)));
     who.append(
       el('a', { href: '#', onclick: async e => {
         e.preventDefault();
@@ -103,7 +123,7 @@ function renderWho() {
           ctx.toast(r.ok ? 'Testmail verstuurd naar ash@connectingthepolkadots.com.' : 'Testmail lukte niet: ' + r.mail);
         } catch (err) { ctx.toast('Testmail lukte niet: ' + err.message); }
       } }, 'Testmail sturen'),
-      el('button', { class: 'btn', style: 'margin-left:10px', onclick: ctx.backToEditor }, 'Naar maken')
+      el('button', { class: 'btn gold', onclick: ctx.newPost }, '+ Nieuwe post')
     );
   } else {
     who.append(
@@ -128,12 +148,14 @@ function renderGrid(t) {
   const grid = $('#rv-grid');
   grid.innerHTML = '';
   const list = drafts.filter(t.test);
+  if (t.id === 'all') list.sort((a, b) => (a.date || '9999') < (b.date || '9999') ? -1 : (a.date || '9999') > (b.date || '9999') ? 1 : b.updated - a.updated);
   if (!list.length) {
     const empty = {
       review: ctx.role === 'maker' ? 'Er staat niets ter goedkeuring.' : 'Er wacht niets op je goedkeuring. Fijn.',
       changes: ctx.role === 'maker' ? 'Geen openstaande feedback.' : 'Nog geen posts met feedback.',
       approved: 'Nog geen goedgekeurde posts.',
-      concept: 'Geen concepten.'
+      concept: 'Geen concepten.',
+      all: 'Nog geen posts. Maak er een met + Nieuwe post.'
     };
     grid.append(el('p', { class: 'muted rv-empty' }, empty[t.id]));
     return;
@@ -282,7 +304,8 @@ function renderDetail() {
     ));
     if (d.caption) side.append(el('div', { class: 'rv-sec' }, el('p', { class: 'eyebrow' }, 'Bijschrift voor Instagram'), el('p', { class: 'rv-caption' }, d.caption)));
     side.append(el('div', { class: 'rv-sec' }, el('div', { class: 'rv-btns' },
-      el('button', { class: 'btn gold', onclick: () => { closeDetail(); ctx.openInEditor(d.id); } }, 'Open in editor'))));
+      el('button', { class: 'btn gold', onclick: () => { closeDetail(); ctx.openInEditor(d.id); } }, 'Open in editor'),
+      removeBtn(d))));
     renderMedia();
     return;
   }
@@ -338,7 +361,8 @@ function renderDetail() {
   if (ctx.role === 'maker') {
     row.append(
       el('button', { class: 'btn', onclick: () => act('comment', { text: ta.value }) }, 'Reageer'),
-      el('button', { class: 'btn gold', onclick: () => { closeDetail(); ctx.openInEditor(d.id); } }, 'Open in editor')
+      el('button', { class: 'btn gold', onclick: () => { closeDetail(); ctx.openInEditor(d.id); } }, 'Open in editor'),
+      removeBtn(d)
     );
   } else if (s) {
     row.append(

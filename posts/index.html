@@ -72,6 +72,16 @@ button{cursor:pointer;}
 .btn:hover{border-color:var(--mist);}
 .btn.gold{background:var(--gold);border-color:var(--gold);color:var(--black);}
 .btn.gold:hover{background:#d8b25d;}
+.btn.back{border-color:transparent;padding-left:4px;color:var(--stone);}
+.btn.back:hover{color:var(--mist);}
+.new-fmt{display:flex;border:1px solid var(--line2);}
+.new-fmt button{flex:1;}
+.new-fmt button.on{color:var(--mist);background:var(--panel2);box-shadow:inset 0 -2px 0 var(--gold);}
+.rv-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.rv-resume{font-size:13px;color:var(--stone);}
+.rv-resume a{color:var(--gold);}
+.btn.rv-remove{margin-left:auto;border-color:transparent;color:var(--stone);}
+.btn.rv-remove:hover{color:#e07a6a;}
 .btn:disabled{opacity:.35;cursor:default;}
 .sep{width:1px;height:26px;background:var(--line);}
 .mode{display:flex;border:1px solid var(--line2);}
@@ -312,12 +322,10 @@ body.booting .app, body.booting .review{visibility:hidden;}
 
   <main class="center">
     <div class="topbar">
+      <button class="btn back" id="btn-overview" title="Terug naar alle posts">&larr; Overzicht</button>
       <input class="post-name" id="post-name" value="Naamloze post" aria-label="Naam van de post">
       <span class="save-state" id="save-state"></span>
-      <button class="btn" id="btn-new">Nieuw</button>
-      <button class="btn" id="btn-drafts">Concepten</button>
       <button class="btn" id="btn-save">Bewaar</button>
-      <button class="btn" id="btn-review">Goedkeuring</button>
       <span class="sep"></span>
       <span class="undo-btns">
         <button class="icon-btn" id="btn-undo" title="Ongedaan maken (⌘Z)" aria-label="Ongedaan maken" disabled>&#8630;</button>
@@ -350,7 +358,7 @@ body.booting .app, body.booting .review{visibility:hidden;}
 
 <section class="review" id="review">
   <div class="rv-head">
-    <div><p class="eyebrow">Skymark · Posts</p><h1>Goedkeuring</h1></div>
+    <div><p class="eyebrow">Skymark · Posts</p><h1 id="rv-h1">Goedkeuring</h1></div>
     <div class="rv-who" id="rv-who"></div>
   </div>
   <div class="rv-tabs" id="rv-tabs"></div>
@@ -383,9 +391,20 @@ body.booting .app, body.booting .review{visibility:hidden;}
   <div class="body"><div class="photo-grid" id="photo-grid"></div></div>
 </div></div>
 
-<div class="modal" id="m-drafts"><div class="dialog small">
-  <header><h3>Concepten</h3><button class="close" data-close>&times;</button></header>
-  <div class="body"><ul class="draft-list" id="draft-list"></ul></div>
+<div class="modal" id="m-new"><div class="dialog small">
+  <header><h3>Nieuwe post</h3><button class="close" data-close>&times;</button></header>
+  <div class="body">
+    <div class="field"><label for="new-name">Naam</label><input type="text" id="new-name" placeholder="Bijvoorbeeld Teaser 5 · Ontwerpverhaal #2"></div>
+    <div class="field"><label>Formaat</label>
+      <div class="tabs new-fmt" id="new-fmt">
+        <button data-f="feed" class="on"><b>Feed</b><span>4:5</span></button>
+        <button data-f="story"><b>Story</b><span>9:16</span></button>
+        <button data-f="carousel"><b>Carrousel</b><span>4:5 · reeks</span></button>
+      </div>
+    </div>
+    <div class="field"><label for="new-date">Geplande datum <span class="muted">(optioneel)</span></label><input type="date" id="new-date"></div>
+    <button class="btn gold" id="new-ok">Maak post</button>
+  </div>
 </div></div>
 
 <div class="modal" id="m-name"><div class="dialog small">
