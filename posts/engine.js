@@ -200,9 +200,9 @@ function drawPlaceholder(ctx, box, label) {
   ctx.fillStyle = COLORS['mist-green'].hex;
   ctx.globalAlpha *= 0.75;
   const s = label.toLocaleUpperCase('nl-NL');
-  const w = measure(ctx, s, spec, 20);
-  ctx.textBaseline = 'middle';
-  drawLine(ctx, s, box.x + (box.w - w) / 2, box.y + box.h / 2, spec, 20);
+  /* linksboven, binnen de rand van 72 px, zodat het label nooit door tekst loopt */
+  ctx.textBaseline = 'top';
+  drawLine(ctx, s, box.x + 28, box.y + 28, spec, 20);
 }
 
 /* ---------- render ---------- */

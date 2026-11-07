@@ -294,15 +294,15 @@ cv.addEventListener('wheel', ev => {
   changed(false);
 }, { passive: false });
 
-/* ---------- links: formaat en templates ---------- */
+/* ---------- thumbnails ---------- */
 
 const thumbCache = new Map();
+const MAX_SLIDES = 20;
 
 function renderThumb(canvas, s, fmt) {
   const size = sizeOf(fmt);
-  const key = fmt;
-  let off = thumbCache.get(key);
-  if (!off) { off = document.createElement('canvas'); thumbCache.set(key, off); }
+  let off = thumbCache.get(fmt);
+  if (!off) { off = document.createElement('canvas'); thumbCache.set(fmt, off); }
   off.width = size.w; off.height = size.h;
   renderSlide(off.getContext('2d'), s, fmt, { t: null, getMedia, placeholders: true });
   const c = canvas.getContext('2d');
@@ -311,32 +311,56 @@ function renderThumb(canvas, s, fmt) {
   c.drawImage(off, 0, 0, canvas.width, canvas.height);
 }
 
-function renderTemplates() {
-  const wrap = $('#tpl-groups');
-  wrap.innerHTML = '';
+/* ---------- templatekiezer (nieuwe slide of template wisselen) ---------- */
+
+let pickerMode = 'add';
+let pickerFilter = 'Alle';
+
+function sampleMedia() {
+  return photos[0] ? { kind: 'image', src: photoSrc(photos[0]), ref: { type: 'foto', id: photos[0].id }, zoom: 1, pos: { x: 0, y: 0 } } : null;
+}
+
+function openPicker(mode) {
+  pickerMode = mode;
+  pickerFilter = 'Alle';
+  $('#tpl-title').textContent = mode === 'add' ? 'Nieuwe slide: kies een template' : 'Template wisselen';
+  renderPicker();
+  $('#m-tpl').classList.add('show');
+}
+
+function renderPicker() {
   const list = templatesFor(post.format);
+  const groups = ['Alle', ...new Set(list.map(t => t.group))];
+  const f = $('#tpl-filters');
+  f.innerHTML = '';
+  for (const g of groups) f.append(el('button', { class: 'chip' + (g === pickerFilter ? ' on' : ''), onclick: () => { pickerFilter = g; renderPicker(); } }, g));
+  const grid = $('#tpl-grid');
+  grid.innerHTML = '';
   const size = sizeOf(post.format);
-  const groups = [...new Set(list.map(t => t.group))];
-  const sample = photos[0] ? { kind: 'image', src: photoSrc(photos[0]), ref: { type: 'foto', id: photos[0].id }, zoom: 1, pos: { x: 0, y: 0 } } : null;
-  for (const g of groups) {
-    wrap.append(el('p', { class: 'eyebrow group-title' }, g));
-    const grid = el('div', { class: 'tpl-grid' });
-    for (const t of list.filter(x => x.group === g)) {
-      const c = el('canvas', { width: 216, height: Math.round(216 * size.h / size.w) });
-      const b = el('button', { class: 'tpl' + (t.id === slide().template ? ' on' : ''), title: post.format === 'carousel' ? 'Klik: op deze slide. Sleep naar de slidebalk: nieuwe slide.' : (t.note || t.name), draggable: post.format === 'carousel' ? 'true' : null,
-        ondragstart: e => { e.dataTransfer.setData(DT_TPL, t.id); e.dataTransfer.effectAllowed = 'copy'; $('#strip').classList.add('dragging'); },
-        ondragend: () => clearDrop(), onclick: () => {
-        applyTemplate(slide(), t.id);
-        changed(true);
-      } }, c, el('span', {}, t.name));
-      const demo = newSlide(t.id);
-      if (sample) for (const m of t.media) demo.media[m.key] = sample;
-      renderThumb(c, demo, post.format);
-      prepareSlide(demo, post.format).then(() => renderThumb(c, demo, post.format));
-      grid.append(b);
-    }
-    wrap.append(grid);
+  const sample = sampleMedia();
+  for (const t of list.filter(x => pickerFilter === 'Alle' || x.group === pickerFilter)) {
+    const c = el('canvas', { width: 320, height: Math.round(320 * size.h / size.w) });
+    grid.append(el('button', { class: 'tpl' + (pickerMode === 'swap' && t.id === slide().template ? ' on' : ''), onclick: () => pickTemplate(t.id) },
+      c, el('span', {}, t.name), el('small', {}, t.group)));
+    const demo = newSlide(t.id);
+    if (sample) for (const m of t.media) demo.media[m.key] = sample;
+    renderThumb(c, demo, post.format);
+    prepareSlide(demo, post.format).then(() => renderThumb(c, demo, post.format));
   }
+}
+
+function pickTemplate(tid) {
+  $('#m-tpl').classList.remove('show');
+  if (playing) stop();
+  itab = 'design';
+  if (pickerMode === 'swap') { applyTemplate(slide(), tid); changed(true); return; }
+  if (post.slides.length >= MAX_SLIDES) { toast(`Een carrousel heeft maximaal ${MAX_SLIDES} slides.`); return; }
+  const ns = newSlide(tid);
+  const near = slide();
+  if (near && getTemplate(tid).palettes.find(p => p.id === near.palette)) ns.palette = near.palette;
+  post.slides.splice(current + 1, 0, ns);
+  current++;
+  changed(true);
 }
 
 function setFormat(f) {
@@ -354,174 +378,170 @@ function setFormat(f) {
   changed(true);
 }
 
-/* ---------- carrousel ---------- */
+/* ---------- slides links ---------- */
 
-function renderStrip() {
-  const strip = $('#strip');
-  strip.classList.toggle('show', post.format === 'carousel');
-  if (post.format !== 'carousel') return;
-  strip.innerHTML = '';
-  post.slides.forEach((s, i) => {
-    const c = el('canvas', { width: 152, height: 190 });
-    const b = el('button', { class: 'slide-th' + (i === current ? ' on' : ''), draggable: 'true', 'data-i': i,
-      ondragstart: e => { e.dataTransfer.setData(DT_SLIDE, String(i)); e.dataTransfer.effectAllowed = 'move'; $('#strip').classList.add('dragging'); },
-      ondragend: () => clearDrop(),
-      onclick: () => { if (playing) stop(); current = i; refreshAll(); } },
-      c, el('b', {}, String(i + 1)), slideHasVideo(s) ? el('em', {}, 'VIDEO') : null);
-    renderThumb(c, s, post.format);
-    strip.append(b);
-  });
-  if (post.slides.length < 20) {
-    strip.append(el('button', { class: 'add-slide', title: 'Slide toevoegen', onclick: () => {
-      const s = slide();
-      const ns = newSlide(s.template);
-      ns.palette = s.palette;
-      post.slides.splice(current + 1, 0, ns);
-      current++;
-      changed(true);
-    } }, '+'));
-  }
-  const tools = el('div', { class: 'strip-tools' },
-    el('button', { class: 'icon-btn', title: 'Naar links', disabled: current === 0, onclick: () => move(-1) }, '‹'),
-    el('button', { class: 'icon-btn', title: 'Naar rechts', disabled: current === post.slides.length - 1, onclick: () => move(1) }, '›'),
-    el('button', { class: 'icon-btn', title: 'Dupliceer slide', disabled: post.slides.length >= 20, onclick: () => {
-      const copy = JSON.parse(JSON.stringify(slide()));
-      copy.id = uid();
-      for (const [k, m] of Object.entries(slide().media)) if (m) { copy.media[k].src = m.src; if (m.blob) copy.media[k].blob = m.blob; }
-      post.slides.splice(current + 1, 0, copy);
-      current++;
-      changed(true);
-    } }, '⧉'),
-    el('button', { class: 'icon-btn', title: 'Verwijder slide', disabled: post.slides.length < 2, onclick: () => {
-      post.slides.splice(current, 1);
-      current = Math.max(0, current - 1);
-      changed(true);
-    } }, '×')
-  );
-  strip.append(tools);
-  if (post.slides.length < 4) strip.append(el('p', { class: 'strip-hint' }, 'Sleep een template uit de zijbalk naar deze balk voor een nieuwe slide, of op een slide om die te vervangen. Slides verslepen verandert de volgorde.'));
-  strip.append(el('i', { class: 'drop-line', id: 'drop-line' }));
+const ICON = {
+  grip: '<svg viewBox="0 0 10 16" aria-hidden="true"><circle cx="2.5" cy="2.5" r="1.3"/><circle cx="7.5" cy="2.5" r="1.3"/><circle cx="2.5" cy="8" r="1.3"/><circle cx="7.5" cy="8" r="1.3"/><circle cx="2.5" cy="13.5" r="1.3"/><circle cx="7.5" cy="13.5" r="1.3"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11"/><path d="M5 15V4h11"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>'
+};
+const svgEl = html => { const t = document.createElement('template'); t.innerHTML = html; return t.content.firstChild; };
+
+function iconBtn(label, icon, fn, disabled) {
+  return el('button', { class: 'icon-btn small', title: label, 'aria-label': label, disabled: !!disabled, onclick: e => { e.stopPropagation(); fn(); } }, svgEl(icon));
 }
 
-/* ---------- slepen naar de slidebalk ---------- */
-
-const DT_TPL = 'text/x-skymark-template';
-const DT_SLIDE = 'text/x-skymark-slide';
-let dropTarget = null;
-
-function clearDrop() {
-  dropTarget = null;
-  $('#strip').classList.remove('dragging');
-  document.querySelectorAll('.slide-th.drop-replace').forEach(n => n.classList.remove('drop-replace'));
-  const line = $('#drop-line');
-  if (line) line.style.display = 'none';
+function selectSlide(i) {
+  if (playing) stop();
+  current = i;
+  refreshAll();
 }
 
-function dropAt(e) {
-  const types = [...e.dataTransfer.types];
-  const isTpl = types.includes(DT_TPL);
-  const thumbs = [...document.querySelectorAll('.slide-th')];
-  const strip = $('#strip');
-  const sr = strip.getBoundingClientRect();
-  let target = { mode: 'insert', index: thumbs.length };
-  for (let k = 0; k < thumbs.length; k++) {
-    const r = thumbs[k].getBoundingClientRect();
-    if (isTpl && e.clientX > r.left + r.width * 0.25 && e.clientX < r.right - r.width * 0.25) { target = { mode: 'replace', index: k }; break; }
-    if (e.clientX < r.left + r.width / 2) { target = { mode: 'insert', index: k }; break; }
-  }
-  document.querySelectorAll('.slide-th.drop-replace').forEach(n => n.classList.remove('drop-replace'));
-  const line = $('#drop-line');
-  if (target.mode === 'replace') { thumbs[target.index].classList.add('drop-replace'); line.style.display = 'none'; }
-  else {
-    const ref = thumbs[target.index] ? thumbs[target.index].getBoundingClientRect().left - 6 : (thumbs.length ? thumbs[thumbs.length - 1].getBoundingClientRect().right + 4 : sr.left + 18);
-    line.style.left = (ref - sr.left + strip.scrollLeft) + 'px';
-    line.style.display = 'block';
-  }
-  return target;
-}
-
-function bindStripDrop() {
-  const strip = $('#strip');
-  strip.addEventListener('dragover', e => {
-    const types = [...e.dataTransfer.types];
-    if (!types.includes(DT_TPL) && !types.includes(DT_SLIDE)) return;
-    e.preventDefault();
-    e.dataTransfer.dropEffect = types.includes(DT_TPL) ? 'copy' : 'move';
-    dropTarget = dropAt(e);
-  });
-  strip.addEventListener('dragleave', e => { if (!strip.contains(e.relatedTarget)) { const keep = strip.classList.contains('dragging'); clearDrop(); if (keep) strip.classList.add('dragging'); } });
-  strip.addEventListener('drop', e => {
-    e.preventDefault();
-    const tid = e.dataTransfer.getData(DT_TPL);
-    const from = e.dataTransfer.getData(DT_SLIDE);
-    const target = dropTarget || dropAt(e);
-    clearDrop();
-    if (playing) stop();
-    if (tid) {
-      if (target.mode === 'replace') {
-        applyTemplate(post.slides[target.index], tid);
-        current = target.index;
-      } else {
-        if (post.slides.length >= 20) { toast('Een carrousel heeft maximaal 20 slides.'); return; }
-        const ns = newSlide(tid);
-        const near = post.slides[Math.max(0, target.index - 1)];
-        if (near && getTemplate(tid).palettes.find(p => p.id === near.palette)) ns.palette = near.palette;
-        post.slides.splice(target.index, 0, ns);
-        current = target.index;
-      }
-      changed(true);
-    } else if (from !== '') {
-      const f = +from;
-      let to = target.index;
-      if (to > f) to--;
-      if (to === f) return;
-      const [s] = post.slides.splice(f, 1);
-      post.slides.splice(to, 0, s);
-      current = to;
-      changed(true);
-    }
-  });
-}
-
-function move(d) {
-  const j = current + d;
-  if (j < 0 || j >= post.slides.length) return;
-  [post.slides[current], post.slides[j]] = [post.slides[j], post.slides[current]];
-  current = j;
+function duplicateSlide(i) {
+  if (post.slides.length >= MAX_SLIDES) return;
+  const src = post.slides[i];
+  const copy = JSON.parse(JSON.stringify(src));
+  copy.id = uid();
+  for (const [k, m] of Object.entries(src.media)) if (m) { copy.media[k].src = m.src; if (m.blob) copy.media[k].blob = m.blob; }
+  post.slides.splice(i + 1, 0, copy);
+  current = i + 1;
   changed(true);
+}
+
+function removeSlide(i) {
+  if (post.slides.length < 2) return;
+  post.slides.splice(i, 1);
+  current = Math.max(0, Math.min(current, post.slides.length - 1));
+  changed(true);
+  toast('Slide verwijderd. Met ⌘Z zet je hem terug.');
+}
+
+function renderSlideList() {
+  const list = $('#slide-list');
+  list.innerHTML = '';
+  const multi = post.format === 'carousel';
+  const size = sizeOf(post.format);
+  post.slides.forEach((s, i) => {
+    const c = el('canvas', { width: 112, height: Math.round(112 * size.h / size.w) });
+    const item = el('div', { class: 'slide-item' + (i === current ? ' on' : ''), role: 'button', tabindex: '0', 'data-i': i, draggable: multi ? 'true' : null,
+      'aria-label': `Slide ${i + 1}: ${getTemplate(s.template).name}`,
+      onclick: () => selectSlide(i),
+      onkeydown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectSlide(i); } } },
+      multi ? el('span', { class: 'grip' }, svgEl(ICON.grip)) : null,
+      c,
+      el('span', { class: 'txt' },
+        el('small', {}, multi ? `Slide ${i + 1}` : `${FORMATS[post.format].name} · ${FORMATS[post.format].ratio}`),
+        el('span', {}, getTemplate(s.template).name),
+        slideHasVideo(s) ? el('em', {}, 'VIDEO') : null),
+      multi ? el('span', { class: 'acts' },
+        iconBtn('Dupliceer slide', ICON.copy, () => duplicateSlide(i), post.slides.length >= MAX_SLIDES),
+        iconBtn('Verwijder slide', ICON.trash, () => removeSlide(i), post.slides.length < 2)) : null);
+    renderThumb(c, s, post.format);
+    list.append(item);
+  });
+  $('#slides-count').textContent = multi ? `${post.slides.length} van max. ${MAX_SLIDES}` : '';
+  $('#btn-add-slide').style.display = multi && post.slides.length < MAX_SLIDES ? '' : 'none';
+  $('#slides-hint').textContent = multi
+    ? (post.slides.length > 1 ? 'Sleep slides om de volgorde te wijzigen.' : 'Voeg slides toe om er een reeks van te maken.')
+    : `Een ${FORMATS[post.format].name.toLowerCase()} heeft één beeld. Kies onder Post het formaat Carrousel voor meerdere slides.`;
+}
+
+/* slepen om de volgorde te wijzigen */
+const DT_SLIDE = 'text/x-skymark-slide';
+
+function bindListDrop() {
+  const list = $('#slide-list');
+  let from = null;
+  const clear = () => list.querySelectorAll('.drop-before,.drop-after,.dragging').forEach(n => n.classList.remove('drop-before', 'drop-after', 'dragging'));
+  const targetOf = e => {
+    const items = [...list.querySelectorAll('.slide-item')];
+    for (let k = 0; k < items.length; k++) {
+      const r = items[k].getBoundingClientRect();
+      if (e.clientY < r.top + r.height / 2) return { index: k, node: items[k], before: true };
+    }
+    return { index: items.length, node: items[items.length - 1], before: false };
+  };
+  list.addEventListener('dragstart', e => {
+    const it = e.target.closest('.slide-item');
+    if (!it) return;
+    from = +it.dataset.i;
+    e.dataTransfer.setData(DT_SLIDE, String(from));
+    e.dataTransfer.effectAllowed = 'move';
+    it.classList.add('dragging');
+  });
+  list.addEventListener('dragover', e => {
+    if (from == null) return;
+    e.preventDefault();
+    const t = targetOf(e);
+    list.querySelectorAll('.drop-before,.drop-after').forEach(n => n.classList.remove('drop-before', 'drop-after'));
+    if (t.node) t.node.classList.add(t.before ? 'drop-before' : 'drop-after');
+  });
+  list.addEventListener('dragend', () => { clear(); from = null; });
+  list.addEventListener('drop', e => {
+    e.preventDefault();
+    if (from == null) return;
+    const t = targetOf(e);
+    clear();
+    const f = from;
+    from = null;
+    let to = t.index;
+    if (to > f) to--;
+    if (to === f) return;
+    if (playing) stop();
+    const [s] = post.slides.splice(f, 1);
+    post.slides.splice(to, 0, s);
+    current = to;
+    changed(true);
+  });
 }
 
 let tplTimer = null;
 function refreshTemplateThumbs() {
   clearTimeout(tplTimer);
-  tplTimer = setTimeout(renderTemplates, 120);
+  tplTimer = setTimeout(() => {
+    renderSlideList();
+    if ($('#m-tpl').classList.contains('show')) renderPicker();
+  }, 150);
 }
 
 let thumbTimer = null;
 function updateThumbs() {
   clearTimeout(thumbTimer);
   thumbTimer = setTimeout(() => {
-    if (post.format !== 'carousel') return;
-    const c = document.querySelector('.slide-th.on canvas');
+    const c = document.querySelector('.slide-item.on canvas');
     if (c) renderThumb(c, slide(), post.format);
   }, 250);
 }
 
-/* ---------- rechts: inspector ---------- */
+/* ---------- rechts: inspector met de tabs Design en Post ---------- */
+
+let itab = 'design';
 
 function renderInspector() {
-  const s = slide();
-  const tpl = getTemplate(s.template);
+  document.querySelectorAll('.itabs button').forEach(b => {
+    b.classList.toggle('on', b.dataset.t === itab);
+    b.setAttribute('aria-selected', b.dataset.t === itab ? 'true' : 'false');
+  });
   const box = $('#inspector');
   box.innerHTML = '';
+  if (itab === 'post') renderPostTab(box);
+  else renderDesignTab(box);
+}
 
-  box.append(postSection());
+const luminance = hex => {
+  const n = parseInt(hex.slice(1), 16);
+  const c = [n >> 16, (n >> 8) & 255, n & 255].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+};
 
-  box.append(el('div', { class: 'sec' },
-    el('p', { class: 'eyebrow' }, post.format === 'carousel' ? `Slide ${current + 1} van ${post.slides.length}` : FORMATS[post.format].name + ' · ' + FORMATS[post.format].ratio),
-    el('p', { class: 'tpl-title' }, tpl.name),
-    tpl.note ? el('p', { class: 'muted', style: 'margin:0' }, tpl.note) : null
-  ));
+function renderDesignTab(box) {
+  const s = slide();
+  const tpl = getTemplate(s.template);
+  const where = post.format === 'carousel' ? `Slide ${current + 1} van ${post.slides.length}` : `${FORMATS[post.format].name} · ${FORMATS[post.format].ratio}`;
+
+  box.append(el('div', { class: 'sec' }, el('div', { class: 'tpl-head' },
+    el('div', {}, el('p', { class: 'eyebrow', style: 'margin:0' }, where + ' · Template'), el('p', { class: 'tpl-title' }, tpl.name)),
+    el('button', { class: 'btn', onclick: () => openPicker('swap') }, 'Wissel'))));
 
   /* tekst */
   const tsec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Tekst'));
@@ -558,12 +578,11 @@ function renderInspector() {
     } else thumb.append('Geen beeld');
 
     msec.append(el('div', { class: 'media-card' }, thumb, el('div', { class: 'media-btns' },
-      el('button', { class: 'btn', onclick: () => openPhotos(slot.key) }, 'Uit fotoselectie'),
-      el('button', { class: 'btn', onclick: () => pickFile(slot.key) }, 'Eigen foto of video'),
-      m ? el('button', { class: 'btn', onclick: () => { delete s.media[slot.key]; changed(true); } }, 'Verwijder') : null
+      el('button', { class: 'btn', onclick: () => openPhotos(slot.key) }, 'Kies uit fotoselectie'),
+      el('button', { class: 'btn quiet', onclick: () => pickFile(slot.key) }, 'Eigen foto of video')
     )));
 
-    if (m && m.missing) msec.append(el('p', { class: 'missing' }, `“${m.ref.name}” is niet online bewaard. Kies het bestand opnieuw en bewaar de post.`));
+    if (m && m.missing) msec.append(el('p', { class: 'missing' }, `“${m.ref.name}” is niet online bewaard. Kies het bestand opnieuw.`));
 
     if (m && m.src) {
       const zoom = el('input', { type: 'range', min: 100, max: 300, step: 1, 'data-zoom': slot.key });
@@ -573,8 +592,6 @@ function renderInspector() {
       zoom.addEventListener('sync', sync);
       zoom.addEventListener('input', () => { m.zoom = zoom.value / 100; sync(); if (!playing) draw(); changed(false); });
       msec.append(el('div', { class: 'range' }, el('label', {}, el('span', {}, 'Zoom'), zl), zoom));
-      msec.append(el('p', { class: 'muted', style: 'margin:8px 0 0' }, 'Sleep in het voorbeeld om de uitsnede te verschuiven. ',
-        el('a', { href: '#', style: 'color:var(--gold)', onclick: e => { e.preventDefault(); m.zoom = 1; m.pos = { x: 0, y: 0 }; changed(true); } }, 'Centreren')));
 
       const ov = el('input', { type: 'range', min: 0, max: 80, step: 1 });
       ov.value = Math.round((m.overlay || 0) * 100);
@@ -602,10 +619,9 @@ function renderInspector() {
             il.textContent = fmtSec(a); ol.textContent = fmtSec(b);
             dl.textContent = 'Lengte clip: ' + fmtSec(b - a) + (post.format === 'story' && b - a > 60 ? ' · stories langer dan 60 s knipt Instagram op' : '');
             if (!playing && v.readyState) v.currentTime = document.activeElement === outp ? b : a;
-            changed(false);
           };
-          inp.addEventListener('input', upd);
-          outp.addEventListener('input', upd);
+          inp.addEventListener('input', () => { upd(); changed(false); });
+          outp.addEventListener('input', () => { upd(); changed(false); });
           inp.addEventListener('change', () => { if (!playing && v.readyState) v.currentTime = m.in; });
           upd();
           const snd = el('input', { type: 'checkbox' });
@@ -619,63 +635,89 @@ function renderInspector() {
           );
         }
       }
+      msec.append(el('p', { class: 'muted', style: 'margin:12px 0 0;display:flex;gap:14px;flex-wrap:wrap' },
+        el('span', {}, 'Sleep in het voorbeeld om te verschuiven.'),
+        el('button', { class: 'link', onclick: () => { m.zoom = 1; m.pos = { x: 0, y: 0 }; changed(true); } }, 'Centreren'),
+        el('button', { class: 'link', onclick: () => { delete s.media[slot.key]; changed(true); } }, 'Beeld verwijderen')));
     }
     box.append(msec);
   }
 
   /* kleur */
-  const csec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Kleuren'));
-  const sw = el('div', { class: 'swatches' });
-  for (const p of tpl.palettes) {
+  const onPhoto = tpl.palettes.some(p => p.swatch);
+  const csec = el('div', { class: 'sec' }, el('div', { class: 'sec-head' },
+    el('h4', { class: 'eyebrow' }, onPhoto ? 'Tekstkleur' : 'Kleur'),
+    el('span', { class: 'sw-name' }, paletteOf(tpl, s.palette).name)));
+  const swBtn = p => {
     const bg = COLORS[p.swatch ? p.swatch : p.bg].hex;
     const dot = COLORS[p.swatch ? p.swatch : p.head].hex;
     const i = el('i', { style: `background:${p.swatch ? 'repeating-conic-gradient(#3a3f3a 0 25%,#2b2f2b 0 50%) 0 0/14px 14px' : bg}` }, el('u', { style: `background:${p.swatch ? bg : dot}` }));
-    sw.append(el('button', { class: 'sw' + (paletteOf(tpl, s.palette).id === p.id ? ' on' : ''), title: p.name, 'aria-label': p.name, onclick: () => { s.palette = p.id; changed(true); } }, i));
+    return el('button', { class: 'sw' + (paletteOf(tpl, s.palette).id === p.id ? ' on' : ''), title: p.name, 'aria-label': p.name, onclick: () => { s.palette = p.id; changed(true); } }, i);
+  };
+  if (onPhoto) {
+    const g = el('div', { class: 'swatches' });
+    tpl.palettes.forEach(p => g.append(swBtn(p)));
+    csec.append(g);
+  } else {
+    for (const [label, dark] of [['Donker', true], ['Licht', false]]) {
+      const ps = tpl.palettes.filter(p => (luminance(COLORS[p.bg].hex) < 0.3) === dark);
+      if (!ps.length) continue;
+      const g = el('div', { class: 'swatches' });
+      ps.forEach(p => g.append(swBtn(p)));
+      csec.append(el('p', { class: 'sw-group' }, label), g);
+    }
   }
-  csec.append(el('p', { class: 'sw-name' }, paletteOf(tpl, s.palette).name), sw,
-    el('p', { class: 'muted', style: 'margin:12px 0 0' }, 'Alleen combinaties uit het brandbook, zodat alles leesbaar en herkenbaar blijft.'));
   box.append(csec);
 
-  /* export */
-  if (!isVideo()) {
-    box.append(el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Export als afbeelding'),
-      el('ul', { class: 'spec' },
-        el('li', {}, `${sizeOf(post.format).w}×${sizeOf(post.format).h} pixels`),
-        el('li', {}, 'JPG met foto, PNG zonder foto (scherpe vlakken en letters)'),
-        post.format === 'carousel' ? el('li', {}, 'Carrousel: zip met genummerde bestanden') : null,
-        el('li', {}, 'Wil je beweging? Zet de modus bovenin op Video.')
-      )));
-    return;
-  }
-  const hasVideo = slideHasVideo(s);
+  /* beweging, alleen bij video */
+  if (!isVideo()) return;
   const anim = el('input', { type: 'checkbox' });
   anim.checked = s.animate !== false;
   anim.addEventListener('change', () => { s.animate = anim.checked; changed(false); });
   const animOut = el('input', { type: 'checkbox' });
   animOut.checked = s.animateOut !== false;
   animOut.addEventListener('change', () => { s.animateOut = animOut.checked; changed(false); });
-  const bsec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, post.format === 'carousel' ? 'Beweging van deze slide' : 'Beweging'),
-    el('label', { class: 'chk' }, anim, 'In: tekst en beeld rustig laten binnenkomen'),
-    el('label', { class: 'chk', style: 'margin-top:8px' }, animOut, 'Uit: tekst rustig laten verdwijnen aan het eind'));
-  if (!hasVideo) {
+  const bsec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Beweging'),
+    el('label', { class: 'chk' }, anim, 'Tekst en beeld komen rustig binnen'),
+    el('label', { class: 'chk', style: 'margin-top:8px' }, animOut, 'Tekst verdwijnt rustig aan het eind'));
+  if (!slideHasVideo(s)) {
     const d = el('input', { type: 'range', min: 3, max: 20, step: 1 });
     d.value = s.duration || 6;
     const dl = el('span', {}, d.value + ' s');
     d.addEventListener('input', () => { s.duration = +d.value; dl.textContent = d.value + ' s'; changed(false); });
-    bsec.append(el('div', { class: 'range' }, el('label', {}, el('span', {}, 'Duur van de video'), dl), d));
+    bsec.append(el('div', { class: 'range' }, el('label', {}, el('span', {}, 'Duur'), dl), d));
   }
-  bsec.append(el('ul', { class: 'spec', style: 'margin-top:14px' },
-    el('li', {}, `MP4, H.264 + AAC, 30 fps, ${sizeOf(post.format).w}×${sizeOf(post.format).h}`),
-    el('li', {}, 'Klaar voor Instagram: geen extra omzetting nodig'),
-    post.format === 'carousel' && post.videoExport !== 'doorlopend' ? el('li', {}, 'Carrousel: elke slide als MP4 in één zip') : null
-  ));
   box.append(bsec);
-  if (post.format === 'carousel') box.append(sequenceSection());
+}
+
+function renderPostTab(box) {
+  /* formaat */
+  const seg = el('div', { class: 'seg' });
+  for (const f of Object.values(FORMATS)) {
+    seg.append(el('button', { class: f.id === post.format ? 'on' : '', onclick: () => setFormat(f.id) },
+      el('b', {}, f.name), el('span', {}, f.id === 'carousel' ? '4:5 · reeks' : f.ratio)));
+  }
+  box.append(el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Formaat'), seg));
+
+  if (isVideo() && post.format === 'carousel') box.append(sequenceSection());
+
+  /* instagram */
+  const cap = el('textarea', { rows: 6, id: 'f-caption', placeholder: 'De tekst onder de post op Instagram' });
+  cap.value = post.caption || '';
+  cap.addEventListener('input', () => { post.caption = cap.value; changed(false); });
+  const date = el('input', { type: 'date', id: 'f-date' });
+  date.value = post.date || '';
+  date.addEventListener('change', () => { post.date = date.value; changed(false); renderTopbar(); });
+  box.append(el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Instagram'),
+    el('div', { class: 'field' }, el('label', { for: 'f-caption' }, 'Bijschrift'), cap),
+    el('div', { class: 'field', style: 'margin:0' }, el('label', { for: 'f-date' }, 'Geplande datum'), date)));
+
+  box.append(approvalSection());
 }
 
 /* Carrousel als video: losse clips voor Instagram, of één doorlopende video met overgangen. */
 function sequenceSection() {
-  const sec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Carrousel als video'));
+  const sec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Video'));
   const opt = (val, title, sub) => {
     const r = el('input', { type: 'radio', name: 'vexp', value: val });
     r.checked = (post.videoExport || 'los') === val;
@@ -881,8 +923,8 @@ function hydrate(data) {
 
 let saveTimer = null;
 /* ---------- ongedaan maken ----------
-   Elke wijziging loopt via changed(). Snelle reeksen (typen, schuiven, slepen)
-   binnen 0,7 s tellen als één stap. Beeldbestanden zelf worden niet gekopieerd,
+   Elke wijziging loopt via changed(). Snelle reeksen van typen en schuiven
+   binnen 0,7 s tellen als één stap; losse handelingen altijd als eigen stap. Beeldbestanden zelf worden niet gekopieerd,
    alleen de verwijzing ernaar. */
 
 const HISTORY_MAX = 50;
@@ -912,14 +954,16 @@ function resetHistory() {
   updateUndoUI();
 }
 
-function recordHistory() {
+function recordHistory(structural) {
   const now = Date.now();
-  if (stable && now - lastChange > BURST_MS) {
+  /* losse handelingen (template, kleur, slide, modus) altijd een eigen stap;
+     typen en schuiven binnen 0,7 s samen als één stap */
+  if (stable && (structural || now - lastChange > BURST_MS)) {
     undoStack.push(stable);
     if (undoStack.length > HISTORY_MAX) undoStack.shift();
     redoStack = [];
   }
-  lastChange = now;
+  lastChange = structural ? 0 : now;
   stable = snapshot();
   updateUndoUI();
 }
@@ -953,7 +997,7 @@ function updateUndoUI() {
 }
 
 function changed(structural) {
-  recordHistory();
+  recordHistory(structural);
   markDirty(structural);
 }
 
@@ -975,7 +1019,7 @@ function resumeLocal() {
   if (!dirty) {
     try {
       const p = JSON.parse(localStorage.getItem(LS_POST));
-      if (p) { post = hydrate(p); current = 0; dirty = true; resetHistory(); $('#save-state').textContent = 'Niet bewaard'; resolveRemote(post).then(() => refreshAll()); }
+      if (p) { post = hydrate(p); current = 0; dirty = true; editSeq++; resetHistory(); setSaveState('dirty'); scheduleAutosave(); resolveRemote(post).then(() => refreshAll()); }
     } catch (e) {}
   }
   setView('make');
@@ -990,30 +1034,35 @@ function startNew() {
   setTimeout(() => $('#new-name').focus(), 50);
 }
 
-function createNew() {
-  if (dirty && !confirm('Je vorige post is niet bewaard. Toch een nieuwe beginnen?')) return;
+async function createNew() {
+  if (dirty && !(await saveNow()) && !confirm('Je vorige post kon niet bewaard worden. Toch een nieuwe beginnen?')) return;
   if (playing) stop();
   const f = $('#new-fmt button.on').dataset.f;
   post = newPost(f);
   const name = $('#new-name').value.trim();
   if (name) post.name = name;
   post.date = $('#new-date').value || '';
-  current = 0; dirty = false;
-  $('#save-state').textContent = '';
+  current = 0;
+  itab = 'design';
+  dirty = true;
+  editSeq++;
   persistLocal();
   resetHistory();
   $('#m-new').classList.remove('show');
   setView('make');
   refreshAll();
+  saveNow();
 }
 
 function markDirty(structural) {
   dirty = true;
-  $('#save-state').textContent = 'Niet bewaard';
+  editSeq++;
+  setSaveState('dirty');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(persistLocal, 400);
+  scheduleAutosave();
   if (structural) refreshAll();
-  else { updateThumbs(); }
+  else { updateThumbs(); renderTopbar(); }
 }
 
 function author() {
@@ -1058,25 +1107,58 @@ async function api(body) {
   return j;
 }
 
-async function saveDraft() {
-  const who = author() || await askAuthor();
-  const btn = $('#btn-save');
-  btn.disabled = true;
-  $('#save-state').textContent = 'Bewaren...';
-  try {
-    const up = await storeUploads((i, n) => { $('#save-state').textContent = `Beeld ${i + 1} van ${n} uploaden...`; });
-    $('#save-state').textContent = 'Bewaren...';
-    const res = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
-    post.review = reviewOf(res.draft);
-    dirty = false;
-    persistLocal();
-    renderInspector();
-    $('#save-state').textContent = 'Bewaard';
-    toast(up.skipped ? `Concept bewaard. ${up.skipped === 1 ? 'Eén video was' : up.skipped + ' video’s waren'} te groot om online te bewaren (max. 115 MB); die kies je bij openen opnieuw.` : 'Concept bewaard, met alle beelden. Celine en jij zien het onder Concepten.');
-  } catch (e) {
-    $('#save-state').textContent = 'Niet bewaard';
-    toast('Bewaren lukte niet: ' + e.message);
-  } finally { btn.disabled = false; }
+/* Automatisch bewaren: 2,5 s na de laatste wijziging, of meteen bij ⌘S,
+   bij teruggaan naar het overzicht en voor het aanbieden.
+   editSeq voorkomt dat een wijziging tijdens het bewaren als bewaard telt. */
+
+const AUTOSAVE_MS = 2500;
+let editSeq = 0;
+let saving = null;
+let autoTimer = null;
+
+function scheduleAutosave() {
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => { saveNow(); }, AUTOSAVE_MS);
+}
+
+function setSaveState(kind, text) {
+  const n = $('#save-state');
+  n.className = 'save-state' + (kind === 'ok' ? ' ok' : kind === 'error' ? ' err' : '');
+  n.innerHTML = '';
+  if (kind === 'ok') n.textContent = 'Alles bewaard';
+  else if (kind === 'dirty') n.textContent = 'Niet bewaard';
+  else if (kind === 'saving') n.textContent = text || 'Bewaren...';
+  else if (kind === 'error') n.append('Bewaren lukte niet · ', el('a', { href: '#', onclick: e => { e.preventDefault(); saveNow(); } }, 'opnieuw proberen'));
+  else n.textContent = text || '';
+}
+
+async function saveNow() {
+  clearTimeout(autoTimer);
+  if (saving) await saving.catch(() => {});
+  if (!dirty) return true;
+  const run = (async () => {
+    const seq = editSeq;
+    const who = author() || await askAuthor();
+    setSaveState('saving');
+    try {
+      const up = await storeUploads((i, n) => setSaveState('saving', `Beeld ${i + 1} van ${n} uploaden...`));
+      const res = await api({ action: 'save', draft: Object.assign(serialize(), { author: who }) });
+      post.review = reviewOf(res.draft);
+      if (editSeq === seq) dirty = false;
+      persistLocal();
+      setSaveState(dirty ? 'dirty' : 'ok');
+      renderTopbar();
+      if (dirty) scheduleAutosave();
+      if (up.skipped) toast(`${up.skipped === 1 ? 'Eén video was' : up.skipped + ' video’s waren'} te groot om online te bewaren (max. 115 MB); die kies je bij openen opnieuw.`);
+      return true;
+    } catch (e) {
+      setSaveState('error');
+      console.warn('Bewaren lukte niet', e);
+      return false;
+    }
+  })();
+  saving = run;
+  try { return await run; } finally { if (saving === run) saving = null; }
 }
 
 /* ---------- exporteren ---------- */
@@ -1187,18 +1269,70 @@ function toast(msg) {
 
 function refreshAll() {
   if (current >= post.slides.length) current = post.slides.length - 1;
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.f === post.format));
-  $('#post-name').value = post.name;
   document.querySelectorAll('#mode button').forEach(b => b.classList.toggle('on', b.dataset.m === post.mode));
-  $('#btn-slide').style.display = post.format === 'carousel' ? '' : 'none';
-  $('#btn-export').textContent = isSequence() ? 'Exporteer als één video' : post.format === 'carousel' ? (isVideo() ? 'Exporteer carrousel (MP4)' : 'Exporteer carrousel') : (isVideo() ? 'Exporteer video' : 'Exporteer afbeelding');
   $('#playbar').classList.toggle('hide', !isVideo());
   if (!isVideo() && playing) stop();
-  renderTemplates();
-  renderStrip();
+  const multi = post.format === 'carousel' && post.slides.length > 1;
+  $('#pager').style.visibility = multi ? '' : 'hidden';
+  $('#pager-label').textContent = multi ? `Slide ${current + 1} van ${post.slides.length}` : '';
+  toggleExportMenu(false);
+  renderTopbar();
+  renderSlideList();
   renderInspector();
   fitStage();
   draw();
+}
+
+function renderTopbar() {
+  const name = $('#post-name');
+  if (document.activeElement !== name) name.value = post.name;
+  const r = post.review || reviewOf(null);
+  const ms = $('#meta-status');
+  ms.innerHTML = '';
+  ms.append(statusPill(r.status));
+  const parts = [FORMATS[post.format].name];
+  if (post.format === 'carousel') parts.push(post.slides.length === 1 ? '1 slide' : `${post.slides.length} slides`);
+  if (isVideo()) parts.push('video');
+  if (post.date) parts.push('gepland ' + new Date(post.date + 'T12:00').toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' }));
+  $('#meta-info').textContent = parts.join(' · ');
+  const btn = $('#btn-submit');
+  const fresh = r.version && !r.editedSinceSubmit && !dirty;
+  btn.disabled = !!fresh;
+  btn.textContent = fresh ? `Versie ${r.version} aangeboden` : r.version ? `Versie ${r.version + 1} aanbieden` : 'Ter goedkeuring aanbieden';
+}
+
+function exportItems() {
+  const sz = sizeOf(post.format);
+  const dims = `${sz.w} × ${sz.h}`;
+  if (post.format !== 'carousel') return isVideo()
+    ? [['Video', `MP4 · ${dims} · klaar voor Instagram`, () => doExport('video')]]
+    : [['Afbeelding', `JPG of PNG · ${dims}`, () => doExport('image')]];
+  const n = post.slides.length;
+  if (!isVideo()) return [
+    ['Deze slide', `Slide ${current + 1} als JPG of PNG`, () => doExport('image')],
+    ['Alle slides', `ZIP met ${n} genummerde afbeeldingen`, exportCarousel]];
+  return [
+    ['Deze slide als video', `Slide ${current + 1} als MP4`, () => doExport('video')],
+    isSequence()
+      ? ['Hele carrousel als één video', 'MP4 met overgangen, voor een Reel of story', exportReel]
+      : ['Alle slides als video', `ZIP met ${n} MP4’s, voor een carrousel`, exportCarousel]];
+}
+
+function toggleExportMenu(show) {
+  const m = $('#exp-menu');
+  const on = show == null ? !m.classList.contains('show') : show;
+  m.innerHTML = '';
+  if (on) for (const [t, sub, fn] of exportItems()) {
+    m.append(el('button', { role: 'menuitem', onclick: () => { toggleExportMenu(false); fn(); } }, el('b', {}, t), el('small', {}, sub)));
+  }
+  m.classList.toggle('show', on);
+  $('#btn-export').setAttribute('aria-expanded', on ? 'true' : 'false');
+}
+
+async function goOverview() {
+  if (playing) stop();
+  if (dirty) { persistLocal(); await saveNow(); }
+  setView('review');
 }
 
 function setMode(m) {
@@ -1209,41 +1343,51 @@ function setMode(m) {
 }
 
 function bind() {
-  document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => setFormat(b.dataset.f)));
   $('#post-name').addEventListener('input', e => { post.name = e.target.value; changed(false); });
   $('#play').innerHTML = ICON_PLAY;
   $('#play').addEventListener('click', () => (playing ? stop() : play()));
   $('#safe-toggle').addEventListener('change', fitStage);
-  $('#btn-overview').addEventListener('click', () => { if (dirty) persistLocal(); setView('review'); });
+  $('#btn-overview').addEventListener('click', goOverview);
   document.querySelectorAll('#new-fmt button').forEach(b => b.addEventListener('click', () => {
     document.querySelectorAll('#new-fmt button').forEach(x => x.classList.toggle('on', x === b));
   }));
   $('#new-ok').addEventListener('click', createNew);
   $('#new-name').addEventListener('keydown', e => { if (e.key === 'Enter') createNew(); });
-  $('#btn-save').addEventListener('click', saveDraft);
   $('#btn-undo').addEventListener('click', undo);
   $('#btn-redo').addEventListener('click', redo);
   document.querySelectorAll('#mode button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
-  $('#btn-slide').addEventListener('click', exportSlide);
-  $('#btn-export').addEventListener('click', exportMain);
+  document.querySelectorAll('.itabs button').forEach(b => b.addEventListener('click', () => { itab = b.dataset.t; renderInspector(); }));
+  $('#btn-add-slide').addEventListener('click', () => openPicker('add'));
+  $('#btn-prev').addEventListener('click', () => selectSlide((current - 1 + post.slides.length) % post.slides.length));
+  $('#btn-next').addEventListener('click', () => selectSlide((current + 1) % post.slides.length));
+  $('#btn-export').addEventListener('click', e => {
+    e.stopPropagation();
+    const items = exportItems();
+    if (items.length === 1) { toggleExportMenu(false); items[0][2](); } else toggleExportMenu();
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.menu-wrap')) toggleExportMenu(false); });
+  $('#btn-submit').addEventListener('click', openSubmit);
+  $('#submit-ok').addEventListener('click', () => { $('#m-submit').classList.remove('show'); submitForApproval($('#submit-note').value); });
   new ResizeObserver(() => fitStage()).observe($('#stage-wrap'));
-  bindStripDrop();
+  bindListDrop();
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').classList.remove('show')));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m && m.id !== 'm-export' && m.id !== 'm-name') m.classList.remove('show'); }));
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') document.querySelectorAll('.modal.show').forEach(m => { if (m.id !== 'm-export') m.classList.remove('show'); });
+    const inEditor = !document.body.classList.contains('view-review');
+    if (e.key === 'Escape') { toggleExportMenu(false); document.querySelectorAll('.modal.show').forEach(m => { if (m.id !== 'm-export') m.classList.remove('show'); }); }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's' && inEditor) { e.preventDefault(); saveNow(); return; }
     if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key.toLowerCase() === 'z' || (e.key.toLowerCase() === 'y' && e.ctrlKey))) {
       const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
-      const elsewhere = document.body.classList.contains('view-review') || document.querySelector('.modal.show');
+      const elsewhere = !inEditor || document.querySelector('.modal.show');
       if (!typing && !elsewhere) {
         e.preventDefault();
         (e.shiftKey || e.key.toLowerCase() === 'y') ? redo() : undo();
       }
     }
-    if (e.key === ' ' && isVideo() && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); playing ? stop() : play(); }
+    if (e.key === ' ' && isVideo() && inEditor && !/INPUT|TEXTAREA|BUTTON/.test(document.activeElement.tagName) && !document.activeElement.closest('.slide-item')) { e.preventDefault(); playing ? stop() : play(); }
   });
   window.addEventListener('resize', fitStage);
-  window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+  window.addEventListener('beforeunload', e => { if (dirty || saving) { persistLocal(); e.preventDefault(); e.returnValue = ''; } });
 }
 
 /* ---------- goedkeuring vanuit de editor ---------- */
@@ -1259,18 +1403,18 @@ function reviewOf(d) {
 }
 
 async function openDraft(id) {
-  if (dirty && !confirm('Je huidige post is niet bewaard. Toch deze post openen?')) return false;
+  if (dirty && !(await saveNow()) && !confirm('Je huidige post kon niet bewaard worden. Toch deze post openen?')) return false;
   const { draft } = await api({ action: 'get', id });
   if (playing) stop();
   const p = hydrate(draft);
-  $('#save-state').textContent = 'Beelden laden...';
+  setSaveState('saving', 'Beelden laden...');
   await resolveRemote(p);
-  post = p; current = 0; dirty = false;
+  post = p; current = 0; dirty = false; itab = 'design';
   persistLocal();
   resetHistory();
   setView('make');
   refreshAll();
-  $('#save-state').textContent = 'Geopend';
+  setSaveState('ok');
   return true;
 }
 
@@ -1280,25 +1424,15 @@ function setView(v) {
   else fitStage();
 }
 
-function postSection() {
+function approvalSection() {
   const r = post.review || reviewOf(null);
-  const sec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Post'));
-  const cap = el('textarea', { rows: 4, id: 'f-caption', placeholder: 'De tekst onder de post op Instagram' });
-  cap.value = post.caption || '';
-  cap.addEventListener('input', () => { post.caption = cap.value; changed(false); });
-  const date = el('input', { type: 'date', id: 'f-date' });
-  date.value = post.date || '';
-  date.addEventListener('change', () => { post.date = date.value; changed(false); });
-  sec.append(
-    el('div', { class: 'field' }, el('label', { for: 'f-caption' }, 'Bijschrift voor Instagram'), cap),
-    el('div', { class: 'field' }, el('label', { for: 'f-date' }, 'Geplande datum'), date)
-  );
-
+  const sec = el('div', { class: 'sec' }, el('h4', { class: 'eyebrow' }, 'Goedkeuring'));
   const st = el('div', { class: 'post-status' }, statusPill(r.status));
   if (r.version) st.append(el('small', { class: 'muted' }, `Versie ${r.version} aangeboden${r.submitted ? ' door ' + r.submitted.by : ''}`));
-  if (r.editedSinceSubmit || (dirty && r.version)) st.append(el('small', { class: 'rv-open' }, 'Aangepast sinds de laatste versie. Bied opnieuw aan als het klaar is.'));
+  if (r.version && (r.editedSinceSubmit || dirty)) st.append(el('small', { class: 'rv-open' }, 'Aangepast sinds de laatste versie. Bied opnieuw aan als het klaar is.'));
 
   const open = r.thread.filter(t => t.role === 'approver' && (t.type === 'changes' || t.type === 'comment') && !t.resolved);
+  if (open.length) st.append(el('p', { class: 'muted', style: 'margin:8px 0 0' }, 'Open feedback'));
   for (const t of open) {
     const cb = el('input', { type: 'checkbox' });
     cb.addEventListener('change', async () => {
@@ -1313,13 +1447,20 @@ function postSection() {
       t.text,
       el('label', { class: 'chk', style: 'margin-top:6px;font-size:12px;color:var(--stone)' }, cb, 'Verwerkt')));
   }
-
-  const note = el('textarea', { rows: 2, placeholder: 'Toelichting voor Esmée en Camille (optioneel)' });
-  const btn = el('button', { class: 'btn gold', onclick: () => submitForApproval(note.value) }, r.version ? `Versie ${r.version + 1} aanbieden` : 'Ter goedkeuring aanbieden');
-  st.append(el('div', { class: 'field', style: 'width:100%;margin:6px 0 0' }, note), btn);
-  if (r.version) st.append(el('a', { href: '#', style: 'color:var(--gold);font-size:12.5px', onclick: e => { e.preventDefault(); setView('review'); } }, 'Bekijk in goedkeuring'));
-  sec.append(el('div', { class: 'field' }, el('label', {}, 'Goedkeuring'), st));
+  st.append(el('p', { class: 'muted', style: 'margin:8px 0 0' }, 'Aanbieden doe je met de gouden knop rechtsboven.'));
+  if (r.version) st.append(el('a', { href: '#', style: 'color:var(--gold);font-size:12.5px', onclick: e => { e.preventDefault(); goOverview(); } }, 'Bekijk in het overzicht'));
+  sec.append(st);
   return sec;
+}
+
+function openSubmit() {
+  const r = post.review || reviewOf(null);
+  $('#submit-title').textContent = r.version ? `Versie ${r.version + 1} aanbieden` : 'Ter goedkeuring aanbieden';
+  const missing = post.slides.some(s => Object.values(s.media).some(m => m && m.missing)) || post.slides.some(s => getTemplate(s.template).media.some(m => !s.media[m.key] || !s.media[m.key].src));
+  $('#submit-warn').textContent = missing ? 'Let op: niet elk beeldvak is gevuld. Lege vakken worden een effen vlak.' : '';
+  $('#submit-note').value = '';
+  $('#m-submit').classList.add('show');
+  setTimeout(() => $('#submit-note').focus(), 50);
 }
 
 function blobToB64(blob) {
@@ -1345,8 +1486,8 @@ async function uploadPreview(rel, blob, type) {
 
 async function submitForApproval(note) {
   if (playing) stop();
-  const missing = post.slides.some(s => Object.values(s.media).some(m => m && m.missing)) || post.slides.some(s => getTemplate(s.template).media.some(m => !s.media[m.key] || !s.media[m.key].src));
-  if (missing && !confirm('Niet elk beeldvak is gevuld. Toch aanbieden?')) return;
+  clearTimeout(autoTimer);
+  if (saving) await saving.catch(() => {});
   if (isVideo() && !videoSupported()) { toast('Video-previews maken werkt in Chrome, Edge of Safari 17+.'); return; }
   const who = author() || await askAuthor();
   const ui = exportModal('Ter goedkeuring aanbieden');
@@ -1357,6 +1498,7 @@ async function submitForApproval(note) {
     post.review = reviewOf(saved.draft);
     dirty = false;
     persistLocal();
+    setSaveState('ok');
     const version = post.review.version + 1;
     const base = `${post.id}/v${version}`;
     const n = post.slides.length;
@@ -1384,7 +1526,7 @@ async function submitForApproval(note) {
     const res = await api({ action: 'submit', id: post.id, version, previews, sequence, by: who, note: (note || '').trim() });
     post.review = reviewOf(res.draft);
     renderInspector();
-    $('#save-state').textContent = 'Aangeboden';
+    renderTopbar();
     toast(`Versie ${version} staat klaar voor Esmée en Camille.`);
   } catch (e) {
     toast('Aanbieden lukte niet: ' + e.message);
