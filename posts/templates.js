@@ -40,8 +40,26 @@ const BASE = {
   licht:  { name: 'Mist Green', bg: 'mist-green', head: 'binck-black', body: 'binck-black', label: 'binck-black', mark: 'binck-black', logo: 'binck-black' },
   wit:    { name: 'Cloud White', bg: 'cloud-white', head: 'binck-black', body: 'binck-black', label: 'sage-stone', mark: 'binck-black', logo: 'binck-black' },
   brick:  { name: 'Brick Red', bg: 'brick-red', head: 'cloud-white', body: 'cloud-white', label: 'cloud-white', mark: 'golden-yellow', logo: 'cloud-white' },
-  plum:   { name: 'Midnight Plum', bg: 'midnight-plum', head: 'mist-green', body: 'mist-green', label: 'golden-yellow', mark: 'golden-yellow', logo: 'mist-green' }
+  plum:   { name: 'Midnight Plum', bg: 'midnight-plum', head: 'mist-green', body: 'mist-green', label: 'golden-yellow', mark: 'golden-yellow', logo: 'mist-green' },
+
+  /* Uitbreiding (nov 2026). Contrast kop/tekst minstens 4,5:1, labels minstens 3:1. */
+  'donker-goud': { bg: 'binck-black', head: 'golden-yellow', body: 'mist-green', label: 'golden-yellow', mark: 'golden-yellow', logo: 'cloud-white' },
+  'plum-goud':   { bg: 'midnight-plum', head: 'golden-yellow', body: 'cloud-white', label: 'cloud-white', mark: 'golden-yellow', logo: 'cloud-white' },
+  cement:        { bg: 'cement-grey', head: 'binck-black', body: 'binck-black', label: 'urban-pine', mark: 'binck-black', logo: 'binck-black' },
+  goud:          { bg: 'golden-yellow', head: 'binck-black', body: 'binck-black', label: 'midnight-plum', mark: 'midnight-plum', logo: 'binck-black' },
+  moss:          { bg: 'concrete-moss', head: 'binck-black', body: 'binck-black', label: 'cloud-white', mark: 'binck-black', logo: 'binck-black' },
+  'wit-pine':    { bg: 'cloud-white', head: 'urban-pine', body: 'binck-black', label: 'urban-pine', mark: 'urban-pine', logo: 'urban-pine' },
+  'wit-brick':   { bg: 'cloud-white', head: 'brick-red', body: 'binck-black', label: 'brick-red', mark: 'brick-red', logo: 'brick-red' },
+  'wit-plum':    { bg: 'cloud-white', head: 'midnight-plum', body: 'midnight-plum', label: 'midnight-plum', mark: 'midnight-plum', logo: 'midnight-plum' },
+  'licht-plum':  { bg: 'mist-green', head: 'midnight-plum', body: 'midnight-plum', label: 'midnight-plum', mark: 'midnight-plum', logo: 'midnight-plum' },
+  'licht-pine':  { bg: 'mist-green', head: 'urban-pine', body: 'binck-black', label: 'urban-pine', mark: 'urban-pine', logo: 'urban-pine' }
 };
+/* Naam van een set: achtergrond · kopkleur. */
+for (const b of Object.values(BASE)) b.name = `${COLORS[b.bg].name} · ${COLORS[b.head].name}`;
+
+/* Volgorde in de editor: eerst donkere, dan lichte achtergronden. */
+const ORDER = ['donker', 'donker-goud', 'pine', 'plum', 'plum-goud', 'brick', 'moss',
+  'licht', 'licht-pine', 'licht-plum', 'wit', 'wit-pine', 'wit-brick', 'wit-plum', 'cement', 'goud'];
 
 function pal(id, over) {
   return Object.assign({ id }, BASE[id], over || {});
@@ -377,6 +395,19 @@ export const TEMPLATES = [
     }
   }
 ];
+
+/* Elke template krijgt alle kleurensets. De gecureerde sets van een template
+   (met eventuele afwijkingen per rol) gaan voor; de rest vult aan in ORDER-volgorde.
+   Templates met tekst op beeld krijgen extra tekstkleuren. */
+for (const t of TEMPLATES) {
+  const own = new Map(t.palettes.map(p => [p.id, p]));
+  if (t.palettes.some(p => p.swatch)) {
+    for (const [id, c] of [['op-goud', 'golden-yellow'], ['op-cement', 'cement-grey']]) if (!own.has(id)) t.palettes.push(opBeeld(id, c));
+    continue;
+  }
+  const first = t.palettes[0];
+  t.palettes = [first, ...ORDER.filter(id => id !== first.id).map(id => own.get(id) || pal(id))];
+}
 
 export function getTemplate(id) {
   return TEMPLATES.find(t => t.id === id) || TEMPLATES[0];

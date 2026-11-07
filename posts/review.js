@@ -115,16 +115,7 @@ function renderWho() {
     who.classList.add('rv-actions');
     if (local) who.append(el('span', { class: 'rv-resume' }, 'Niet bewaard: ',
       el('a', { href: '#', onclick: e => { e.preventDefault(); ctx.resume(); } }, `verder met “${local.name || 'Naamloze post'}”`)));
-    who.append(
-      el('a', { href: '#', onclick: async e => {
-        e.preventDefault();
-        try {
-          const r = await ctx.api({ action: 'mailtest' });
-          ctx.toast(r.ok ? 'Testmail verstuurd naar ash@connectingthepolkadots.com.' : 'Testmail lukte niet: ' + r.mail);
-        } catch (err) { ctx.toast('Testmail lukte niet: ' + err.message); }
-      } }, 'Testmail sturen'),
-      el('button', { class: 'btn gold', onclick: ctx.newPost }, '+ Nieuwe post')
-    );
+    who.append(el('button', { class: 'btn gold', onclick: ctx.newPost }, '+ Nieuwe post'));
   } else {
     who.append(
       el('span', { class: 'muted' }, me ? `Je reageert als ${me} · ` : ''),

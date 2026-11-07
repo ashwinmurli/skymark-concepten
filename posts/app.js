@@ -630,9 +630,10 @@ function renderInspector() {
     const bg = COLORS[p.swatch ? p.swatch : p.bg].hex;
     const dot = COLORS[p.swatch ? p.swatch : p.head].hex;
     const i = el('i', { style: `background:${p.swatch ? 'repeating-conic-gradient(#3a3f3a 0 25%,#2b2f2b 0 50%) 0 0/14px 14px' : bg}` }, el('u', { style: `background:${p.swatch ? bg : dot}` }));
-    sw.append(el('button', { class: 'sw' + (paletteOf(tpl, s.palette).id === p.id ? ' on' : ''), title: p.name, onclick: () => { s.palette = p.id; changed(true); } }, i, p.name));
+    sw.append(el('button', { class: 'sw' + (paletteOf(tpl, s.palette).id === p.id ? ' on' : ''), title: p.name, 'aria-label': p.name, onclick: () => { s.palette = p.id; changed(true); } }, i));
   }
-  csec.append(sw, el('p', { class: 'muted', style: 'margin:12px 0 0' }, 'Alleen combinaties uit het brandbook, zodat alles leesbaar en herkenbaar blijft.'));
+  csec.append(el('p', { class: 'sw-name' }, paletteOf(tpl, s.palette).name), sw,
+    el('p', { class: 'muted', style: 'margin:12px 0 0' }, 'Alleen combinaties uit het brandbook, zodat alles leesbaar en herkenbaar blijft.'));
   box.append(csec);
 
   /* export */
