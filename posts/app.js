@@ -323,7 +323,7 @@ function sampleMedia() {
 function openPicker(mode) {
   pickerMode = mode;
   pickerFilter = 'Alle';
-  $('#tpl-title').textContent = mode === 'add' ? 'Nieuwe slide: kies een template' : 'Template wisselen';
+  $('#tpl-title').textContent = mode === 'add' ? 'Nieuwe slide: kies een template' : mode === 'start' ? 'Kies een template' : 'Template wisselen';
   renderPicker();
   $('#m-tpl').classList.add('show');
 }
@@ -340,7 +340,7 @@ function renderPicker() {
   const sample = sampleMedia();
   for (const t of list.filter(x => pickerFilter === 'Alle' || x.group === pickerFilter)) {
     const c = el('canvas', { width: 320, height: Math.round(320 * size.h / size.w) });
-    grid.append(el('button', { class: 'tpl' + (pickerMode === 'swap' && t.id === slide().template ? ' on' : ''), onclick: () => pickTemplate(t.id) },
+    grid.append(el('button', { class: 'tpl' + (pickerMode !== 'add' && t.id === slide().template ? ' on' : ''), onclick: () => pickTemplate(t.id) },
       c, el('span', {}, t.name), el('small', {}, t.group)));
     const demo = newSlide(t.id);
     if (sample) for (const m of t.media) demo.media[m.key] = sample;
@@ -353,7 +353,7 @@ function pickTemplate(tid) {
   $('#m-tpl').classList.remove('show');
   if (playing) stop();
   itab = 'design';
-  if (pickerMode === 'swap') { applyTemplate(slide(), tid); changed(true); return; }
+  if (pickerMode === 'swap' || pickerMode === 'start') { applyTemplate(slide(), tid); changed(true); return; }
   if (post.slides.length >= MAX_SLIDES) { toast(`Een carrousel heeft maximaal ${MAX_SLIDES} slides.`); return; }
   const ns = newSlide(tid);
   const near = slide();
@@ -440,10 +440,13 @@ function renderSlideList() {
     list.append(item);
   });
   $('#slides-count').textContent = multi ? `${post.slides.length} van max. ${MAX_SLIDES}` : '';
-  $('#btn-add-slide').style.display = multi && post.slides.length < MAX_SLIDES ? '' : 'none';
+  const add = $('#btn-add-slide');
+  add.style.display = !multi || post.slides.length < MAX_SLIDES ? '' : 'none';
+  add.lastChild.textContent = multi ? 'Slide toevoegen' : 'Template kiezen';
+  add.firstChild.innerHTML = multi ? '<path d="M12 5v14M5 12h14"/>' : '<rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/>';
   $('#slides-hint').textContent = multi
     ? (post.slides.length > 1 ? 'Sleep slides om de volgorde te wijzigen.' : 'Voeg slides toe om er een reeks van te maken.')
-    : `Een ${FORMATS[post.format].name.toLowerCase()} heeft één beeld. Kies onder Post het formaat Carrousel voor meerdere slides.`;
+    : `Een ${FORMATS[post.format].name.toLowerCase()} heeft één beeld. Wil je meerdere slides, kies dan onder Post het formaat Carrousel.`;
 }
 
 /* slepen om de volgorde te wijzigen */
@@ -1052,6 +1055,7 @@ async function createNew() {
   setView('make');
   refreshAll();
   saveNow();
+  openPicker('start');
 }
 
 function markDirty(structural) {
@@ -1357,7 +1361,7 @@ function bind() {
   $('#btn-redo').addEventListener('click', redo);
   document.querySelectorAll('#mode button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m)));
   document.querySelectorAll('.itabs button').forEach(b => b.addEventListener('click', () => { itab = b.dataset.t; renderInspector(); }));
-  $('#btn-add-slide').addEventListener('click', () => openPicker('add'));
+  $('#btn-add-slide').addEventListener('click', () => openPicker(post.format === 'carousel' ? 'add' : 'swap'));
   $('#btn-prev').addEventListener('click', () => selectSlide((current - 1 + post.slides.length) % post.slides.length));
   $('#btn-next').addEventListener('click', () => selectSlide((current + 1) % post.slides.length));
   $('#btn-export').addEventListener('click', e => {
