@@ -30,6 +30,37 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .pw-error{font-size:.78rem;color:#c97070;min-height:18px;margin-top:2px;}
 .pw-footer{position:absolute;bottom:24px;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,235,218,.3);}
 
+/* REVIEW */
+.namefield{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--stone);}
+.namefield input{background:var(--panel2);border:1px solid var(--line2);padding:8px 12px;min-height:38px;width:160px;color:var(--fog);font:inherit;font-size:.9rem;outline:none;border-radius:0;}
+.namefield input:focus{border-color:var(--gold);}
+.progress{font-size:.85rem;color:var(--stone);margin-left:auto;white-space:nowrap;}
+.progress b{color:var(--mist);font-weight:600;}
+.savestate{margin-left:10px;font-size:.78rem;}
+.savestate.ok{color:#9FD29A;}
+.savestate.busy{color:var(--stone);}
+.savestate.err{color:#E09A8A;}
+.rv{margin-top:18px;padding:18px 20px;background:var(--panel);border:1px solid var(--line);}
+.rv-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px;}
+.rv-head span{font-weight:600;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);}
+.rv-head small{font-size:.8rem;color:var(--stone);}
+.verdict{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.vbtn{border:1px solid var(--line2);background:none;min-height:40px;padding:0 16px;font-size:.85rem;color:var(--mist);}
+.vbtn:hover:not(:disabled){border-color:var(--mist);}
+.vbtn:disabled{opacity:.4;cursor:default;}
+.vbtn.akkoord.on{background:#9FD29A;border-color:#9FD29A;color:var(--black);}
+.vbtn.aanpassen.on{background:var(--gold);border-color:var(--gold);color:var(--black);}
+.rv textarea{width:100%;background:var(--panel2);border:1px solid var(--line);padding:10px 12px;color:var(--fog);font:inherit;font-size:.9rem;line-height:1.45;resize:vertical;outline:none;border-radius:0;}
+.rv textarea:focus{border-color:var(--gold);}
+.rv textarea:disabled{opacity:.6;}
+.others{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.others li{font-size:.88rem;color:var(--fog);}
+.others b{font-weight:600;margin-right:8px;}
+.others p{margin-top:3px;color:var(--mist);opacity:.86;white-space:pre-line;}
+.tag{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;}
+.tag.akkoord{background:rgba(159,210,154,.16);color:#9FD29A;}
+.tag.aanpassen{background:rgba(202,162,75,.16);color:var(--gold);}
+
 /* PAGINA */
 .page{max-width:1240px;margin:0 auto;padding:72px 32px 0;}
 .eyebrow{font-weight:600;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
@@ -41,6 +72,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 
 .bar{position:sticky;top:52px;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 0;background:rgba(16,19,16,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
 .chips{display:flex;flex-wrap:wrap;gap:6px;}
+.bar .chips{margin-left:12px;}
 .chip{border:1px solid var(--line2);background:none;padding:0 14px;min-height:38px;font-size:.82rem;color:var(--stone);}
 .chip:hover{color:var(--mist);}
 .chip.on{background:var(--mist);border-color:var(--mist);color:var(--black);}
@@ -79,12 +111,14 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .how{padding:80px 0 40px;max-width:760px;}
 .how h2{font-family:'PPTalisman',serif;font-weight:300;font-size:2.2rem;color:var(--mist);margin:12px 0 24px;}
 .how ol{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:18px;}
-.how li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;color:var(--mist);opacity:.9;}
+.how li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;align-items:baseline;color:var(--mist);opacity:.9;}
 .how li::before{content:counter(s, decimal-leading-zero);font-weight:600;font-size:.75rem;letter-spacing:.14em;color:var(--gold);padding-top:4px;}
 .how b{font-weight:600;color:var(--fog);}
 footer{padding:48px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--stone);border-top:1px solid var(--line);margin-top:40px;}
 
 @media (max-width:860px){
+  .bar .chips{margin-left:0;}
+  .progress{margin-left:0;}
   .page{padding:48px 16px 0;}
   .tpl,.tpl.story{grid-template-columns:1fr;gap:24px;padding:40px 0;}
   .tpl .preview{max-width:420px;}
@@ -128,11 +162,14 @@ footer{padding:48px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     <p class="eyebrow">Skymark &middot; Social</p>
     <h1>Templates</h1>
     <p class="lede">De vaste bouwstenen voor de Instagram-posts van Skymark. Per template zie je hoe het eruitziet en in welke kleurcombinaties het kan. Teksten en beelden zijn voorbeelden: in elke post vullen we ze opnieuw in.</p>
+    <p class="lede" style="margin-top:14px">Geef per template aan of het akkoord is of dat je het graag anders ziet. Opmerkingen worden direct opgeslagen; we kijken mee.</p>
     <ul class="facts" id="facts"></ul>
   </header>
 
   <div class="bar" id="bar">
+    <label class="namefield" for="reviewer">Je naam <input id="reviewer" type="text" autocomplete="name" placeholder="Bijv. Esmée"></label>
     <div class="chips" id="groups" role="group" aria-label="Filter op groep"></div>
+    <p class="progress"><b id="done">0</b> van <b id="total">0</b> beoordeeld <span class="savestate" id="savestate" role="status"></span></p>
     <div class="seg" id="fmt" role="group" aria-label="Formaat">
       <button data-f="feed" class="on">Feed <span>4:5</span></button>
       <button data-f="story">Story <span>9:16</span></button>
@@ -146,9 +183,9 @@ footer{padding:48px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     <p class="eyebrow">Zo werkt het</p>
     <h2>Van template naar post</h2>
     <ol>
-      <li><b>Ash en Celine kiezen per post een template</b> en vullen tekst, beeld en kleur in. Een carrousel combineert meerdere templates.</li>
-      <li><b>De kleuren komen altijd uit het brandbook.</b> Elke combinatie is gecontroleerd op leesbaarheid.</li>
-      <li><b>Jullie keuren elke post goed onder Posts</b>, met feedback per slide als er iets anders moet.</li>
+      <li><span><b>Ash en Celine kiezen per post een template</b> en vullen tekst, beeld en kleur in. Een carrousel combineert meerdere templates.</span></li>
+      <li><span><b>De kleuren komen altijd uit het brandbook.</b> Elke combinatie is gecontroleerd op leesbaarheid.</span></li>
+      <li><span><b>Jullie keuren elke post goed onder Posts</b>, met feedback per slide als er iets anders moet.</span></li>
     </ol>
   </section>
 
@@ -271,7 +308,8 @@ function card(t, index) {
         el('dt', {}, 'Formaten'), el('dd', {}, fmts),
         el('dt', {}, 'In te vullen'), el('dd', {}, fields)),
       el('div', { class: 'var-head' }, el('span', {}, onPhoto ? `Tekstkleuren op beeld (${pals.length})` : `Kleurvarianten (${pals.length})`), name),
-      grid));
+      grid,
+      reviewBlock(t)));
 
   /* pas tekenen als de kaart in beeld komt */
   const io = new IntersectionObserver(async entries => {
@@ -300,7 +338,142 @@ function render() {
   const list = $('#list');
   list.innerHTML = '';
   all.filter(t => group === 'Alle' || t.group === group).forEach(t => list.append(card(t, TEMPLATES.indexOf(t))));
+  updateProgress();
 }
+
+/* ---------- review: akkoord of aanpassen, met opmerking, per persoon ---------- */
+
+const API = '/api/review';
+const SECRET = 'girxy6-nidzyn-wUknir';
+const STORE = 'skymark-templatereview-v1';
+const VERDICT = { akkoord: 'Akkoord', aanpassen: 'Graag aanpassen' };
+
+const review = (() => {
+  try { return JSON.parse(localStorage.getItem(STORE)) || { name: '', items: {} }; } catch (e) { return { name: '', items: {} }; }
+})();
+if (!review.name) { try { review.name = (JSON.parse(localStorage.getItem('skymark-fotoreview-v1')) || {}).name || ''; } catch (e) {} }
+
+const slugOf = n => (n || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+const mySlug = () => slugOf(review.name);
+const keyOf = tid => `${tid}--${mySlug()}`;
+const keep = () => { try { localStorage.setItem(STORE, JSON.stringify(review)); } catch (e) {} };
+const filled = it => it && (it.choice || (it.note || '').trim());
+
+function setSave(msg, cls) {
+  const n = $('#savestate');
+  n.textContent = msg;
+  n.className = 'savestate' + (cls ? ' ' + cls : '');
+}
+
+async function call(body) {
+  const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ secret: SECRET, page: 'templates' }, body)) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+function mergeIn(items) {
+  for (const [k, r] of Object.entries(items || {})) {
+    const l = review.items[k];
+    if (!l || (r.updated || 0) > (l.updated || 0)) review.items[k] = r;
+  }
+}
+
+let syncTimer = null, pushing = false, pending = false;
+function scheduleSync() {
+  pending = true;
+  setSave('Opslaan…', 'busy');
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(push, 1000);
+}
+async function push() {
+  if (pushing) { pending = true; return; }
+  pushing = true; pending = false;
+  try {
+    const res = await call({ action: 'set', items: review.items });
+    mergeIn(res.items); keep();
+    setSave('Opgeslagen', 'ok');
+    refreshReviews();
+  } catch (e) {
+    pending = true;
+    setSave('Nog niet opgeslagen, opnieuw proberen…', 'err');
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(push, 5000);
+  } finally {
+    pushing = false;
+    if (pending) scheduleSync();
+  }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && pending && navigator.sendBeacon) {
+    navigator.sendBeacon(API, new Blob([JSON.stringify({ secret: SECRET, page: 'templates', action: 'set', items: review.items })], { type: 'application/json' }));
+    pending = false;
+  }
+});
+
+function updateProgress() {
+  const list = templatesFor(format);
+  const done = mySlug() ? list.filter(t => filled(review.items[keyOf(t.id)])).length : 0;
+  $('#done').textContent = done;
+  $('#total').textContent = list.length;
+}
+
+/* het reviewblok onder elke template */
+function reviewBlock(t) {
+  const box = el('div', { class: 'rv', 'data-t': t.id });
+  fillReview(box, t);
+  return box;
+}
+
+function fillReview(box, t) {
+  box.innerHTML = '';
+  const me = mySlug();
+  const it = me ? review.items[keyOf(t.id)] || { choice: null, note: '' } : null;
+  const save = patch => {
+    const cur = review.items[keyOf(t.id)] || { choice: null, note: '' };
+    review.items[keyOf(t.id)] = Object.assign({}, cur, patch, { name: review.name.trim(), updated: Date.now() });
+    keep(); scheduleSync(); updateProgress();
+  };
+  const btns = el('div', { class: 'verdict' });
+  for (const [k, label] of Object.entries(VERDICT)) {
+    btns.append(el('button', { class: 'vbtn ' + k + (it && it.choice === k ? ' on' : ''), disabled: !me ? true : null, 'aria-pressed': it && it.choice === k ? 'true' : 'false',
+      onclick: () => { save({ choice: it.choice === k ? null : k }); fillReview(box, t); } }, label));
+  }
+  const note = el('textarea', { rows: 2, disabled: !me ? true : null, placeholder: me ? 'Opmerking, bijvoorbeeld over een tekst of kleurvariant (optioneel)' : 'Vul bovenaan je naam in om te reageren' });
+  note.value = it ? it.note || '' : '';
+  note.addEventListener('input', () => save({ note: note.value }));
+  box.append(el('div', { class: 'rv-head' }, el('span', {}, 'Jouw reactie'), me ? el('small', {}, 'als ' + review.name.trim()) : null), btns, note);
+
+  const others = Object.entries(review.items)
+    .filter(([k, v]) => k.startsWith(t.id + '--') && k !== keyOf(t.id) && filled(v))
+    .sort((a, b) => (b[1].updated || 0) - (a[1].updated || 0));
+  if (others.length) {
+    const ul = el('ul', { class: 'others' });
+    for (const [, v] of others) {
+      ul.append(el('li', {},
+        el('b', {}, v.name || 'Iemand'),
+        v.choice ? el('span', { class: 'tag ' + v.choice }, VERDICT[v.choice]) : null,
+        (v.note || '').trim() ? el('p', {}, v.note) : null));
+    }
+    box.append(el('div', { class: 'rv-head', style: 'margin-top:14px' }, el('span', {}, 'Reacties van anderen')), ul);
+  }
+}
+
+function refreshReviews() {
+  document.querySelectorAll('.rv').forEach(box => {
+    if (box.contains(document.activeElement)) return;
+    const t = TEMPLATES.find(x => x.id === box.dataset.t);
+    if (t) fillReview(box, t);
+  });
+  updateProgress();
+}
+
+function bindReview() {
+  const f = $('#reviewer');
+  f.value = review.name;
+  f.addEventListener('input', () => { review.name = f.value; keep(); refreshReviews(); });
+  call({ action: 'get' }).then(res => { mergeIn(res.items); keep(); refreshReviews(); }).catch(() => {});
+}
+
 
 async function init() {
   await Promise.all([loadFonts(), loadAssets()]);
@@ -316,6 +489,7 @@ async function init() {
     if (group !== 'Alle' && !templatesFor(format).some(t => t.group === group)) group = 'Alle';
     render();
   }));
+  bindReview();
   render();
 }
 
