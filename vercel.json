@@ -34,6 +34,10 @@
       "dest": "/brandbook/index.html"
     },
     {
+      "src": "/templates/?",
+      "dest": "/templates/index.html"
+    },
+    {
       "src": "/posts/?",
       "dest": "/posts/index.html"
     },

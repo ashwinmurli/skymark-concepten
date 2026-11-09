@@ -51,6 +51,7 @@
     '<a class="sn-link" data-path="/formats/" href="/formats/">Formats</a>' +
     '<a class="sn-link" data-path="/fotoselectie/" href="/fotoselectie/">Fotoselectie</a>' +
     '<a class="sn-link" data-path="/brandbook/" href="/brandbook/">Brandbook</a>' +
+    '<a class="sn-link" data-path="/templates/" href="/templates/">Templates</a>' +
     '<a class="sn-link" data-path="/posts/" href="/posts/">Posts</a>';
   document.body.insertBefore(nav, document.body.firstChild);
 

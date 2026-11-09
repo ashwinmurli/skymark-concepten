@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Skymark Templates</title>
+<style>
+@font-face{font-family:'PPMori';font-weight:400;font-display:swap;src:url('/posts/assets/mori-book.woff2') format('woff2');}
+@font-face{font-family:'PPMori';font-weight:600;font-display:swap;src:url('/posts/assets/mori-semibold.woff2') format('woff2');}
+@font-face{font-family:'PPTalisman';font-weight:300;font-display:swap;src:url('/posts/assets/talisman-light.woff2') format('woff2');}
+:root{--black:#101310;--ink:#0B0D0B;--panel:#141714;--panel2:#1A1E1A;--pine:#556655;--moss:#758370;--mist:#DCEBDA;--stone:#8B8B7E;--fog:#F1F1EB;--gold:#CAA24B;--line:rgba(220,235,218,.12);--line2:rgba(220,235,218,.24);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--fog);font-family:'PPMori',sans-serif;font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased;}
+button{font:inherit;color:inherit;cursor:pointer;}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+
+/* PASSWORD */
+#password-screen{position:fixed;inset:0;z-index:9999;background:var(--pine);display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.pw-box{width:100%;max-width:360px;padding:0 24px;display:flex;flex-direction:column;align-items:flex-start;}
+.pw-logo{width:180px;color:var(--mist);margin-bottom:40px;}
+.pw-eyebrow{font-weight:600;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.pw-title{font-family:'PPTalisman',sans-serif;font-weight:300;font-size:1.5rem;color:var(--mist);margin-bottom:28px;line-height:1.2;}
+.pw-input-wrap{width:100%;display:flex;flex-direction:column;gap:8px;}
+.pw-input{width:100%;background:rgba(220,235,218,.1);border:1px solid rgba(220,235,218,.25);padding:12px 16px;font-family:'PPMori',sans-serif;font-size:.9rem;color:var(--fog);outline:none;border-radius:0;-webkit-appearance:none;}
+.pw-input:focus{border-color:var(--gold);}
+.pw-input::placeholder{color:rgba(220,235,218,.3);}
+.pw-btn{width:100%;padding:12px 16px;background:var(--gold);border:none;font-weight:600;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--black);margin-top:4px;}
+.pw-btn:hover{background:#d4aa55;}
+.pw-error{font-size:.78rem;color:#c97070;min-height:18px;margin-top:2px;}
+.pw-footer{position:absolute;bottom:24px;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(220,235,218,.3);}
+
+/* PAGINA */
+.page{max-width:1240px;margin:0 auto;padding:72px 32px 0;}
+.eyebrow{font-weight:600;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+.hero{max-width:760px;padding-bottom:40px;}
+.hero h1{font-family:'PPTalisman',serif;font-weight:300;font-size:clamp(2.8rem,6vw,4.6rem);line-height:1.02;color:var(--mist);margin:14px 0 22px;}
+.lede{font-size:1.08rem;color:var(--mist);opacity:.86;max-width:640px;}
+.facts{list-style:none;display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:28px;font-size:.82rem;color:var(--stone);}
+.facts b{display:block;font-family:'PPTalisman',serif;font-weight:300;font-size:1.7rem;line-height:1.1;color:var(--mist);}
+
+.bar{position:sticky;top:52px;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 0;background:rgba(16,19,16,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{border:1px solid var(--line2);background:none;padding:0 14px;min-height:38px;font-size:.82rem;color:var(--stone);}
+.chip:hover{color:var(--mist);}
+.chip.on{background:var(--mist);border-color:var(--mist);color:var(--black);}
+.chip small{font-size:.72rem;opacity:.7;margin-left:4px;}
+.chip:disabled{opacity:.35;cursor:default;}
+.chip:disabled:hover{color:var(--stone);}
+.seg{display:flex;border:1px solid var(--line2);}
+.seg button{background:none;border:0;min-height:38px;padding:0 16px;font-weight:600;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);}
+.seg button span{font-weight:400;letter-spacing:0;margin-left:4px;opacity:.8;}
+.seg button+button{border-left:1px solid var(--line2);}
+.seg button.on{background:var(--mist);color:var(--black);}
+.note{font-size:.85rem;color:var(--stone);padding:14px 0 0;min-height:1em;}
+.note:empty{padding:0;}
+
+.list{display:flex;flex-direction:column;}
+.tpl{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:48px;padding:56px 0;border-bottom:1px solid var(--line);align-items:start;scroll-margin-top:130px;}
+.tpl.story{grid-template-columns:minmax(0,320px) minmax(0,1fr);}
+.preview{position:relative;background:var(--panel);box-shadow:0 26px 60px rgba(0,0,0,.45);}
+.preview canvas{display:block;width:100%;height:auto;}
+.info{display:flex;flex-direction:column;gap:16px;padding-top:6px;}
+.info h2{font-family:'PPTalisman',serif;font-weight:300;font-size:2.2rem;line-height:1.1;color:var(--mist);}
+.desc{font-size:1rem;color:var(--mist);opacity:.86;max-width:560px;}
+.meta{display:grid;grid-template-columns:max-content 1fr;gap:6px 24px;font-size:.86rem;margin-top:4px;}
+.meta dt{color:var(--stone);}
+.meta dd{color:var(--fog);}
+.var-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:14px;padding-top:18px;border-top:1px solid var(--line);}
+.var-head span:first-child{font-weight:600;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);}
+.var-name{font-size:.88rem;color:var(--mist);}
+.variants{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:12px;}
+.tpl.story .variants{grid-template-columns:repeat(auto-fill,minmax(50px,1fr));}
+.var{background:none;border:0;padding:0;display:block;}
+.var canvas{display:block;width:100%;height:auto;outline:1px solid var(--line);outline-offset:2px;transition:outline-color .15s;background:var(--panel);}
+.var:hover canvas{outline-color:var(--line2);}
+.var.on canvas{outline:2px solid var(--gold);}
+
+.how{padding:80px 0 40px;max-width:760px;}
+.how h2{font-family:'PPTalisman',serif;font-weight:300;font-size:2.2rem;color:var(--mist);margin:12px 0 24px;}
+.how ol{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:18px;}
+.how li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;color:var(--mist);opacity:.9;}
+.how li::before{content:counter(s, decimal-leading-zero);font-weight:600;font-size:.75rem;letter-spacing:.14em;color:var(--gold);padding-top:4px;}
+.how b{font-weight:600;color:var(--fog);}
+footer{padding:48px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--stone);border-top:1px solid var(--line);margin-top:40px;}
+
+@media (max-width:860px){
+  .page{padding:48px 16px 0;}
+  .tpl,.tpl.story{grid-template-columns:1fr;gap:24px;padding:40px 0;}
+  .tpl .preview{max-width:420px;}
+  .tpl.story .preview{max-width:300px;}
+  .bar{top:52px;}
+}
+</style>
+</head>
+<body>
+<div id="password-screen">
+  <div class="pw-box">
+    <div class="pw-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 321.22 48.26">
+  <defs>
+    <style>
+      .cls-1 { fill: currentColor; }
+    </style>
+  </defs>
+  <g>
+    <path class="cls-1" d="M74.24,25.01h-22.03v22.64h-5.19V.33h5.19v22.21h21.88c5.76,0,8.42-3.93,8.42-11.18V.33h5.16v10.68c0,6.49-2.12,11.08-7.57,12.76,5.54,1.71,7.72,6.62,7.72,13.2v10.67h-5.19v-11.02c0-7.22-2.63-11.62-8.39-11.62Z"></path>
+    <path class="cls-1" d="M259.79,25.07h-20.86v22.8h-5.19V.33h28.21c7.88,0,12.6,4.56,12.6,11.81,0,5.48-2.75,10.46-8.42,11.86,5.45,1.27,8.26,5.19,8.26,12.38v11.5h-5.26v-11.57c0-7.82-3.48-11.24-9.34-11.24ZM260.9,22.51c5.1,0,8.33-4.35,8.33-10.18s-3.2-9.34-8.33-9.34h-21.97v19.52h21.97Z"></path>
+    <path class="cls-1" d="M307.64,25.01h-22.03v22.64h-5.19V.95h5.19v21.59h21.88c5.76,0,8.42-3.93,8.42-11.18V.95h5.16v10.07c0,6.49-2.12,11.08-7.57,12.76,5.54,1.71,7.72,6.62,7.72,13.2v10.67h-5.19v-11.02c0-7.22-2.63-11.62-8.39-11.62Z"></path>
+    <path class="cls-1" d="M175.83,47.88V10.27c0-4.72-2.69-7.28-7.03-7.28h-5.35v22.08h-5.35V2.99h-5.35c-4.34,0-7.03,2.6-7.03,7.28v37.6h-5.35V10.56c0-6.49,4.08-10.23,11.37-10.23h18.05c7.35,0,11.4,3.74,11.4,10.23v37.32h-5.35Z"></path>
+    <path class="cls-1" d="M20.65,22.51h-2.49c-3.77,0-7.46-1.45-9.98-4.25-1.48-1.65-2.42-3.64-2.42-6.22,0-4.69,3.1-9.17,7.53-9.17.21,0,.4.02.6.03h13.68c5.08.29,8.1,4.26,8.1,10.17v.28h5.38c0-7.82-5.21-12.83-13.49-13h-13.68c-.14,0-.27-.02-.41-.02C5.82.33.7,4.45.7,11.51c0,4.52,2.14,7.46,5.09,9.78,4.22,3.32,9.51,3.78,14.87,3.78h2.48c3.72,0,7.36,1.35,9.99,3.97,1.92,1.91,3.18,4.27,3.18,7.5,0,4.88-3.39,9.16-8.07,9.16-.23,0-.44.01-.66,0h-13.68c-5.35-.35-8.45-4.91-8.45-10.29v-.19H0c0,7.29,5.36,12.81,13.9,13.02h13.68c.17,0,.33.02.51.02,8.04,0,13.39-4.56,13.39-11.78,0-4.88-2.24-8.05-5.28-10.5-4.38-3.53-9.92-3.48-15.54-3.48Z"></path>
+    <path class="cls-1" d="M214.44,0h-13.96s-.02,0-.03,0c-8.07,0-13.39,4.72-13.39,13.39v34.49h5.32v-22.8h30.14v22.8h5.35V13.39C227.86,4.73,222.53.01,214.44,0ZM222.51,22.45h-30.14v-10.16c0-6.33,3.23-9.66,8.07-9.66.01,0,.02,0,.03,0h13.96c4.86.01,8.07,3.34,8.07,9.65v10.16Z"></path>
+    <path class="cls-1" d="M129.19.33v12.46c0,6.33-3.23,9.66-8.07,9.66-.01,0-.02,0-.03,0h-13.96c-4.86-.01-8.07-3.34-8.07-9.65V.33h-5.35v11.35c0,8.66,5.34,13.38,13.42,13.39h4.4v22.81h5.19v-22.81h4.37s.02,0,.03,0c8.07,0,13.39-4.72,13.39-13.39V.33h-5.32Z"></path>
+  </g>
+</svg></div>
+    <p class="pw-eyebrow">Skymark &middot; Templates</p>
+    <p class="pw-title">Voer het wachtwoord<br>in om verder te gaan</p>
+    <div class="pw-input-wrap">
+      <input class="pw-input" type="password" id="pw-field" placeholder="Wachtwoord" autocomplete="off">
+      <button class="pw-btn" id="pw-btn">Toegang &rarr;</button>
+      <p class="pw-error" id="pw-error"></p>
+    </div>
+  </div>
+  <p class="pw-footer">Connecting the Polkadots &nbsp;&middot;&nbsp; Vertrouwelijk document</p>
+</div>
+
+<main class="page">
+  <header class="hero">
+    <p class="eyebrow">Skymark &middot; Social</p>
+    <h1>Templates</h1>
+    <p class="lede">De vaste bouwstenen voor de Instagram-posts van Skymark. Per template zie je hoe het eruitziet en in welke kleurcombinaties het kan. Teksten en beelden zijn voorbeelden: in elke post vullen we ze opnieuw in.</p>
+    <ul class="facts" id="facts"></ul>
+  </header>
+
+  <div class="bar" id="bar">
+    <div class="chips" id="groups" role="group" aria-label="Filter op groep"></div>
+    <div class="seg" id="fmt" role="group" aria-label="Formaat">
+      <button data-f="feed" class="on">Feed <span>4:5</span></button>
+      <button data-f="story">Story <span>9:16</span></button>
+    </div>
+  </div>
+  <p class="note" id="note"></p>
+
+  <div class="list" id="list"></div>
+
+  <section class="how">
+    <p class="eyebrow">Zo werkt het</p>
+    <h2>Van template naar post</h2>
+    <ol>
+      <li><b>Ash en Celine kiezen per post een template</b> en vullen tekst, beeld en kleur in. Een carrousel combineert meerdere templates.</li>
+      <li><b>De kleuren komen altijd uit het brandbook.</b> Elke combinatie is gecontroleerd op leesbaarheid.</li>
+      <li><b>Jullie keuren elke post goed onder Posts</b>, met feedback per slide als er iets anders moet.</li>
+    </ol>
+  </section>
+
+  <footer>Skymark &middot; Amvest &middot; Templates voor social &middot; Connecting the Polkadots</footer>
+</main>
+
+<script type="module">
+import { TEMPLATES, FORMATS, COLORS, templatesFor } from '/posts/templates.js';
+import { loadFonts, loadAssets, renderSlide, sizeOf, prepareSlide, paletteOf } from '/posts/engine.js';
+
+/* Waar elk template voor is, in gewone taal */
+const DESC = {
+  'mijlpaal-midden': 'Een korte kop midden op een foto of video. Voor mijlpalen en aankondigingen, zoals de start van de bouw.',
+  'statement-beeld': 'Een uitspraak groot op beeld, met een regel eronder. Voor de kernboodschap van Skymark.',
+  'passe-partout': 'Een foto in een rand, met een label en een kop eronder. Rustig en redactioneel, voor beelden die zelf het verhaal vertellen.',
+  'mijlpaal-onder': 'Een foto of video met de kop onderaan. Het beeld krijgt de ruimte, de tekst ondersteunt.',
+  'maker': 'Portret van een maker uit de Binckhorst, met naam en wat diegene maakt. Voor de reeks De Binckhorst Maakt.',
+  'quote': 'Een citaat met naam, op een effen kleurvlak. Bijvoorbeeld van de architect of een bewoner van de buurt.',
+  'outro': 'Een korte uitspraak zonder beeld, met een afsluitende regel. Ook geschikt als laatste slide van een carrousel.',
+  'hotspot': 'Een plek uit de buurt: label, kop, korte tekst en een verwijzing. Voor de Hotspot Guide.',
+  'feitje-vraag': 'Opent een feitje met een vraag. De eerste slide van een reeks Feitjes over het gebouw.',
+  'feitje-antwoord': 'Het antwoord als groot getal, met een korte uitleg eronder.',
+  'feitje-licht': 'Het antwoord als groot getal in een kader, voor een lichtere variant in de reeks.',
+  'feitje-beeld': 'Een foto met een balk eronder voor de uitleg. Sluit een reeks Feitjes af met beeld.',
+  'ontwerp-cover': 'Opent een ontwerpverhaal: een beeld met label en kop. Voor de reeks over het ontwerp van De Zwarte Hond.',
+  'ontwerp-uitleg': 'Vertelt het ontwerpverhaal verder in tekst, met ruimte voor een langere uitleg.'
+};
+
+/* Voorbeeldbeeld per template, uit de finale fotoselectie */
+const PHOTO = {
+  'mijlpaal-midden': '29', 'statement-beeld': '37', 'passe-partout': '23', 'mijlpaal-onder': '30',
+  'maker': '48', 'feitje-beeld': '24', 'ontwerp-cover': '40'
+};
+
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') n.className = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else if (v != null && v !== false) n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : document.createTextNode(k));
+  return n;
+};
+
+let format = 'feed';
+let group = 'Alle';
+const chosen = {};
+const images = {};
+const off = document.createElement('canvas');
+
+function loadImage(src) {
+  if (images[src]) return images[src];
+  images[src] = new Promise(res => {
+    const i = new Image();
+    i.onload = () => res(i);
+    i.onerror = () => res(null);
+    i.src = src;
+  });
+  return images[src];
+}
+
+async function slideFor(t, palId) {
+  const s = { id: 'demo', template: t.id, palette: palId, texts: Object.fromEntries(t.fields.map(f => [f.key, f.def])), media: {}, animate: false };
+  let img = null;
+  if (t.media.length && PHOTO[t.id]) {
+    img = await loadImage(`/fotoselectie/img/${PHOTO[t.id]}.jpg`);
+    if (img) for (const m of t.media) s.media[m.key] = { kind: 'image', src: img.src, zoom: 1, pos: { x: 0, y: 0 } };
+  }
+  await prepareSlide(s, format);
+  return { s, img };
+}
+
+async function draw(canvas, t, palId) {
+  const { s, img } = await slideFor(t, palId);
+  const size = sizeOf(format);
+  off.width = size.w; off.height = size.h;
+  renderSlide(off.getContext('2d'), s, format, { t: null, getMedia: () => img, placeholders: false });
+  const c = canvas.getContext('2d');
+  c.imageSmoothingQuality = 'high';
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  c.drawImage(off, 0, 0, canvas.width, canvas.height);
+}
+
+function card(t, index) {
+  const size = sizeOf(format);
+  const pals = t.palettes;
+  /* tekst op beeld: begin met een lichte tekstkleur, die leest het best op een foto */
+  const light = pals.find(p => p.swatch === 'cloud-white') || pals.find(p => p.swatch === 'mist-green');
+  const cur = chosen[t.id] && pals.find(p => p.id === chosen[t.id]) ? chosen[t.id] : (light || pals[0]).id;
+  const W = format === 'story' ? 640 : 800;
+  const main = el('canvas', { width: W, height: Math.round(W * size.h / size.w), role: 'img', 'aria-label': `Voorbeeld van ${t.name}` });
+  const name = el('span', { class: 'var-name' }, paletteOf(t, cur).name);
+  const grid = el('div', { class: 'variants' });
+  const fmts = Object.keys(t.layouts).map(f => f === 'feed' ? 'Feed 4:5 en carrousel' : 'Story 9:16').join(' · ');
+  const fields = [...t.fields.map(f => f.label), ...t.media.map(m => m.label)].join(' · ');
+  const onPhoto = pals.some(p => p.swatch);
+
+  const thumbs = pals.map(p => {
+    const c = el('canvas', { width: 128, height: Math.round(128 * size.h / size.w) });
+    const b = el('button', { class: 'var' + (p.id === cur ? ' on' : ''), title: p.name, 'aria-label': p.name, 'aria-pressed': p.id === cur ? 'true' : 'false',
+      onclick: () => {
+        chosen[t.id] = p.id;
+        grid.querySelectorAll('.var').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        name.textContent = p.name;
+        draw(main, t, p.id);
+      } }, c);
+    grid.append(b);
+    return [c, p.id];
+  });
+
+  const art = el('article', { class: 'tpl' + (format === 'story' ? ' story' : ''), id: 't-' + t.id },
+    el('div', { class: 'preview' }, main),
+    el('div', { class: 'info' },
+      el('p', { class: 'eyebrow' }, `${t.group} · ${String(index + 1).padStart(2, '0')}`),
+      el('h2', {}, t.name),
+      el('p', { class: 'desc' }, DESC[t.id] || ''),
+      el('dl', { class: 'meta' },
+        el('dt', {}, 'Formaten'), el('dd', {}, fmts),
+        el('dt', {}, 'In te vullen'), el('dd', {}, fields)),
+      el('div', { class: 'var-head' }, el('span', {}, onPhoto ? `Tekstkleuren op beeld (${pals.length})` : `Kleurvarianten (${pals.length})`), name),
+      grid));
+
+  /* pas tekenen als de kaart in beeld komt */
+  const io = new IntersectionObserver(async entries => {
+    if (!entries.some(e => e.isIntersecting)) return;
+    io.disconnect();
+    await draw(main, t, cur);
+    for (const [c, id] of thumbs) await draw(c, t, id);
+  }, { rootMargin: '600px 0px' });
+  io.observe(art);
+  return art;
+}
+
+function render() {
+  const all = templatesFor(format);
+  const groups = ['Alle', ...new Set(TEMPLATES.map(t => t.group))];
+  const g = $('#groups');
+  g.innerHTML = '';
+  for (const name of groups) {
+    const n = name === 'Alle' ? all.length : all.filter(t => t.group === name).length;
+    g.append(el('button', { class: 'chip' + (name === group ? ' on' : ''), disabled: n === 0 ? true : null, onclick: () => { group = name; render(); } }, name, el('small', {}, String(n))));
+  }
+  document.querySelectorAll('#fmt button').forEach(b => b.classList.toggle('on', b.dataset.f === format));
+  $('#note').textContent = format === 'story'
+    ? `${all.length} van de ${TEMPLATES.length} templates bestaan ook als story. De rest is alleen voor feed-posts en carrousels.`
+    : '';
+  const list = $('#list');
+  list.innerHTML = '';
+  all.filter(t => group === 'Alle' || t.group === group).forEach(t => list.append(card(t, TEMPLATES.indexOf(t))));
+}
+
+async function init() {
+  await Promise.all([loadFonts(), loadAssets()]);
+  const colors = new Set();
+  for (const t of TEMPLATES) for (const p of t.palettes) if (!p.swatch) colors.add(p.id);
+  $('#facts').append(
+    el('li', {}, el('b', {}, String(TEMPLATES.length)), 'templates'),
+    el('li', {}, el('b', {}, String(new Set(TEMPLATES.map(t => t.group)).size)), 'groepen'),
+    el('li', {}, el('b', {}, String(colors.size)), 'kleurcombinaties'),
+    el('li', {}, el('b', {}, '4:5 · 9:16'), 'feed en story'));
+  document.querySelectorAll('#fmt button').forEach(b => b.addEventListener('click', () => {
+    format = b.dataset.f;
+    if (group !== 'Alle' && !templatesFor(format).some(t => t.group === group)) group = 'Alle';
+    render();
+  }));
+  render();
+}
+
+init();
+</script>
+<script>
+(function(){
+  var PW_EDIT='skymark-edit-2025', PW_VIEW='girxy6-nidzyn-wUknir';
+  var screen=document.getElementById('password-screen');
+  var saved=null; try{saved=sessionStorage.getItem('skymark_auth');}catch(e){}
+  if(saved==='view'||saved==='edit'){screen.style.display='none';return;}
+  var field=document.getElementById('pw-field'), btn=document.getElementById('pw-btn'), err=document.getElementById('pw-error');
+  function attempt(){
+    var val=field.value;
+    if(val===PW_EDIT||val===PW_VIEW){
+      try{
+        sessionStorage.setItem('skymark_auth', val===PW_EDIT?'edit':'view');
+        if(val===PW_EDIT) sessionStorage.setItem('skymark_editor','1');
+      }catch(e){}
+      screen.style.transition='opacity .4s ease'; screen.style.opacity='0';
+      setTimeout(function(){screen.style.display='none';},400);
+    } else {
+      var bad=function(){ err.textContent='Onjuist wachtwoord, probeer het opnieuw.'; field.value=''; field.focus(); };
+      if(!val){bad();return;}
+      /* makerswachtwoord van de posttool: alleen op de server gecontroleerd */
+      fetch('/api/posts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:val,action:'whoami'})})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(j){
+          if(!(j&&j.role==='maker')){bad();return;}
+          try{ sessionStorage.setItem('skymark_auth','view'); sessionStorage.setItem('skymark_posts_secret',val); }catch(e){}
+          screen.style.transition='opacity .4s ease'; screen.style.opacity='0';
+          setTimeout(function(){screen.style.display='none';},400);
+        })
+        .catch(bad);
+    }
+  }
+  btn.addEventListener('click',attempt);
+  field.addEventListener('keydown',function(e){if(e.key==='Enter')attempt();});
+})();
+</script>
+<script src="/nav.js" defer></script>
+</body>
+</html>
