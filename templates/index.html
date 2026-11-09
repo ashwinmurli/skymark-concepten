@@ -379,6 +379,7 @@ function mergeIn(items) {
 }
 
 let syncTimer = null, pushing = false, pending = false;
+const toNotify = new Map();   /* sleutel -> templatenaam, gemeld na de volgende opslag */
 function scheduleSync() {
   pending = true;
   setSave('Opslaan…', 'busy');
@@ -393,6 +394,8 @@ async function push() {
     mergeIn(res.items); keep();
     setSave('Opgeslagen', 'ok');
     refreshReviews();
+    for (const [id, label] of toNotify) call({ action: 'notify', id, label }).catch(() => {});
+    toNotify.clear();
   } catch (e) {
     pending = true;
     setSave('Nog niet opgeslagen, opnieuw proberen…', 'err');
@@ -436,11 +439,13 @@ function fillReview(box, t) {
   const btns = el('div', { class: 'verdict' });
   for (const [k, label] of Object.entries(VERDICT)) {
     btns.append(el('button', { class: 'vbtn ' + k + (it && it.choice === k ? ' on' : ''), disabled: !me ? true : null, 'aria-pressed': it && it.choice === k ? 'true' : 'false',
-      onclick: () => { save({ choice: it.choice === k ? null : k }); fillReview(box, t); } }, label));
+      onclick: () => { save({ choice: it.choice === k ? null : k }); toNotify.set(keyOf(t.id), t.name); fillReview(box, t); } }, label));
   }
   const note = el('textarea', { rows: 2, disabled: !me ? true : null, placeholder: me ? 'Opmerking, bijvoorbeeld over een tekst of kleurvariant (optioneel)' : 'Vul bovenaan je naam in om te reageren' });
   note.value = it ? it.note || '' : '';
   note.addEventListener('input', () => save({ note: note.value }));
+  /* klaar met typen (veld verlaten): dan pas een melding */
+  note.addEventListener('change', () => { toNotify.set(keyOf(t.id), t.name); scheduleSync(); });
   box.append(el('div', { class: 'rv-head' }, el('span', {}, 'Jouw reactie'), me ? el('small', {}, 'als ' + review.name.trim()) : null), btns, note);
 
   const others = Object.entries(review.items)
@@ -491,6 +496,12 @@ async function init() {
   }));
   bindReview();
   render();
+  const m = location.hash.match(/^#t-([\w-]+)$/);
+  if (m) {
+    const t = TEMPLATES.find(x => x.id === m[1]);
+    if (t && !templatesFor(format).includes(t)) { format = 'feed'; render(); }
+    setTimeout(() => { const n = document.getElementById('t-' + m[1]); if (n) n.scrollIntoView({ block: 'start' }); }, 300);
+  }
 }
 
 init();
