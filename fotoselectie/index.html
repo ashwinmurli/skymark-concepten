@@ -279,7 +279,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     <h1>Fotoselectie</h1>
     <p class="lede">Dit zijn de beelden in de <strong>finale bewerking</strong>. Open een beeld om het groot te bekijken, laat gerust een opmerking achter en stel je definitieve selectie samen. Alles wat je invult wordt automatisch opgeslagen.</p>
     <div class="intro">
-    <p>Hier staan alle beelden uit de Binckhorst in de finale bewerking, inmiddels 118. Vul bovenaan je naam in en stel je definitieve selectie van maximaal 40 beelden samen; opmerkingen per beeld zijn welkom. Alles wordt direct in deze tool opgeslagen, je hoeft niets te mailen; ik kijk hier mee. Groet, Ash</p>
+    <p>Hier staan alle beelden uit de Binckhorst in de finale bewerking, inmiddels 174. De aangevulde beelden van Brute Bonen, de omgeving en de Fokkerhaven staan onder 06, 28 en 122 t/m 175. Vul bovenaan je naam in en stel je definitieve selectie van maximaal 40 beelden samen; opmerkingen per beeld zijn welkom. Alles wordt direct in deze tool opgeslagen, je hoeft niets te mailen; ik kijk hier mee. Groet, Ash</p>
   </div>
 </header>
 
@@ -531,7 +531,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       btn.style.position = "relative";
       btn.innerHTML =
         '<img class="thumb" loading="lazy" src="' + (p.thumb || p.after || p.soft) + '" alt="">' +
-        '<span class="meta"><span class="nr">' + String(i+1).padStart(2,"0") + '</span>' +
+        '<span class="meta"><span class="nr">' + p.id + '</span>' +
         '<span class="name"></span>' + chipFor(p.id) + '</span>';
       btn.querySelector(".name").textContent = p.title || "";
       btn.addEventListener("click", function(){ openViewer(i); });
@@ -647,7 +647,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
       var body = document.createElement("div");
       var titel = document.createElement("p");
       titel.className = "t";
-      titel.innerHTML = "<b>" + String(r.i + 1).padStart(2, "0") + "</b> \u00b7 ";
+      titel.innerHTML = "<b>" + r.p.id + "</b> \u00b7 ";
       titel.appendChild(document.createTextNode(r.p.title || ""));
       body.appendChild(titel);
       var ul = document.createElement("ul");
@@ -834,7 +834,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     $("tri-after-cap").textContent = heeftSoft ? "Bewerkt \u00b7 100%" : "Bewerkt";
     $("tri-soft-fig").hidden = !heeftSoft;
     if (heeftSoft) $("tri-soft").src = p.soft;
-    $("viewer-title").innerHTML = '<b>' + String(i+1).padStart(2,"0") + '</b> · ';
+    $("viewer-title").innerHTML = '<b>' + p.id + '</b> · ';
     $("viewer-title").appendChild(document.createTextNode(p.title || ""));
     var it = itemState(p.id);
     noteEl.value = it ? (it.note || "") : "";
