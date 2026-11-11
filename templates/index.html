@@ -57,6 +57,23 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 .others li{font-size:.88rem;color:var(--fog);}
 .others b{font-weight:600;margin-right:8px;}
 .others p{margin-top:3px;color:var(--mist);opacity:.86;white-space:pre-line;}
+.others>li{padding:12px 0 0;border-top:1px solid var(--line);}
+.others>li:first-child{border-top:0;padding-top:0;}
+.others li.done>p,.others li.done .replies{opacity:.5;}
+.done-note{font-size:.78rem;color:#9FD29A;margin-left:8px;}
+.replies{list-style:none;margin:10px 0 0 14px;padding-left:14px;border-left:2px solid var(--line2);display:flex;flex-direction:column;gap:8px;}
+.replies li{font-size:.85rem;}
+.replies small{color:var(--stone);font-size:.75rem;margin-left:4px;}
+.replies p{margin-top:2px;}
+.cmt-actions{display:flex;gap:16px;margin-top:8px;align-items:center;}
+.linkbtn{background:none;border:0;padding:4px 0;font-size:.8rem;color:var(--stone);text-decoration:underline;text-underline-offset:3px;}
+.linkbtn:hover{color:var(--mist);}
+.linkbtn.resolve{color:#9FD29A;}
+.replies .linkbtn{font-size:.72rem;margin-left:8px;padding:0;}
+.replyform{margin:10px 0 0 14px;padding-left:14px;border-left:2px solid var(--gold);}
+.replyform textarea{min-height:64px;}
+.replyform .row{display:flex;gap:8px;margin-top:8px;}
+.vbtn.post{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:600;}
 .tag{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;}
 .tag.akkoord{background:rgba(159,210,154,.16);color:#9FD29A;}
 .tag.aanpassen{background:rgba(202,162,75,.16);color:var(--gold);}
@@ -351,6 +368,9 @@ const VERDICT = { akkoord: 'Akkoord', aanpassen: 'Graag aanpassen' };
 const review = (() => {
   try { return JSON.parse(localStorage.getItem(STORE)) || { name: '', items: {} }; } catch (e) { return { name: '', items: {} }; }
 })();
+review.items = review.items || {};
+review.replies = review.replies || {};
+review.resolved = review.resolved || {};
 if (!review.name) { try { review.name = (JSON.parse(localStorage.getItem('skymark-fotoreview-v1')) || {}).name || ''; } catch (e) {} }
 
 const slugOf = n => (n || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
@@ -371,15 +391,19 @@ async function call(body) {
   return r.json();
 }
 
-function mergeIn(items) {
-  for (const [k, r] of Object.entries(items || {})) {
-    const l = review.items[k];
-    if (!l || (r.updated || 0) > (l.updated || 0)) review.items[k] = r;
+function mergeIn(res) {
+  for (const coll of ['items', 'replies', 'resolved']) {
+    for (const [k, r] of Object.entries((res && res[coll]) || {})) {
+      const l = review[coll][k];
+      if (!l || (r.updated || 0) > (l.updated || 0)) review[coll][k] = r;
+    }
   }
 }
+const payload = () => ({ items: review.items, replies: review.replies, resolved: review.resolved });
 
 let syncTimer = null, pushing = false, pending = false;
 const toNotify = new Map();   /* sleutel -> templatenaam, gemeld na de volgende opslag */
+const toNotifyReply = new Map();   /* reactie-id -> templatenaam */
 function scheduleSync() {
   pending = true;
   setSave('Opslaan…', 'busy');
@@ -390,12 +414,14 @@ async function push() {
   if (pushing) { pending = true; return; }
   pushing = true; pending = false;
   try {
-    const res = await call({ action: 'set', items: review.items });
-    mergeIn(res.items); keep();
+    const res = await call(Object.assign({ action: 'set' }, payload()));
+    mergeIn(res); keep();
     setSave('Opgeslagen', 'ok');
     refreshReviews();
     for (const [id, label] of toNotify) call({ action: 'notify', id, label }).catch(() => {});
     toNotify.clear();
+    for (const [id, label] of toNotifyReply) call({ action: 'notifyReply', id, label }).catch(() => {});
+    toNotifyReply.clear();
   } catch (e) {
     pending = true;
     setSave('Nog niet opgeslagen, opnieuw proberen…', 'err');
@@ -408,7 +434,7 @@ async function push() {
 }
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden' && pending && navigator.sendBeacon) {
-    navigator.sendBeacon(API, new Blob([JSON.stringify({ secret: SECRET, page: 'templates', action: 'set', items: review.items })], { type: 'application/json' }));
+    navigator.sendBeacon(API, new Blob([JSON.stringify(Object.assign({ secret: SECRET, page: 'templates', action: 'set' }, payload()))], { type: 'application/json' }));
     pending = false;
   }
 });
@@ -448,19 +474,99 @@ function fillReview(box, t) {
   note.addEventListener('change', () => { toNotify.set(keyOf(t.id), t.name); scheduleSync(); });
   box.append(el('div', { class: 'rv-head' }, el('span', {}, 'Jouw reactie'), me ? el('small', {}, 'als ' + review.name.trim()) : null), btns, note);
 
+  /* reacties op je eigen opmerking */
+  if (me && repliesOn(keyOf(t.id)).length) {
+    const ul = el('ul', { class: 'others', style: 'margin-top:10px' });
+    ul.append(thread(t, keyOf(t.id), it, box, true));
+    box.append(ul);
+  }
+
   const others = Object.entries(review.items)
     .filter(([k, v]) => k.startsWith(t.id + '--') && k !== keyOf(t.id) && filled(v))
-    .sort((a, b) => (b[1].updated || 0) - (a[1].updated || 0));
+    .sort((a, b) => (isDone(a[0], a[1]) - isDone(b[0], b[1])) || ((b[1].updated || 0) - (a[1].updated || 0)));
   if (others.length) {
+    const open = others.filter(([k, v]) => needsAnswer(v) && !isDone(k, v)).length;
     const ul = el('ul', { class: 'others' });
-    for (const [, v] of others) {
-      ul.append(el('li', {},
-        el('b', {}, v.name || 'Iemand'),
-        v.choice ? el('span', { class: 'tag ' + v.choice }, VERDICT[v.choice]) : null,
-        (v.note || '').trim() ? el('p', {}, v.note) : null));
-    }
-    box.append(el('div', { class: 'rv-head', style: 'margin-top:14px' }, el('span', {}, 'Reacties van anderen')), ul);
+    for (const [k, v] of others) ul.append(thread(t, k, v, box, false));
+    box.append(el('div', { class: 'rv-head', style: 'margin-top:18px' }, el('span', {}, 'Reacties van anderen'), open ? el('small', {}, open === 1 ? '1 open' : open + ' open') : null), ul);
   }
+}
+
+/* ---------- gesprek onder een opmerking: reageren en afhandelen ---------- */
+
+const sigOf = v => `${(v && v.choice) || ''}|${((v && v.note) || '').trim()}`;
+const needsAnswer = v => v && (v.choice === 'aanpassen' || (v.note || '').trim());
+/* afgehandeld geldt alleen voor de opmerking zoals die toen was: past iemand hem aan, dan staat hij weer open */
+const isDone = (k, v) => { const r = review.resolved[k]; return !!(r && r.done && r.sig === sigOf(v)); };
+const repliesOn = k => Object.entries(review.replies).filter(([, r]) => r.on === k && !r.deleted).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
+const replyOpen = new Set();
+const drafts = new Map();
+const when = ts => ts ? new Date(ts).toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+const newId = () => 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+function thread(t, key, v, box, own) {
+  const me = mySlug();
+  const done = !own && isDone(key, v);
+  const li = el('li', { class: done ? 'done' : '' });
+  if (!own) {
+    const r = review.resolved[key];
+    li.append(el('div', {},
+      el('b', {}, v.name || 'Iemand'),
+      v.choice ? el('span', { class: 'tag ' + v.choice }, VERDICT[v.choice]) : null,
+      done ? el('span', { class: 'done-note' }, '✓ Opgelost' + (r.by ? ' door ' + r.by : '')) : null));
+    if ((v.note || '').trim()) li.append(el('p', {}, v.note));
+  } else {
+    li.append(el('div', { class: 'rv-head', style: 'margin:0' }, el('span', {}, 'Reacties op jouw opmerking')));
+  }
+
+  const reps = repliesOn(key);
+  if (reps.length) {
+    const ol = el('ol', { class: 'replies' });
+    for (const [rid, r] of reps) {
+      const mine = me && slugOf(r.by) === me;
+      ol.append(el('li', {},
+        el('b', {}, r.by || 'Iemand'), el('small', {}, when(r.at)),
+        mine ? el('button', { class: 'linkbtn', onclick: () => {
+          review.replies[rid] = Object.assign({}, r, { deleted: true, text: '', updated: Date.now() });
+          toNotifyReply.delete(rid); keep(); scheduleSync(); fillReview(box, t);
+        } }, 'Verwijderen') : null,
+        el('p', {}, r.text)));
+    }
+    li.append(ol);
+  }
+
+  if (!me || (!own && !needsAnswer(v) && !reps.length)) return li;
+
+  if (replyOpen.has(key)) {
+    const ta = el('textarea', { rows: 2, placeholder: `Reageer op ${own ? 'deze reacties' : v.name || 'deze opmerking'}…`, 'aria-label': 'Je reactie' });
+    ta.value = drafts.get(key) || '';
+    ta.addEventListener('input', () => drafts.set(key, ta.value));
+    const send = () => {
+      const text = ta.value.trim();
+      if (!text) { ta.focus(); return; }
+      const id = newId(), now = Date.now();
+      review.replies[id] = { on: key, by: review.name.trim(), text, at: now, updated: now };
+      /* reageren op een afgehandelde opmerking opent hem niet vanzelf; dat blijft een bewuste keuze */
+      toNotifyReply.set(id, t.name);
+      drafts.delete(key); replyOpen.delete(key);
+      keep(); scheduleSync(); fillReview(box, t);
+    };
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); } });
+    li.append(el('div', { class: 'replyform' }, ta,
+      el('div', { class: 'row' },
+        el('button', { class: 'vbtn post', onclick: send }, 'Plaatsen'),
+        el('button', { class: 'vbtn', onclick: () => { replyOpen.delete(key); fillReview(box, t); } }, 'Annuleren'))));
+    setTimeout(() => ta.focus(), 0);
+  } else {
+    const acts = el('div', { class: 'cmt-actions' });
+    if (!done) acts.append(el('button', { class: 'linkbtn', onclick: () => { replyOpen.add(key); fillReview(box, t); } }, 'Reageren'));
+    if (!own) acts.append(el('button', { class: 'linkbtn' + (done ? '' : ' resolve'), onclick: () => {
+      review.resolved[key] = { done: !done, by: review.name.trim(), sig: sigOf(v), updated: Date.now() };
+      keep(); scheduleSync(); fillReview(box, t);
+    } }, done ? 'Heropenen' : 'Markeer als opgelost'));
+    li.append(acts);
+  }
+  return li;
 }
 
 function refreshReviews() {
@@ -476,7 +582,7 @@ function bindReview() {
   const f = $('#reviewer');
   f.value = review.name;
   f.addEventListener('input', () => { review.name = f.value; keep(); refreshReviews(); });
-  call({ action: 'get' }).then(res => { mergeIn(res.items); keep(); refreshReviews(); }).catch(() => {});
+  call({ action: 'get' }).then(res => { mergeIn(res); keep(); refreshReviews(); }).catch(() => {});
 }
 
 

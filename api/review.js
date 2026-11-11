@@ -1,5 +1,5 @@
 export const config = { runtime: 'edge' };
-import { sendMail, others } from './_mail.js';
+import { sendMail, others, PEOPLE } from './_mail.js';
 
 /* Feedback-opslag voor de fotoselectie en de templatepagina.
    Bewaart voorkeuren en opmerkingen als <pagina>/reviews.json op de
@@ -10,7 +10,12 @@ import { sendMail, others } from './_mail.js';
    page is "fotoselectie" (standaard) of "templates".
    { secret, page: "templates", action: "notify", id, label } -> mailt Ash en Celine over
    een reactie op een template; dezelfde reactie wordt maar één keer gemeld (notifiedSig).
-   Merge is per foto: de hoogste "updated"-timestamp wint. */
+   Merge is per foto: de hoogste "updated"-timestamp wint.
+   Daarnaast (templates): "replies" (reacties op een opmerking, elk met een eigen id)
+   en "resolved" (opmerking afgehandeld, per sleutel). Die staan los van de items,
+   zodat een latere bewerking van de opmerking zelf ze niet overschrijft.
+   { secret, page: "templates", action: "notifyReply", id } -> mailt de deelnemers van
+   dat gesprek en de makers, behalve de schrijver zelf. Eén keer per reactie. */
 
 const REPO = 'ashwinmurli/skymark-concepten';
 const BRANCH = 'feedback';
@@ -47,16 +52,17 @@ async function readRemote(token, page) {
     `https://api.github.com/repos/${REPO}/contents/${page.file}?ref=${BRANCH}`,
     { headers: ghHeaders(token) }
   );
-  if (resp.status === 404) return { items: {}, selections: {}, sha: null };
+  if (resp.status === 404) return { items: {}, selections: {}, replies: {}, resolved: {}, sha: null };
   if (!resp.ok) throw new Error(`GitHub GET ${resp.status}`);
   const data = await resp.json();
-  let items = {}, selections = {};
+  const doc = { items: {}, selections: {}, replies: {}, resolved: {}, sha: data.sha };
   try {
     const parsed = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
-    if (parsed && typeof parsed.items === 'object') items = parsed.items;
-    if (parsed && typeof parsed.selections === 'object') selections = parsed.selections;
+    for (const k of ['items', 'selections', 'replies', 'resolved']) {
+      if (parsed && parsed[k] && typeof parsed[k] === 'object') doc[k] = parsed[k];
+    }
   } catch (e) { /* corrupte inhoud: behandel als leeg, sha blijft bruikbaar */ }
-  return { items, selections, sha: data.sha };
+  return doc;
 }
 
 function sanitizeItems(raw, CHOICES) {
@@ -96,13 +102,45 @@ function sanitizeSelections(raw) {
   return out;
 }
 
+const KEY_RE = /^[\w-]{1,90}$/;
+const num = v => (typeof v === 'number' && isFinite(v) ? v : 0);
+const str = (v, n) => (typeof v === 'string' ? v.slice(0, n) : '');
+
+function sanitizeReplies(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const id of Object.keys(raw).slice(0, 5000)) {
+    const r = raw[id];
+    if (!/^[\w-]{1,60}$/.test(id) || !r || typeof r !== 'object' || !KEY_RE.test(String(r.on || ''))) continue;
+    const text = str(r.text, 2000);
+    const deleted = r.deleted === true;
+    if (!text.trim() && !deleted) continue;
+    out[id] = { on: r.on, by: str(r.by, 100), text: deleted ? '' : text, at: num(r.at), updated: num(r.updated), deleted };
+  }
+  return out;
+}
+
+function sanitizeResolved(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const key of Object.keys(raw).slice(0, 5000)) {
+    const r = raw[key];
+    if (!KEY_RE.test(key) || !r || typeof r !== 'object') continue;
+    out[key] = { done: r.done === true, by: str(r.by, 100), sig: str(r.sig, 2200), updated: num(r.updated) };
+  }
+  return out;
+}
+
 function merge(remote, incoming) {
   const out = { ...remote };
   for (const id of Object.keys(incoming)) {
     const r = out[id];
     if (!r || (incoming[id].updated || 0) >= (r.updated || 0)) {
-      /* het server-veld notifiedSig blijft staan; de browser stuurt het niet mee */
-      out[id] = r && r.notifiedSig ? { ...incoming[id], notifiedSig: r.notifiedSig } : incoming[id];
+      /* server-velden (notifiedSig, notified) blijven staan; de browser stuurt ze niet mee */
+      const keepFields = {};
+      if (r && r.notifiedSig) keepFields.notifiedSig = r.notifiedSig;
+      if (r && r.notified) keepFields.notified = r.notified;
+      out[id] = { ...incoming[id], ...keepFields };
     }
   }
   return out;
@@ -139,19 +177,62 @@ async function notifyTemplate(token, page, id, label) {
     const cur = fresh.items[id];
     if (!cur || sigOf(cur) !== sig) break;
     fresh.items[id] = { ...cur, notifiedSig: sig };
-    const put = await writeRemote(token, page, fresh.items, fresh.sha, fresh.selections);
+    const put = await writeRemote(token, page, fresh);
     if (put.ok) break;
   }
   return mail;
 }
 
-async function writeRemote(token, page, items, sha, selections) {
+/* wie hoort bij een naam zoals iemand die invult ("Ashwin", "Esmee") */
+const plain = s => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const personOf = name => [...PEOPLE.maker, ...PEOPLE.approver].find(p => plain(name).startsWith(plain(p.name)));
+
+async function notifyReply(token, page, rid, templateLabel) {
+  const doc = await readRemote(token, page);
+  const r = doc.replies[rid];
+  if (!r || r.deleted || !r.text.trim()) return 'leeg';
+  if (r.notified) return 'al gemeld';
+  const by = (r.by || '').trim() || 'Iemand';
+  const item = doc.items[r.on] || {};
+  const tid = r.on.split('--')[0];
+  const owner = (item.name || '').trim();
+  /* deelnemers: schrijver van de opmerking, eerdere reageerders, en altijd de makers */
+  const names = [owner, ...Object.values(doc.replies).filter(x => x.on === r.on && !x.deleted).map(x => x.by)];
+  const to = new Map();
+  for (const p of [...names.map(personOf).filter(Boolean), ...PEOPLE.maker]) to.set(p.email, p);
+  const me = personOf(by);
+  if (me) to.delete(me.email);
+  const label = String(templateLabel || tid).slice(0, 80);
+  const self = owner && plain(owner) === plain(by);
+  const mail = await sendMail([...to.values()], self ? `${by} reageerde terug over template ${label}` : `${by} reageerde op ${owner ? owner + ' over ' : ''}template ${label}`, {
+    eyebrow: 'Templates · reactie',
+    title: self ? `${by} reageerde terug` : `${by} reageerde${owner ? ' op ' + owner : ''}`,
+    intro: owner && (item.note || '').trim() ? `Bij template ${label}, op de opmerking: "${item.note.trim().slice(0, 300)}"` : `Bij template ${label}.`,
+    quote: r.text.trim(),
+    rows: [['Template', label]],
+    cta: 'Bekijk en reageer',
+    link: `${SITE}/templates/#t-${tid}`
+  });
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const fresh = attempt ? await readRemote(token, page) : doc;
+    if (!fresh.replies[rid]) break;
+    fresh.replies[rid] = { ...fresh.replies[rid], notified: true };
+    const put = await writeRemote(token, page, fresh);
+    if (put.ok) break;
+  }
+  return mail;
+}
+
+async function writeRemote(token, page, doc) {
+  const out = { items: doc.items || {}, selections: doc.selections || {}, updated: Date.now() };
+  if (doc.replies && Object.keys(doc.replies).length) out.replies = doc.replies;
+  if (doc.resolved && Object.keys(doc.resolved).length) out.resolved = doc.resolved;
   const body = {
     message: `${page.label}: feedback bijgewerkt ${new Date().toISOString().slice(0, 16).replace('T', ' ')}`,
-    content: btoa(unescape(encodeURIComponent(JSON.stringify({ items, selections: selections || {}, updated: Date.now() }, null, 1)))),
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(out, null, 1)))),
     branch: BRANCH
   };
-  if (sha) body.sha = sha;
+  if (doc.sha) body.sha = doc.sha;
   return fetch(`https://api.github.com/repos/${REPO}/contents/${page.file}`, {
     method: 'PUT',
     headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
@@ -177,19 +258,26 @@ export default async function handler(req) {
   try {
     if (payload.action === 'get') {
       const remote = await readRemote(token, page);
-      return json({ items: remote.items, selections: remote.selections });
+      return json({ items: remote.items, selections: remote.selections, replies: remote.replies, resolved: remote.resolved });
     }
 
     if (payload.action === 'set') {
       const incoming = sanitizeItems(payload.items, page.choices);
       const incomingSel = sanitizeSelections(payload.selections);
+      const incomingRep = payload.page === 'templates' ? sanitizeReplies(payload.replies) : {};
+      const incomingRes = payload.page === 'templates' ? sanitizeResolved(payload.resolved) : {};
       /* twee pogingen: bij een sha-conflict (gelijktijdige save) verse stand ophalen */
       for (let attempt = 0; attempt < 2; attempt++) {
         const remote = await readRemote(token, page);
-        const merged = merge(remote.items, incoming);
-        const mergedSel = merge(remote.selections, incomingSel);
-        const put = await writeRemote(token, page, merged, remote.sha, mergedSel);
-        if (put.ok) return json({ ok: true, items: merged, selections: mergedSel });
+        const next = {
+          items: merge(remote.items, incoming),
+          selections: merge(remote.selections, incomingSel),
+          replies: merge(remote.replies, incomingRep),
+          resolved: merge(remote.resolved, incomingRes),
+          sha: remote.sha
+        };
+        const put = await writeRemote(token, page, next);
+        if (put.ok) return json({ ok: true, items: next.items, selections: next.selections, replies: next.replies, resolved: next.resolved });
         if (put.status !== 409 && put.status !== 422) {
           return json({ error: `github ${put.status}` }, 500);
         }
@@ -202,6 +290,14 @@ export default async function handler(req) {
       const id = String(payload.id || '');
       if (!/^[\w-]{1,90}$/.test(id)) return json({ error: 'bad id' }, 400);
       const mail = await notifyTemplate(token, page, id, payload.label);
+      return json({ ok: true, mail });
+    }
+
+    if (payload.action === 'notifyReply') {
+      if (payload.page !== 'templates') return json({ error: 'not supported' }, 400);
+      const id = String(payload.id || '');
+      if (!/^[\w-]{1,60}$/.test(id)) return json({ error: 'bad id' }, 400);
+      const mail = await notifyReply(token, page, id, payload.label);
       return json({ ok: true, mail });
     }
 
