@@ -2,17 +2,21 @@
  "photos": [
   {
    "id": "01",
-   "title": "DSCF1178",
+   "cat": "Binckhorst",
+   "title": "Supreme Strength, training",
+   "orig": "DSCF1178",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/01.jpg",
     "thumb": "thumb/01.jpg",
-    "bytes": 492590
+    "bytes": 492590,
+    "name": "Skymark_Binckhorst_Supreme-Strength-training_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1178-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1178-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Supreme-Strength-training_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Supreme-Strength-training_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Supreme-Strength-training_print.jpg",
     "bytes": 6147285,
     "w": 3888,
     "h": 2592
@@ -20,17 +24,21 @@
   },
   {
    "id": "03",
-   "title": "DSCF1284",
+   "cat": "Binckhorst",
+   "title": "Bink36 met trein",
+   "orig": "DSCF1284",
    "w": 2000,
    "h": 1333,
    "digital": {
     "file": "img/03.jpg",
     "thumb": "thumb/03.jpg",
-    "bytes": 528822
+    "bytes": 528822,
+    "name": "Skymark_Binckhorst_Bink36-met-trein_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1284-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1284-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bink36-met-trein_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bink36-met-trein_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Bink36-met-trein_print.jpg",
     "bytes": 5875991,
     "w": 3888,
     "h": 2592
@@ -38,17 +46,21 @@
   },
   {
    "id": "04",
-   "title": "DSCF1292",
+   "cat": "Binckhorst",
+   "title": "Bedrijfshal ALL",
+   "orig": "DSCF1292",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/04.jpg",
     "thumb": "thumb/04.jpg",
-    "bytes": 438208
+    "bytes": 438208,
+    "name": "Skymark_Binckhorst_Bedrijfshal-ALL_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1292-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1292-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bedrijfshal-ALL_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bedrijfshal-ALL_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Bedrijfshal-ALL_print.jpg",
     "bytes": 13194274,
     "w": 5472,
     "h": 3648
@@ -56,17 +68,21 @@
   },
   {
    "id": "05",
-   "title": "DSCF1296",
+   "cat": "Binckhorst",
+   "title": "Kantoor met terras",
+   "orig": "DSCF1296",
    "w": 1302,
    "h": 2000,
    "digital": {
     "file": "img/05.jpg",
     "thumb": "thumb/05.jpg",
-    "bytes": 490048
+    "bytes": 490048,
+    "name": "Skymark_Binckhorst_Kantoor-met-terras_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1296-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1296-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kantoor-met-terras_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kantoor-met-terras_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Kantoor-met-terras_print.jpg",
     "bytes": 11080398,
     "w": 5314,
     "h": 3459
@@ -74,17 +90,21 @@
   },
   {
    "id": "06",
-   "title": "DSCF1374",
+   "cat": "Binckhorst",
+   "title": "Kompaan, interieur",
+   "orig": "DSCF1374",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/06.jpg",
     "thumb": "thumb/06.jpg",
-    "bytes": 534738
+    "bytes": 534738,
+    "name": "Skymark_Binckhorst_Kompaan-interieur_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1374-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1374-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-interieur_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-interieur_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Kompaan-interieur_print.jpg",
     "bytes": 5857150,
     "w": 3888,
     "h": 2592
@@ -92,17 +112,21 @@
   },
   {
    "id": "07",
-   "title": "DSCF1375",
+   "cat": "Binckhorst",
+   "title": "Kompaan, tap",
+   "orig": "DSCF1375",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/07.jpg",
     "thumb": "thumb/07.jpg",
-    "bytes": 642950
+    "bytes": 642950,
+    "name": "Skymark_Binckhorst_Kompaan-tap_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1375-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1375-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-tap_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-tap_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Kompaan-tap_print.jpg",
     "bytes": 26500692,
     "w": 7728,
     "h": 5152
@@ -110,17 +134,21 @@
   },
   {
    "id": "11",
-   "title": "DSCF1436",
+   "cat": "Binckhorst",
+   "title": "Kompaan aan het water",
+   "orig": "DSCF1436",
    "w": 2000,
    "h": 1333,
    "digital": {
     "file": "img/11.jpg",
     "thumb": "thumb/11.jpg",
-    "bytes": 661245
+    "bytes": 661245,
+    "name": "Skymark_Binckhorst_Kompaan-aan-het-water_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1436-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1436-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-aan-het-water_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-aan-het-water_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Kompaan-aan-het-water_print.jpg",
     "bytes": 12251333,
     "w": 5472,
     "h": 3648
@@ -128,17 +156,21 @@
   },
   {
    "id": "12",
-   "title": "DSCF1492",
+   "cat": "Binckhorst",
+   "title": "Graffiti",
+   "orig": "DSCF1492",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/12.jpg",
     "thumb": "thumb/12.jpg",
-    "bytes": 554219
+    "bytes": 554219,
+    "name": "Skymark_Binckhorst_Graffiti_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1492-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1492-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Graffiti_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Graffiti_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Graffiti_print.jpg",
     "bytes": 6209779,
     "w": 3888,
     "h": 2592
@@ -146,17 +178,21 @@
   },
   {
    "id": "13",
-   "title": "DSCF1499",
+   "cat": "Binckhorst",
+   "title": "Fokkerhaven, steiger",
+   "orig": "DSCF1499",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/13.jpg",
     "thumb": "thumb/13.jpg",
-    "bytes": 547184
+    "bytes": 547184,
+    "name": "Skymark_Binckhorst_Fokkerhaven-steiger_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1499-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1499-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fokkerhaven-steiger_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fokkerhaven-steiger_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Fokkerhaven-steiger_print.jpg",
     "bytes": 5916347,
     "w": 3888,
     "h": 2592
@@ -164,17 +200,21 @@
   },
   {
    "id": "15",
-   "title": "DSCF1572",
+   "cat": "Binckhorst",
+   "title": "Park aan het water",
+   "orig": "DSCF1572",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/15.jpg",
     "thumb": "thumb/15.jpg",
-    "bytes": 564748
+    "bytes": 564748,
+    "name": "Skymark_Binckhorst_Park-aan-het-water_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1572-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1572-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Park-aan-het-water_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Park-aan-het-water_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Park-aan-het-water_print.jpg",
     "bytes": 6109123,
     "w": 3888,
     "h": 2592
@@ -182,17 +222,21 @@
   },
   {
    "id": "16",
-   "title": "DSCF1575",
+   "cat": "Binckhorst",
+   "title": "Waterkant, panorama",
+   "orig": "DSCF1575",
    "w": 2000,
    "h": 1333,
    "digital": {
     "file": "img/16.jpg",
     "thumb": "thumb/16.jpg",
-    "bytes": 544353
+    "bytes": 544353,
+    "name": "Skymark_Binckhorst_Waterkant-panorama_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1575-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1575-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Waterkant-panorama_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Waterkant-panorama_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Waterkant-panorama_print.jpg",
     "bytes": 5928753,
     "w": 3888,
     "h": 2592
@@ -200,17 +244,21 @@
   },
   {
    "id": "17",
-   "title": "DSCF1609",
+   "cat": "Binckhorst",
+   "title": "Brute Bonen, gevel",
+   "orig": "DSCF1609",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/17.jpg",
     "thumb": "thumb/17.jpg",
-    "bytes": 609114
+    "bytes": 609114,
+    "name": "Skymark_Binckhorst_Brute-Bonen-gevel_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1609-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1609-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Brute-Bonen-gevel_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Brute-Bonen-gevel_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Brute-Bonen-gevel_print.jpg",
     "bytes": 6187990,
     "w": 3888,
     "h": 2592
@@ -218,17 +266,21 @@
   },
   {
    "id": "18",
-   "title": "DSCF1679",
+   "cat": "Binckhorst",
+   "title": "Kade met woningen",
+   "orig": "DSCF1679",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/18.jpg",
     "thumb": "thumb/18.jpg",
-    "bytes": 587445
+    "bytes": 587445,
+    "name": "Skymark_Binckhorst_Kade-met-woningen_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1679-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1679-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kade-met-woningen_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kade-met-woningen_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Kade-met-woningen_print.jpg",
     "bytes": 6101819,
     "w": 3888,
     "h": 2592
@@ -236,17 +288,21 @@
   },
   {
    "id": "21",
-   "title": "DSCF1702",
+   "cat": "Binckhorst",
+   "title": "Haven met boten",
+   "orig": "DSCF1702",
    "w": 2000,
    "h": 1333,
    "digital": {
     "file": "img/21.jpg",
     "thumb": "thumb/21.jpg",
-    "bytes": 477702
+    "bytes": 477702,
+    "name": "Skymark_Binckhorst_Haven-met-boten_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1702-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1702-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Haven-met-boten_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Haven-met-boten_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Haven-met-boten_print.jpg",
     "bytes": 22894219,
     "w": 7728,
     "h": 5152
@@ -254,17 +310,21 @@
   },
   {
    "id": "23",
-   "title": "DSCF1707",
+   "cat": "Binckhorst",
+   "title": "Fietser bij hoogbouw",
+   "orig": "DSCF1707",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/23.jpg",
     "thumb": "thumb/23.jpg",
-    "bytes": 725014
+    "bytes": 725014,
+    "name": "Skymark_Binckhorst_Fietser-bij-hoogbouw_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1707-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1707-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fietser-bij-hoogbouw_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fietser-bij-hoogbouw_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Fietser-bij-hoogbouw_print.jpg",
     "bytes": 13451667,
     "w": 5472,
     "h": 3648
@@ -272,17 +332,21 @@
   },
   {
    "id": "24",
-   "title": "DSCF1729",
+   "cat": "Binckhorst",
+   "title": "Hoogbouw en Kompaan 1",
+   "orig": "DSCF1729",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/24.jpg",
     "thumb": "thumb/24.jpg",
-    "bytes": 598793
+    "bytes": 598793,
+    "name": "Skymark_Binckhorst_Hoogbouw-en-Kompaan-1_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1729-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1729-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Hoogbouw-en-Kompaan-1_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Hoogbouw-en-Kompaan-1_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Hoogbouw-en-Kompaan-1_print.jpg",
     "bytes": 5900680,
     "w": 3888,
     "h": 2592
@@ -290,17 +354,21 @@
   },
   {
    "id": "26",
-   "title": "DSCF1805",
+   "cat": "Den Haag",
+   "title": "Centraal, sporen",
+   "orig": "DSCF1805",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/26.jpg",
     "thumb": "thumb/26.jpg",
-    "bytes": 593806
+    "bytes": 593806,
+    "name": "Skymark_Den-Haag_Centraal-sporen_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1805-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1805-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Centraal-sporen_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Centraal-sporen_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Centraal-sporen_print.jpg",
     "bytes": 23237242,
     "w": 7728,
     "h": 5152
@@ -308,17 +376,21 @@
   },
   {
    "id": "27",
-   "title": "DSCF1811",
+   "cat": "Den Haag",
+   "title": "Centraal, stationshal",
+   "orig": "DSCF1811",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/27.jpg",
     "thumb": "thumb/27.jpg",
-    "bytes": 416743
+    "bytes": 416743,
+    "name": "Skymark_Den-Haag_Centraal-stationshal_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1811-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1811-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Centraal-stationshal_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Centraal-stationshal_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Centraal-stationshal_print.jpg",
     "bytes": 22454213,
     "w": 7728,
     "h": 5152
@@ -326,17 +398,21 @@
   },
   {
    "id": "29",
-   "title": "DSCF3392",
+   "cat": "Bouwplaats",
+   "title": "Heistelling",
+   "orig": "DSCF3392",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/29.jpg",
     "thumb": "thumb/29.jpg",
-    "bytes": 502422
+    "bytes": 502422,
+    "name": "Skymark_Bouwplaats_Heistelling_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3392-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3392-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Bouwplaats_Heistelling_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Bouwplaats_Heistelling_print.jpg?download=1",
+    "name": "Skymark_Bouwplaats_Heistelling_print.jpg",
     "bytes": 25716228,
     "w": 5152,
     "h": 7728
@@ -344,17 +420,21 @@
   },
   {
    "id": "41",
-   "title": "DSCF3449",
+   "cat": "Den Haag",
+   "title": "Brood van Bro, gevel",
+   "orig": "DSCF3449",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/41.jpg",
     "thumb": "thumb/41.jpg",
-    "bytes": 496350
+    "bytes": 496350,
+    "name": "Skymark_Den-Haag_Brood-van-Bro-gevel_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3449-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3449-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Brood-van-Bro-gevel_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Brood-van-Bro-gevel_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Brood-van-Bro-gevel_print.jpg",
     "bytes": 12871973,
     "w": 3547,
     "h": 5320
@@ -362,17 +442,21 @@
   },
   {
    "id": "44",
-   "title": "DSCF3460",
+   "cat": "Den Haag",
+   "title": "Brood van Bro, interieur",
+   "orig": "DSCF3460",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/44.jpg",
     "thumb": "thumb/44.jpg",
-    "bytes": 465575
+    "bytes": 465575,
+    "name": "Skymark_Den-Haag_Brood-van-Bro-interieur_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3460-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3460-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Brood-van-Bro-interieur_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Brood-van-Bro-interieur_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Brood-van-Bro-interieur_print.jpg",
     "bytes": 12615259,
     "w": 3648,
     "h": 5472
@@ -380,17 +464,21 @@
   },
   {
    "id": "49",
-   "title": "DSCF3487",
+   "cat": "Den Haag",
+   "title": "Brood van Bro, deeg",
+   "orig": "DSCF3487",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/49.jpg",
     "thumb": "thumb/49.jpg",
-    "bytes": 487923
+    "bytes": 487923,
+    "name": "Skymark_Den-Haag_Brood-van-Bro-deeg_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3487-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3487-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Brood-van-Bro-deeg_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Brood-van-Bro-deeg_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Brood-van-Bro-deeg_print.jpg",
     "bytes": 13145875,
     "w": 3648,
     "h": 5472
@@ -398,17 +486,21 @@
   },
   {
    "id": "55",
-   "title": "DSCF3511",
+   "cat": "Den Haag",
+   "title": "Straat met tramrails",
+   "orig": "DSCF3511",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/55.jpg",
     "thumb": "thumb/55.jpg",
-    "bytes": 649581
+    "bytes": 649581,
+    "name": "Skymark_Den-Haag_Straat-met-tramrails_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3511-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3511-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Straat-met-tramrails_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Straat-met-tramrails_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Straat-met-tramrails_print.jpg",
     "bytes": 30371548,
     "w": 5152,
     "h": 7728
@@ -416,17 +508,21 @@
   },
   {
    "id": "56",
-   "title": "DSCF3517",
+   "cat": "Den Haag",
+   "title": "Pand met terras",
+   "orig": "DSCF3517",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/56.jpg",
     "thumb": "thumb/56.jpg",
-    "bytes": 701399
+    "bytes": 701399,
+    "name": "Skymark_Den-Haag_Pand-met-terras_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3517-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3517-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Pand-met-terras_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Pand-met-terras_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Pand-met-terras_print.jpg",
     "bytes": 32247122,
     "w": 5152,
     "h": 7728
@@ -434,17 +530,21 @@
   },
   {
    "id": "67",
-   "title": "DSCF3554",
+   "cat": "Den Haag",
+   "title": "Lola, gevel",
+   "orig": "DSCF3554",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/67.jpg",
     "thumb": "thumb/67.jpg",
-    "bytes": 581508
+    "bytes": 581508,
+    "name": "Skymark_Den-Haag_Lola-gevel_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3554-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3554-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Lola-gevel_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Lola-gevel_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Lola-gevel_print.jpg",
     "bytes": 10701921,
     "w": 3183,
     "h": 4774
@@ -452,17 +552,21 @@
   },
   {
    "id": "89",
-   "title": "DSCF3684",
+   "cat": "Den Haag",
+   "title": "Fietser in tegenlicht",
+   "orig": "DSCF3684",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/89.jpg",
     "thumb": "thumb/89.jpg",
-    "bytes": 451428
+    "bytes": 451428,
+    "name": "Skymark_Den-Haag_Fietser-in-tegenlicht_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3684-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3684-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Fietser-in-tegenlicht_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Fietser-in-tegenlicht_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Fietser-in-tegenlicht_print.jpg",
     "bytes": 16062815,
     "w": 4125,
     "h": 6187
@@ -470,17 +574,21 @@
   },
   {
    "id": "92",
-   "title": "DSCF3696",
+   "cat": "Den Haag",
+   "title": "Straat met luifels",
+   "orig": "DSCF3696",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/92.jpg",
     "thumb": "thumb/92.jpg",
-    "bytes": 664057
+    "bytes": 664057,
+    "name": "Skymark_Den-Haag_Straat-met-luifels_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3696-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3696-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Straat-met-luifels_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Straat-met-luifels_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Straat-met-luifels_print.jpg",
     "bytes": 24752785,
     "w": 4555,
     "h": 6833
@@ -488,17 +596,21 @@
   },
   {
    "id": "98",
-   "title": "DSCF3728",
+   "cat": "Den Haag",
+   "title": "Terras onder luifel",
+   "orig": "DSCF3728",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/98.jpg",
     "thumb": "thumb/98.jpg",
-    "bytes": 549067
+    "bytes": 549067,
+    "name": "Skymark_Den-Haag_Terras-onder-luifel_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3728-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3728-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Terras-onder-luifel_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Terras-onder-luifel_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Terras-onder-luifel_print.jpg",
     "bytes": 9940476,
     "w": 3059,
     "h": 4589
@@ -506,17 +618,21 @@
   },
   {
    "id": "104",
-   "title": "DSCF3767",
+   "cat": "Den Haag",
+   "title": "Winkelstraat",
+   "orig": "DSCF3767",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/104.jpg",
     "thumb": "thumb/104.jpg",
-    "bytes": 572766
+    "bytes": 572766,
+    "name": "Skymark_Den-Haag_Winkelstraat_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3767-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF3767-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Winkelstraat_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Den-Haag_Winkelstraat_print.jpg?download=1",
+    "name": "Skymark_Den-Haag_Winkelstraat_print.jpg",
     "bytes": 8826488,
     "w": 2897,
     "h": 4346
@@ -524,17 +640,21 @@
   },
   {
    "id": "109",
-   "title": "Scheveningen",
+   "cat": "Strand",
+   "title": "Scheveningen, pier",
+   "orig": "Scheveningen - HD",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/109.jpg",
     "thumb": "thumb/109.jpg",
-    "bytes": 392133
+    "bytes": 392133,
+    "name": "Skymark_Strand_Scheveningen-pier_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-Scheveningen-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-Scheveningen-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Strand_Scheveningen-pier_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Strand_Scheveningen-pier_print.jpg?download=1",
+    "name": "Skymark_Strand_Scheveningen-pier_print.jpg",
     "bytes": 6442096,
     "w": 2592,
     "h": 3888
@@ -542,17 +662,21 @@
   },
   {
    "id": "119",
-   "title": "BF_00251",
+   "cat": "Binckhorst",
+   "title": "Kompaan, terras",
+   "orig": "BF_00251",
    "w": 2000,
    "h": 1334,
    "digital": {
     "file": "img/119.jpg",
     "thumb": "thumb/119.jpg",
-    "bytes": 708704
+    "bytes": 708704,
+    "name": "Skymark_Binckhorst_Kompaan-terras_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00251-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00251-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-terras_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kompaan-terras_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Kompaan-terras_print.jpg",
     "bytes": 27712158,
     "w": 6016,
     "h": 4012
@@ -560,17 +684,21 @@
   },
   {
    "id": "121",
-   "title": "BF_00257",
+   "cat": "Binckhorst",
+   "title": "Puurr met boten",
+   "orig": "BF_00257",
    "w": 2000,
    "h": 1334,
    "digital": {
     "file": "img/121.jpg",
     "thumb": "thumb/121.jpg",
-    "bytes": 553250
+    "bytes": 553250,
+    "name": "Skymark_Binckhorst_Puurr-met-boten_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00257-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00257-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Puurr-met-boten_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Puurr-met-boten_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Puurr-met-boten_print.jpg",
     "bytes": 23071662,
     "w": 6016,
     "h": 4012
@@ -578,17 +706,21 @@
   },
   {
    "id": "123",
-   "title": "DSCF1283",
+   "cat": "Binckhorst",
+   "title": "Bink36 bij het spoor",
+   "orig": "DSCF1283",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/123.jpg",
     "thumb": "thumb/123.jpg",
-    "bytes": 550374
+    "bytes": 550374,
+    "name": "Skymark_Binckhorst_Bink36-bij-het-spoor_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1283-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1283-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bink36-bij-het-spoor_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bink36-bij-het-spoor_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Bink36-bij-het-spoor_print.jpg",
     "bytes": 6031031,
     "w": 3888,
     "h": 2592
@@ -596,17 +728,21 @@
   },
   {
    "id": "142",
-   "title": "DSCF1445",
+   "cat": "Binckhorst",
+   "title": "Fokkerhaven, sloep",
+   "orig": "DSCF1445",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/142.jpg",
     "thumb": "thumb/142.jpg",
-    "bytes": 647173
+    "bytes": 647173,
+    "name": "Skymark_Binckhorst_Fokkerhaven-sloep_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1445-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1445-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fokkerhaven-sloep_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fokkerhaven-sloep_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Fokkerhaven-sloep_print.jpg",
     "bytes": 6847703,
     "w": 3888,
     "h": 2592
@@ -614,17 +750,21 @@
   },
   {
    "id": "150",
-   "title": "DSCF1548",
+   "cat": "Binckhorst",
+   "title": "Glaswerk, gevel",
+   "orig": "DSCF1548",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/150.jpg",
     "thumb": "thumb/150.jpg",
-    "bytes": 531470
+    "bytes": 531470,
+    "name": "Skymark_Binckhorst_Glaswerk-gevel_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1548-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1548-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Glaswerk-gevel_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Glaswerk-gevel_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Glaswerk-gevel_print.jpg",
     "bytes": 5878105,
     "w": 3888,
     "h": 2592
@@ -632,17 +772,21 @@
   },
   {
    "id": "153",
-   "title": "DSCF1558",
+   "cat": "Binckhorst",
+   "title": "Fokkerhaven, terras",
+   "orig": "DSCF1558",
    "w": 1451,
    "h": 2000,
    "digital": {
     "file": "img/153.jpg",
     "thumb": "thumb/153.jpg",
-    "bytes": 567698
+    "bytes": 567698,
+    "name": "Skymark_Binckhorst_Fokkerhaven-terras_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1558-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1558-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fokkerhaven-terras_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Fokkerhaven-terras_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Fokkerhaven-terras_print.jpg",
     "bytes": 4621097,
     "w": 3226,
     "h": 2341
@@ -650,17 +794,21 @@
   },
   {
    "id": "155",
-   "title": "DSCF1574",
+   "cat": "Binckhorst",
+   "title": "Waterkant",
+   "orig": "DSCF1574",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/155.jpg",
     "thumb": "thumb/155.jpg",
-    "bytes": 503425
+    "bytes": 503425,
+    "name": "Skymark_Binckhorst_Waterkant_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1574-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1574-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Waterkant_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Waterkant_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Waterkant_print.jpg",
     "bytes": 5841511,
     "w": 3888,
     "h": 2592
@@ -668,17 +816,21 @@
   },
   {
    "id": "157",
-   "title": "DSCF1605",
+   "cat": "Binckhorst",
+   "title": "Brute Bonen, barista",
+   "orig": "DSCF1605",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/157.jpg",
     "thumb": "thumb/157.jpg",
-    "bytes": 501822
+    "bytes": 501822,
+    "name": "Skymark_Binckhorst_Brute-Bonen-barista_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1605-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1605-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Brute-Bonen-barista_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Brute-Bonen-barista_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Brute-Bonen-barista_print.jpg",
     "bytes": 5806680,
     "w": 3888,
     "h": 2592
@@ -686,17 +838,21 @@
   },
   {
    "id": "163",
-   "title": "DSCF1655",
+   "cat": "Binckhorst",
+   "title": "Brute Bonen, koffie",
+   "orig": "DSCF1655",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/163.jpg",
     "thumb": "thumb/163.jpg",
-    "bytes": 454979
+    "bytes": 454979,
+    "name": "Skymark_Binckhorst_Brute-Bonen-koffie_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1655-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1655-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Brute-Bonen-koffie_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Brute-Bonen-koffie_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Brute-Bonen-koffie_print.jpg",
     "bytes": 5799012,
     "w": 3888,
     "h": 2592
@@ -704,17 +860,21 @@
   },
   {
    "id": "168",
-   "title": "DSCF1693",
+   "cat": "Binckhorst",
+   "title": "Kleurrijke loods",
+   "orig": "DSCF1693",
    "w": 2000,
    "h": 1333,
    "digital": {
     "file": "img/168.jpg",
     "thumb": "thumb/168.jpg",
-    "bytes": 489160
+    "bytes": 489160,
+    "name": "Skymark_Binckhorst_Kleurrijke-loods_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1693-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1693-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kleurrijke-loods_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kleurrijke-loods_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Kleurrijke-loods_print.jpg",
     "bytes": 5875060,
     "w": 3888,
     "h": 2592
@@ -722,17 +882,21 @@
   },
   {
    "id": "173",
-   "title": "DSCF1730",
+   "cat": "Binckhorst",
+   "title": "Hoogbouw en Kompaan 2",
+   "orig": "DSCF1730",
    "w": 1333,
    "h": 2000,
    "digital": {
     "file": "img/173.jpg",
     "thumb": "thumb/173.jpg",
-    "bytes": 586942
+    "bytes": 586942,
+    "name": "Skymark_Binckhorst_Hoogbouw-en-Kompaan-2_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1730-print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-DSCF1730-print.jpg?download=1",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Hoogbouw-en-Kompaan-2_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Hoogbouw-en-Kompaan-2_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Hoogbouw-en-Kompaan-2_print.jpg",
     "bytes": 5854442,
     "w": 3888,
     "h": 2592

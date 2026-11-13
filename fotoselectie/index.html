@@ -38,8 +38,6 @@ button{cursor:pointer;}
 .hero{max-width:760px;padding-bottom:36px;}
 .hero h1{font-family:'PPTalisman',serif;font-weight:300;font-size:clamp(2.8rem,6vw,4.6rem);line-height:1.02;color:var(--mist);margin:14px 0 22px;}
 .lede{font-size:1.08rem;color:var(--mist);opacity:.86;max-width:660px;}
-.facts{list-style:none;display:flex;flex-wrap:wrap;gap:10px 32px;margin-top:28px;font-size:.82rem;color:var(--stone);}
-.facts b{display:block;font-family:'PPTalisman',serif;font-weight:300;font-size:1.7rem;line-height:1.1;color:var(--mist);}
 
 /* BALK */
 .bar{position:sticky;top:52px;z-index:50;display:flex;align-items:center;gap:12px 18px;flex-wrap:wrap;padding:14px 0;background:rgba(16,19,16,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
@@ -59,28 +57,28 @@ button{cursor:pointer;}
 .linkbtn:hover{color:var(--mist);}
 .note{font-size:.84rem;color:var(--stone);padding-top:12px;}
 
-/* RASTER: rijen van links naar rechts, elke foto in zijn eigen verhouding */
-.grid{display:flex;flex-wrap:wrap;gap:20px;padding:28px 0 40px;--row:250px;}
-.grid::after{content:'';flex:999 1 0;}
-.card{position:relative;flex:var(--r) 1 calc(var(--r) * var(--row));min-width:0;background:var(--panel);border:1px solid var(--line);transition:border-color .15s;display:flex;flex-direction:column;}
-.shot{aspect-ratio:var(--r);}
-.shot img{height:100%;object-fit:cover;}
-.card.sel{border-color:var(--gold);}
-.shot{position:relative;display:block;width:100%;border:0;padding:0;background:var(--panel2);cursor:zoom-in;}
-.shot img{display:block;width:100%;height:auto;}
-.pick{position:absolute;top:10px;left:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(16,19,16,.62);border:1px solid rgba(241,241,235,.55);color:transparent;cursor:pointer;}
-.pick svg{width:16px;height:16px;}
+/* RASTER: drie kolommen, gevuld in leesvolgorde (steeds de kortste kolom) */
+.grid{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:0 32px;align-items:start;padding:32px 0 48px;}
+.col{display:flex;flex-direction:column;gap:40px;min-width:0;}
+.card{position:relative;}
+.shot{position:relative;display:block;width:100%;border:0;padding:0;background:var(--panel);cursor:zoom-in;aspect-ratio:var(--r);}
+.shot img{display:block;width:100%;height:100%;object-fit:cover;transition:opacity .2s;}
+.shot:hover img{opacity:.88;}
+.card.sel .shot{outline:2px solid var(--gold);outline-offset:4px;}
+.pick{position:absolute;top:12px;left:12px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(16,19,16,.5);border:1px solid rgba(241,241,235,.7);color:transparent;cursor:pointer;opacity:0;transition:opacity .15s;}
+.pick svg{width:15px;height:15px;}
+.card:hover .pick,.card:focus-within .pick,.card.sel .pick{opacity:1;}
+@media (hover:none){.pick{opacity:.85;}}
 .card.sel .pick{background:var(--gold);border-color:var(--gold);color:var(--black);}
-.pick:hover{border-color:var(--fog);}
-.nr{position:absolute;top:12px;right:12px;font-size:.7rem;font-weight:600;letter-spacing:.12em;color:var(--fog);background:rgba(16,19,16,.62);padding:3px 7px;}
-.meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:12px 14px 14px;}
-.meta .name{flex-basis:100%;font-weight:600;font-size:.86rem;color:var(--mist);}
-.dl{background:none;border:0;padding:4px 0;font-size:.8rem;color:var(--stone);text-decoration:none;display:inline-flex;align-items:center;gap:5px;}
+.cap{padding-top:14px;display:flex;flex-direction:column;gap:2px;}
+.cap .cat{font-weight:600;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);}
+.cap .name{font-size:.95rem;color:var(--mist);line-height:1.35;}
+.acts{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:6px;}
+.dl{background:none;border:0;padding:2px 0;font-size:.78rem;color:var(--stone);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:color .15s;}
 .dl:hover{color:var(--mist);}
-.dl svg{width:13px;height:13px;}
-.dl.off{opacity:.55;cursor:default;}
-.dl.off:hover{color:var(--stone);}
-.dl.post{color:var(--gold);}
+.dl svg{width:12px;height:12px;}
+.dl.post{color:var(--moss);}
+.dl.post:hover{color:var(--gold);}
 
 /* VIEWER */
 .viewer{position:fixed;inset:0;z-index:200;background:rgba(11,13,11,.97);display:grid;grid-template-columns:1fr 340px;}
@@ -91,6 +89,7 @@ button{cursor:pointer;}
 .vprev{left:16px}.vnext{right:16px}
 .vside{border-left:1px solid var(--line);padding:28px 26px;display:flex;flex-direction:column;gap:18px;overflow:auto;background:var(--black);}
 .vside h2{font-family:'PPTalisman',serif;font-weight:300;font-size:2rem;line-height:1.1;color:var(--mist);}
+.vorig{font-size:.78rem;color:var(--stone);margin-top:8px;}
 .vclose{align-self:flex-end;background:none;border:1px solid var(--line2);width:40px;height:40px;color:var(--fog);font-size:1.1rem;}
 .opt{border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:4px;}
 .opt b{font-weight:600;font-size:.9rem;color:var(--mist);}
@@ -103,7 +102,10 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
 
 @media (max-width:900px){
   .page{padding:48px 16px 0;}
-  .grid{gap:12px;--row:150px;}
+  .grid{--cols:2;gap:0 14px;}
+  .col{gap:26px;}
+  .cap .name{font-size:.86rem;}
+  .acts{gap:2px 12px;}
   .meta{padding:10px;gap:4px 10px;}
   .selinfo{margin-left:0;width:100%;order:-1;}
   .viewer{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;}
@@ -148,8 +150,7 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
   <header class="hero">
     <p class="eyebrow">Skymark &middot; Fotografie</p>
     <h1>Fotoselectie</h1>
-    <p class="lede">De definitieve selectie voor Skymark: de Binckhorst, de bouwplaats en Scheveningen. Download een beeld los, of selecteer er een paar en download ze in &eacute;&eacute;n keer als zip.</p>
-    <ul class="facts" id="facts"></ul>
+    <p class="lede">De definitieve selectie voor Skymark: de Binckhorst, Den Haag, de bouwplaats en het strand. Download een beeld los, of selecteer er een paar en download ze in &eacute;&eacute;n keer als zip.</p>
   </header>
 
   <div class="bar">
@@ -177,7 +178,7 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
   </div>
   <aside class="vside">
     <button class="vclose" id="v-close" aria-label="Sluiten">&times;</button>
-    <div><p class="eyebrow" id="v-nr"></p><h2 id="v-title"></h2></div>
+    <div><p class="eyebrow" id="v-nr"></p><h2 id="v-title"></h2><p class="vorig" id="v-orig"></p></div>
     <div id="v-opts"></div>
     <button class="btn wide" id="v-sel"></button>
     <a class="btn wide" id="v-post" hidden>Maak een post met deze foto</a>
@@ -207,7 +208,7 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
   function keep(){ try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
   function mb(bytes){ var m = bytes / 1048576; return (m < 10 ? m.toFixed(1) : Math.round(m)).toString().replace('.', ',') + ' MB'; }
   function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
-  function digitalName(p){ return 'Skymark-' + p.title + '-digitaal.jpg'; }
+  function digitalName(p){ return p.digital.name; }
   function isSel(p){ return state.sel.indexOf(p.id) !== -1; }
   var toastT;
   function toast(msg){ var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function(){ t.hidden = true; }, 4200); }
@@ -218,18 +219,16 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     c.className = 'card' + (isSel(p) ? ' sel' : '');
     c.dataset.id = p.id;
     c.style.setProperty('--r', (p.w / p.h).toFixed(4));
-    var print = p.print
-      ? '<a class="dl" href="' + esc(p.print.download) + '" title="Print · ' + p.print.w + ' × ' + p.print.h + ' px · ' + mb(p.print.bytes) + '">' + ICON_DL + 'Print</a>'
-      : '<span class="dl off" title="De versie in volle resolutie komt nog">Print volgt</span>';
     c.innerHTML =
       '<button class="shot" aria-label="Bekijk ' + esc(p.title) + '">' +
-        '<img src="/fotoselectie/' + esc(p.digital.thumb) + '" alt="' + esc(p.title) + '" loading="lazy" width="' + p.w + '" height="' + p.h + '">' +
-        '<span class="nr">' + String(i + 1).padStart(2, '0') + '</span>' +
+        '<img src="/fotoselectie/' + esc(p.digital.thumb) + '" alt="' + esc(p.cat + ': ' + p.title) + '" loading="lazy" width="' + p.w + '" height="' + p.h + '">' +
       '</button>' +
-      '<div class="meta"><span class="name">' + esc(p.title) + '</span>' +
-        '<a class="dl" href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(digitalName(p)) + '" title="Digitaal · ' + p.w + ' × ' + p.h + ' px · ' + mb(p.digital.bytes) + '">' + ICON_DL + 'Digitaal</a>' +
-        print +
-        (IS_MAKER ? '<a class="dl post" href="/posts/?foto=' + encodeURIComponent(p.id) + '">Maak post</a>' : '') +
+      '<div class="cap"><span class="cat">' + esc(p.cat) + '</span><span class="name">' + esc(p.title) + '</span>' +
+        '<div class="acts">' +
+          '<a class="dl" href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(p.digital.name) + '" title="Digitaal · ' + p.w + ' × ' + p.h + ' px · ' + mb(p.digital.bytes) + '">' + ICON_DL + 'Digitaal</a>' +
+          '<a class="dl" href="' + esc(p.print.download) + '" title="Print · ' + p.print.w + ' × ' + p.print.h + ' px · ' + mb(p.print.bytes) + '">' + ICON_DL + 'Print</a>' +
+          (IS_MAKER ? '<a class="dl post" href="/posts/?foto=' + encodeURIComponent(p.id) + '">Maak post</a>' : '') +
+        '</div>' +
       '</div>';
     var pick = document.createElement('span');
     pick.className = 'pick';
@@ -245,10 +244,20 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     return c;
   }
   function render(){
-    var g = $('grid'); g.innerHTML = '';
-    photos.forEach(function(p, i){ g.appendChild(card(p, i)); });
+    var g = $('grid');
+    var n = matchMedia('(max-width:900px)').matches ? 2 : 3;
+    g.innerHTML = '';
+    var cols = [], heights = [];
+    for (var k = 0; k < n; k++) { var col = document.createElement('div'); col.className = 'col'; g.appendChild(col); cols.push(col); heights.push(0); }
+    photos.forEach(function(p, i){
+      /* steeds in de kortste kolom: houdt de leesvolgorde en de kolommen even lang */
+      var k = heights.indexOf(Math.min.apply(null, heights));
+      cols[k].appendChild(card(p, i));
+      heights[k] += p.h / p.w + 0.22;
+    });
     syncSel();
   }
+  matchMedia('(max-width:900px)').addEventListener('change', function(){ if (photos.length) render(); });
   function toggle(p){
     var k = state.sel.indexOf(p.id);
     if (k === -1) state.sel.push(p.id); else state.sel.splice(k, 1);
@@ -268,7 +277,7 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     var n = chosen.length;
     $('selinfo').innerHTML = n
       ? '<b>' + n + '</b> geselecteerd &middot; ' + mb(bytes) + (q === 'print' && withFile.length < n ? ' &middot; ' + (n - withFile.length) + ' zonder printversie' : '')
-      : 'Klik op het vakje linksboven een foto om te selecteren';
+      : 'Selecteer foto\u2019s met het vakje linksboven in een foto';
     $('zip').disabled = !withFile.length || zipping;
     if (!zipping) $('zip').textContent = withFile.length ? 'Download ' + withFile.length + ' als zip' : 'Download als zip';
     $('selall').hidden = n === photos.length;
@@ -296,7 +305,7 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
         var url = q === 'print' ? p.print.url : '/fotoselectie/' + p.digital.file;
         var r = await fetch(url);
         if (!r.ok) throw new Error(p.title + ' (' + r.status + ')');
-        zip.file(q === 'print' ? 'Skymark-' + p.title + '-print.jpg' : digitalName(p), await r.blob(), { binary: true });
+        zip.file(q === 'print' ? p.print.name : digitalName(p), await r.blob(), { binary: true });
       }
       btn.textContent = 'Zip maken…';
       /* jpg's comprimeren nauwelijks verder: opslaan zonder compressie is sneller */
@@ -321,8 +330,9 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     var p = photos[cur];
     $('v-img').src = '/fotoselectie/' + p.digital.file;
     $('v-img').alt = p.title;
-    $('v-nr').textContent = 'Foto ' + String(cur + 1).padStart(2, '0') + ' van ' + photos.length;
+    $('v-nr').textContent = p.cat;
     $('v-title').textContent = p.title;
+    $('v-orig').textContent = 'Foto ' + (cur + 1) + ' van ' + photos.length + ' · origineel ' + p.orig;
     var html =
       '<div class="opt"><b>Digitaal</b><small>' + p.w + ' × ' + p.h + ' px &middot; ' + mb(p.digital.bytes) + ' &middot; voor social, web en presentaties</small>' +
       '<a class="btn" href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(digitalName(p)) + '">' + ICON_DL + ' Download digitaal</a></div>' +
@@ -360,8 +370,6 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     photos = d.photos || [];
     var ids = photos.map(function(p){ return p.id; });
     state.sel = state.sel.filter(function(id){ return ids.indexOf(id) !== -1; });
-    var nPrint = photos.filter(function(p){ return p.print; }).length;
-    $('facts').innerHTML = '<li><b>' + photos.length + '</b>foto’s</li><li><b>' + nPrint + '</b>in printkwaliteit</li><li><b>2000 px</b>digitaal</li>';
     bind(); render();
   }).catch(function(){ $('grid').innerHTML = '<p class="note">De foto’s konden niet geladen worden. Ververs de pagina.</p>'; });
 })();
