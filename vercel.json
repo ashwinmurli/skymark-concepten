@@ -19,6 +19,10 @@
       "dest": "/api/posts.js"
     },
     {
+      "src": "/api/print",
+      "dest": "/api/print.js"
+    },
+    {
       "handle": "filesystem"
     },
     {

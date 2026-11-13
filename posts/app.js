@@ -315,21 +315,28 @@ function renderThumb(canvas, s, fmt) {
 
 let pickerMode = 'add';
 let pickerFilter = 'Alle';
+/* foto vanaf de fotoselectie ("Maak post"): komt in het beeldvak van het gekozen template */
+let pendingPhoto = null;
+
+const fotoMedia = p => ({ kind: 'image', src: photoSrc(p), ref: { type: 'foto', id: p.id }, zoom: 1, pos: { x: 0, y: 0 } });
 
 function sampleMedia() {
-  return photos[0] ? { kind: 'image', src: photoSrc(photos[0]), ref: { type: 'foto', id: photos[0].id }, zoom: 1, pos: { x: 0, y: 0 } } : null;
+  const p = pickerMode === 'start' && pendingPhoto ? pendingPhoto : photos[0];
+  return p ? fotoMedia(p) : null;
 }
 
 function openPicker(mode) {
   pickerMode = mode;
   pickerFilter = 'Alle';
-  $('#tpl-title').textContent = mode === 'add' ? 'Nieuwe slide: kies een template' : mode === 'start' ? 'Kies een template' : 'Template wisselen';
+  $('#tpl-title').textContent = mode === 'add' ? 'Nieuwe slide: kies een template'
+    : mode === 'start' ? (pendingPhoto ? `Kies een template voor ${pendingPhoto.title}` : 'Kies een template') : 'Template wisselen';
   renderPicker();
   $('#m-tpl').classList.add('show');
 }
 
 function renderPicker() {
-  const list = templatesFor(post.format);
+  /* met een foto vanaf de fotoselectie: alleen templates met een beeldvak */
+  const list = templatesFor(post.format).filter(t => !(pickerMode === 'start' && pendingPhoto) || t.media.length);
   const groups = ['Alle', ...new Set(list.map(t => t.group))];
   const f = $('#tpl-filters');
   f.innerHTML = '';
@@ -353,7 +360,15 @@ function pickTemplate(tid) {
   $('#m-tpl').classList.remove('show');
   if (playing) stop();
   itab = 'design';
-  if (pickerMode === 'swap' || pickerMode === 'start') { applyTemplate(slide(), tid); changed(true); return; }
+  if (pickerMode === 'swap' || pickerMode === 'start') {
+    applyTemplate(slide(), tid);
+    if (pickerMode === 'start' && pendingPhoto) {
+      for (const m of getTemplate(tid).media) slide().media[m.key] = fotoMedia(pendingPhoto);
+      pendingPhoto = null;
+    }
+    changed(true);
+    return;
+  }
   if (post.slides.length >= MAX_SLIDES) { toast(`Een carrousel heeft maximaal ${MAX_SLIDES} slides.`); return; }
   const ns = newSlide(tid);
   const near = slide();
@@ -754,12 +769,15 @@ function sequenceSection() {
 /* ---------- beeld kiezen ---------- */
 
 let pickSlot = null;
+let finalIds = null;
+/* de beeldkiezer toont de definitieve fotoselectie; oudere posts met andere foto's blijven gewoon werken */
+const pickable = () => finalIds ? finalIds.map(id => photos.find(p => p.id === id)).filter(Boolean) : photos;
 
 function openPhotos(slotKey) {
   pickSlot = slotKey;
   const grid = $('#photo-grid');
   if (!grid.childElementCount) {
-    for (const p of photos) {
+    for (const p of pickable()) {
       grid.append(el('button', { title: p.title, onclick: () => {
         const s = slide();
         const prev = s.media[pickSlot];
@@ -1029,9 +1047,10 @@ function resumeLocal() {
   refreshAll();
 }
 
-function startNew() {
+function startNew(photo) {
   const m = $('#m-new');
-  $('#new-name').value = '';
+  pendingPhoto = photo && photo.id ? photo : null;
+  $('#new-name').value = pendingPhoto ? `Post met ${pendingPhoto.title}` : '';
   $('#new-date').value = '';
   m.classList.add('show');
   setTimeout(() => $('#new-name').focus(), 50);
@@ -1642,12 +1661,18 @@ async function init() {
     return;
   }
   document.body.classList.add('role-maker');
-  const [, , pj] = await Promise.all([
+  const [, , pj, fj] = await Promise.all([
     loadFonts(),
     loadAssets(),
-    fetch('/fotoselectie/pairs.json').then(r => r.json()).catch(() => ({ pairs: [] }))
+    fetch('/fotoselectie/pairs.json').then(r => r.json()).catch(() => ({ pairs: [] })),
+    fetch('/fotoselectie/final.json').then(r => r.json()).catch(() => null)
   ]);
   photos = (pj.pairs || []).filter(p => p.after || p.soft || p.single);
+  if (fj && Array.isArray(fj.photos)) {
+    finalIds = fj.photos.map(p => p.id);
+    /* namen zoals op de fotoselectie (bijv. "Scheveningen") */
+    for (const f of fj.photos) { const ph = photos.find(p => p.id === f.id); if (ph) ph.title = f.title; }
+  }
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem(LS_POST)); } catch (e) {}
   post = saved ? hydrate(saved) : newPost('feed');
@@ -1657,6 +1682,13 @@ async function init() {
   refreshAll();
   /* makers beginnen in het overzicht */
   setView('review');
+  /* "Maak post" vanaf de fotoselectie: /posts/?foto=<id> */
+  const fid = new URLSearchParams(location.search).get('foto');
+  if (fid) {
+    history.replaceState(null, '', location.pathname + location.hash);
+    const ph = photos.find(p => p.id === fid);
+    if (ph) startNew(ph); else toast('Die foto staat niet (meer) in de fotoselectie.');
+  }
   window.__posts = { get post() { return post; }, set post(p) { post = p; resetHistory(); refreshAll(); }, hydrate, refreshAll, getMedia, exportVideo, exportImage, setCurrent: i => { current = i; refreshAll(); } };
 }
 
