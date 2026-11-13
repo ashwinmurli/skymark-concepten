@@ -47,7 +47,7 @@
   {
    "id": "04",
    "cat": "Binckhorst",
-   "title": "Bedrijfshal ALL",
+   "title": "De Besturing",
    "orig": "DSCF1292",
    "w": 1333,
    "h": 2000,
@@ -55,12 +55,12 @@
     "file": "img/04.jpg",
     "thumb": "thumb/04.jpg",
     "bytes": 438208,
-    "name": "Skymark_Binckhorst_Bedrijfshal-ALL_digitaal.jpg"
+    "name": "Skymark_Binckhorst_De-Besturing_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bedrijfshal-ALL_print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Bedrijfshal-ALL_print.jpg?download=1",
-    "name": "Skymark_Binckhorst_Bedrijfshal-ALL_print.jpg",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_De-Besturing_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_De-Besturing_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_De-Besturing_print.jpg",
     "bytes": 13194274,
     "w": 5472,
     "h": 3648
@@ -69,7 +69,7 @@
   {
    "id": "05",
    "cat": "Binckhorst",
-   "title": "Kantoor met terras",
+   "title": "Terras",
    "orig": "DSCF1296",
    "w": 1302,
    "h": 2000,
@@ -77,12 +77,12 @@
     "file": "img/05.jpg",
     "thumb": "thumb/05.jpg",
     "bytes": 490048,
-    "name": "Skymark_Binckhorst_Kantoor-met-terras_digitaal.jpg"
+    "name": "Skymark_Binckhorst_Terras_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kantoor-met-terras_print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kantoor-met-terras_print.jpg?download=1",
-    "name": "Skymark_Binckhorst_Kantoor-met-terras_print.jpg",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Terras_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Terras_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Terras_print.jpg",
     "bytes": 11080398,
     "w": 5314,
     "h": 3459
@@ -861,7 +861,7 @@
   {
    "id": "168",
    "cat": "Binckhorst",
-   "title": "Kleurrijke loods",
+   "title": "Caballero Fabriek",
    "orig": "DSCF1693",
    "w": 2000,
    "h": 1333,
@@ -869,12 +869,12 @@
     "file": "img/168.jpg",
     "thumb": "thumb/168.jpg",
     "bytes": 489160,
-    "name": "Skymark_Binckhorst_Kleurrijke-loods_digitaal.jpg"
+    "name": "Skymark_Binckhorst_Caballero-Fabriek_digitaal.jpg"
    },
    "print": {
-    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kleurrijke-loods_print.jpg",
-    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Kleurrijke-loods_print.jpg?download=1",
-    "name": "Skymark_Binckhorst_Kleurrijke-loods_print.jpg",
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Caballero-Fabriek_print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark_Binckhorst_Caballero-Fabriek_print.jpg?download=1",
+    "name": "Skymark_Binckhorst_Caballero-Fabriek_print.jpg",
     "bytes": 5875060,
     "w": 3888,
     "h": 2592
