@@ -1,4 +1,5 @@
 import { generateClientTokenFromReadWriteToken } from '@vercel/blob/client';
+import { copy, del } from '@vercel/blob';
 
 /* Printbestanden (volle resolutie) van de definitieve fotoselectie.
    De bestanden staan in Vercel Blob (openbaar, zodat downloaden en zippen
@@ -7,7 +8,9 @@ import { generateClientTokenFromReadWriteToken } from '@vercel/blob/client';
    Blob. Deze functie geeft alleen een kortlevende uploadsleutel voor één bestand,
    en alleen aan makers:
    POST /api/print  header x-skymark-secret: <makerswachtwoord>
-     body { name: "Skymark-DSCF1558-print.jpg" } -> { token, pathname } */
+     body { name: "Skymark-DSCF1558-print.jpg" } -> { token, pathname }
+   Hernoemen (kopie op de server, daarna het oude bestand weg):
+     body { action: "rename", from: "<blob-url>", name: "<nieuwe naam>" } -> { url, downloadUrl, pathname } */
 
 const MAKER_HASH = '1b89a93efd9c4119f37c5abbb7bdff935ce567a6496b661b53bfe98557b9b64e';
 const NAME_RE = /^[\w.-]{1,120}\.(jpe?g|png|tiff?)$/i;
@@ -29,6 +32,17 @@ export async function POST(req) {
   const name = String(body.name || '');
   if (!NAME_RE.test(name)) return json({ error: 'ongeldige bestandsnaam' }, 400);
   const pathname = `fotoselectie/print/${name}`;
+  if (body.action === 'rename') {
+    const from = String(body.from || '');
+    if (!/^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/fotoselectie\/print\//.test(from)) return json({ error: 'ongeldige bron' }, 400);
+    try {
+      const b = await copy(from, pathname, { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'image/jpeg', cacheControlMaxAge: 60 * 60 * 24 * 30 });
+      if (b.url !== from) await del(from);
+      return json({ url: b.url, downloadUrl: b.downloadUrl, pathname: b.pathname });
+    } catch (e) {
+      return json({ error: String(e && e.message || e) }, 500);
+    }
+  }
   const token = await generateClientTokenFromReadWriteToken({
     pathname,
     allowOverwrite: true,
