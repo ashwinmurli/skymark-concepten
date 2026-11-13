@@ -39,23 +39,29 @@ button{cursor:pointer;}
 .hero h1{font-family:'PPTalisman',serif;font-weight:300;font-size:clamp(2.8rem,6vw,4.6rem);line-height:1.02;color:var(--mist);margin:14px 0 22px;}
 .lede{font-size:1.08rem;color:var(--mist);opacity:.86;max-width:660px;}
 
+/* KNOPPEN: een systeem voor de hele pagina */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 18px;border:1px solid var(--line2);background:none;font-size:.84rem;color:var(--fog);text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s,color .15s;}
+.btn svg,.iconbtn svg,.row svg,.dl svg{flex:none;width:14px;height:14px;}
+.btn:hover:not(:disabled){border-color:var(--fog);}
+.btn:disabled{color:var(--stone);border-color:var(--line);cursor:default;}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:600;}
+.btn.primary:hover:not(:disabled){background:#d6ad57;border-color:#d6ad57;}
+.btn.primary:disabled{background:none;border-color:var(--line2);color:var(--stone);font-weight:400;}
+.ghost{background:none;border:0;padding:0 2px;height:40px;font-size:.84rem;color:var(--stone);transition:color .15s;}
+.ghost:hover{color:var(--fog);}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;background:none;color:var(--fog);transition:background .15s;}
+.iconbtn:hover{background:rgba(241,241,235,.08);}
+.iconbtn svg{width:18px;height:18px;}
+
 /* BALK */
-.bar{position:sticky;top:52px;z-index:50;display:flex;align-items:center;gap:12px 18px;flex-wrap:wrap;padding:14px 0;background:rgba(16,19,16,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
-.seg{display:flex;border:1px solid var(--line2);}
-.seg button{background:none;border:0;min-height:40px;padding:0 16px;font-weight:600;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);}
-.seg button span{font-weight:400;letter-spacing:0;text-transform:none;margin-left:6px;opacity:.85;}
-.seg button+button{border-left:1px solid var(--line2);}
+.bar{position:sticky;top:52px;z-index:50;display:flex;align-items:center;gap:10px 22px;flex-wrap:wrap;padding:12px 0;background:var(--black);border-bottom:1px solid var(--line);}
+.seg{display:flex;padding:3px;border:1px solid var(--line2);}
+.seg button{background:none;border:0;height:32px;padding:0 14px;font-size:.8rem;color:var(--stone);transition:background .15s,color .15s;}
+.seg button span{margin-left:6px;font-size:.74rem;opacity:.7;}
+.seg button:hover{color:var(--fog);}
 .seg button.on{background:var(--mist);color:var(--black);}
-.selinfo{font-size:.86rem;color:var(--stone);margin-left:auto;}
-.selinfo b{color:var(--mist);font-weight:600;}
-.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:none;min-height:40px;padding:0 16px;font-size:.84rem;color:var(--mist);text-decoration:none;white-space:nowrap;}
-.btn:hover:not(:disabled){border-color:var(--mist);}
-.btn:disabled{opacity:.4;cursor:default;}
-.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:600;}
-.btn.gold:hover:not(:disabled){background:#d4aa55;border-color:#d4aa55;}
-.linkbtn{background:none;border:0;padding:6px 0;font-size:.82rem;color:var(--stone);text-decoration:underline;text-underline-offset:3px;}
-.linkbtn:hover{color:var(--mist);}
-.note{font-size:.84rem;color:var(--stone);padding-top:12px;}
+.selinfo{font-size:.84rem;color:var(--stone);margin-left:auto;}
+.selinfo b{color:var(--fog);font-weight:600;}
 
 /* RASTER: drie kolommen, gevuld in leesvolgorde (steeds de kortste kolom) */
 .grid{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:0 32px;align-items:start;padding:32px 0 48px;}
@@ -65,8 +71,8 @@ button{cursor:pointer;}
 .shot img{display:block;width:100%;height:100%;object-fit:cover;transition:opacity .2s;}
 .shot:hover img{opacity:.88;}
 .card.sel .shot{outline:2px solid var(--gold);outline-offset:4px;}
-.pick{position:absolute;top:12px;left:12px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(16,19,16,.5);border:1px solid rgba(241,241,235,.7);color:transparent;cursor:pointer;opacity:0;transition:opacity .15s;}
-.pick svg{width:15px;height:15px;}
+.pick{position:absolute;top:12px;left:12px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:rgba(16,19,16,.5);border:1px solid rgba(241,241,235,.7);color:transparent;cursor:pointer;opacity:0;transition:opacity .15s;}
+.pick svg{width:14px;height:14px;}
 .card:hover .pick,.card:focus-within .pick,.card.sel .pick{opacity:1;}
 @media (hover:none){.pick{opacity:.85;}}
 .card.sel .pick{background:var(--gold);border-color:var(--gold);color:var(--black);}
@@ -81,21 +87,34 @@ button{cursor:pointer;}
 .dl.post:hover{color:var(--gold);}
 
 /* VIEWER */
-.viewer{position:fixed;inset:0;z-index:200;background:rgba(11,13,11,.97);display:grid;grid-template-columns:1fr 340px;}
-.vimg{position:relative;display:flex;align-items:center;justify-content:center;padding:32px;min-height:0;}
-.vimg img{max-width:100%;max-height:calc(100vh - 64px);object-fit:contain;display:block;}
-.vnav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border:1px solid var(--line2);background:rgba(16,19,16,.7);color:var(--fog);font-size:1.2rem;}
-.vnav:hover{border-color:var(--fog);}
-.vprev{left:16px}.vnext{right:16px}
-.vside{border-left:1px solid var(--line);padding:28px 26px;display:flex;flex-direction:column;gap:18px;overflow:auto;background:var(--black);}
-.vside h2{font-family:'PPTalisman',serif;font-weight:300;font-size:2rem;line-height:1.1;color:var(--mist);}
-.vorig{font-size:.78rem;color:var(--stone);margin-top:8px;}
-.vclose{align-self:flex-end;background:none;border:1px solid var(--line2);width:40px;height:40px;color:var(--fog);font-size:1.1rem;}
-.opt{border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:4px;}
-.opt b{font-weight:600;font-size:.9rem;color:var(--mist);}
-.opt small{font-size:.8rem;color:var(--stone);}
-.opt .btn{margin-top:8px;justify-content:center;}
-.vside .btn.wide{justify-content:center;width:100%;}
+.viewer{position:fixed;inset:0;z-index:200;background:var(--ink);display:grid;grid-template-columns:minmax(0,1fr) 380px;animation:vin .18s ease-out;}
+@keyframes vin{from{opacity:0}to{opacity:1}}
+.vimg{position:relative;display:flex;align-items:center;justify-content:center;padding:72px 88px;min-height:0;}
+.vimg img{max-width:100%;max-height:100%;object-fit:contain;display:block;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.vcount{position:absolute;top:28px;left:32px;font-size:.78rem;letter-spacing:.08em;color:var(--stone);font-variant-numeric:tabular-nums;}
+.vnav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border:0;background:none;color:var(--stone);display:flex;align-items:center;justify-content:center;transition:color .15s,background .15s;}
+.vnav:hover{color:var(--fog);background:rgba(241,241,235,.06);}
+.vnav svg{width:22px;height:22px;}
+.vprev{left:20px}.vnext{right:20px}
+.vside{border-left:1px solid var(--line);padding:24px 32px 32px;display:flex;flex-direction:column;overflow:auto;background:var(--black);}
+.vclose{align-self:flex-end;margin-right:-10px;}
+.vhead{margin-top:28px;}
+.vside h2{font-family:'PPTalisman',serif;font-weight:300;font-size:2.1rem;line-height:1.08;color:var(--mist);margin-top:10px;}
+.vorig{font-size:.8rem;color:var(--stone);margin-top:10px;}
+.vlabel{font-weight:600;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin:40px 0 4px;}
+.rows{border-top:1px solid var(--line);}
+.row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 16px;padding:16px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--fog);transition:background .15s;}
+.row:hover{background:rgba(241,241,235,.04);}
+.row b{font-weight:600;font-size:.92rem;}
+.row small{grid-column:1;font-size:.78rem;color:var(--stone);}
+.row .go{grid-row:1/3;grid-column:2;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);color:var(--fog);transition:border-color .15s,background .15s,color .15s;}
+.row:hover .go{background:var(--gold);border-color:var(--gold);color:var(--black);}
+.vfoot{margin-top:auto;padding-top:32px;display:flex;flex-direction:column;gap:10px;}
+.vfoot .btn{width:100%;}
+.check{width:16px;height:16px;border:1px solid var(--stone);display:inline-flex;align-items:center;justify-content:center;color:transparent;}
+.check svg{width:11px;height:11px;}
+.btn.on .check{background:var(--gold);border-color:var(--gold);color:var(--black);}
+.btn.on{border-color:var(--gold);}
 
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:300;background:var(--mist);color:var(--black);padding:12px 18px;font-size:.88rem;max-width:min(560px,calc(100vw - 32px));box-shadow:0 12px 40px rgba(0,0,0,.4);}
 footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--stone);border-top:1px solid var(--line);}
@@ -106,13 +125,23 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
   .col{gap:26px;}
   .cap .name{font-size:.86rem;}
   .acts{gap:2px 12px;}
-  .meta{padding:10px;gap:4px 10px;}
-  .selinfo{margin-left:0;width:100%;order:-1;}
-  .viewer{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;}
-  .vimg{padding:12px;}
-  .vimg img{max-height:58vh;}
-  .vside{border-left:0;border-top:1px solid var(--line);padding:18px 16px;gap:12px;max-height:46vh;}
-  .vnav{width:40px;height:40px;}
+  .bar{gap:10px 14px;}
+  .seg{flex-basis:100%;}
+  .seg button{flex:1;}
+  .selinfo{margin-left:0;flex-basis:100%;order:-1;}
+  #zip{margin-left:auto;}
+  .viewer{grid-template-columns:1fr;grid-template-rows:minmax(0,52vh) minmax(0,1fr);}
+  .vimg{padding:56px 16px 16px;}
+  .vimg img{box-shadow:none;}
+  .vcount{top:20px;left:16px;}
+  .vnav{display:none;}
+  .vmclose{display:inline-flex!important;position:absolute;top:8px;right:8px;}
+  .vside{border-left:0;border-top:1px solid var(--line);padding:20px 16px 24px;}
+  .vside .vclose{display:none;}
+  .vhead{margin-top:0;}
+  .vside h2{font-size:1.7rem;}
+  .vlabel{margin-top:24px;}
+  .vfoot{padding-top:20px;}
 }
 </style>
 </head>
@@ -155,15 +184,14 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
 
   <div class="bar">
     <div class="seg" id="quality" role="group" aria-label="Kwaliteit">
-      <button data-q="digital" class="on" aria-pressed="true">Digitaal <span>2000 px</span></button>
-      <button data-q="print" aria-pressed="false">Print <span>volle resolutie</span></button>
+      <button data-q="digital" class="on" aria-pressed="true" title="2000 pixels aan de lange kant, voor social, web en presentaties">Digitaal <span>2000 px</span></button>
+      <button data-q="print" aria-pressed="false" title="De originele bestanden in volle resolutie, voor drukwerk">Print <span>volle resolutie</span></button>
     </div>
     <p class="selinfo" id="selinfo" role="status"></p>
-    <button class="linkbtn" id="selall">Alles selecteren</button>
-    <button class="linkbtn" id="selnone" hidden>Selectie wissen</button>
-    <button class="btn gold" id="zip" disabled>Download als zip</button>
+    <button class="ghost" id="selall">Alles selecteren</button>
+    <button class="ghost" id="selnone" hidden>Wissen</button>
+    <button class="btn primary" id="zip" disabled></button>
   </div>
-  <p class="note" id="qnote"></p>
 
   <div class="grid" id="grid"></div>
 
@@ -172,16 +200,21 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
 
 <div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="Foto bekijken">
   <div class="vimg">
+    <span class="vcount" id="v-count"></span>
+    <button class="iconbtn vmclose" id="v-mclose" aria-label="Sluiten" style="display:none"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5l10 10M15 5 5 15"/></svg></button>
     <img id="v-img" alt="">
-    <button class="vnav vprev" id="v-prev" aria-label="Vorige foto">&larr;</button>
-    <button class="vnav vnext" id="v-next" aria-label="Volgende foto">&rarr;</button>
+    <button class="vnav vprev" id="v-prev" aria-label="Vorige foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="vnav vnext" id="v-next" aria-label="Volgende foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg></button>
   </div>
   <aside class="vside">
-    <button class="vclose" id="v-close" aria-label="Sluiten">&times;</button>
-    <div><p class="eyebrow" id="v-nr"></p><h2 id="v-title"></h2><p class="vorig" id="v-orig"></p></div>
-    <div id="v-opts"></div>
-    <button class="btn wide" id="v-sel"></button>
-    <a class="btn wide" id="v-post" hidden>Maak een post met deze foto</a>
+    <button class="iconbtn vclose" id="v-close" aria-label="Sluiten"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5l10 10M15 5 5 15"/></svg></button>
+    <div class="vhead"><p class="eyebrow" id="v-nr"></p><h2 id="v-title"></h2><p class="vorig" id="v-orig"></p></div>
+    <p class="vlabel">Downloaden</p>
+    <div class="rows" id="v-opts"></div>
+    <div class="vfoot">
+      <button class="btn" id="v-sel"></button>
+      <a class="btn primary" id="v-post" hidden>Maak een post met deze foto</a>
+    </div>
   </aside>
 </div>
 
@@ -277,16 +310,12 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     var n = chosen.length;
     $('selinfo').innerHTML = n
       ? '<b>' + n + '</b> geselecteerd &middot; ' + mb(bytes) + (q === 'print' && withFile.length < n ? ' &middot; ' + (n - withFile.length) + ' zonder printversie' : '')
-      : 'Selecteer foto\u2019s met het vakje linksboven in een foto';
+      : 'Selecteer foto\u2019s om ze samen te downloaden';
     $('zip').disabled = !withFile.length || zipping;
-    if (!zipping) $('zip').textContent = withFile.length ? 'Download ' + withFile.length + ' als zip' : 'Download als zip';
+    if (!zipping) $('zip').innerHTML = ICON_DL + (withFile.length ? 'Download ' + withFile.length + ' als zip' : 'Download als zip');
     $('selall').hidden = n === photos.length;
     $('selnone').hidden = !n;
     document.querySelectorAll('#quality button').forEach(function(b){ var on = b.dataset.q === q; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
-    var missing = photos.filter(function(p){ return !p.print; }).length;
-    $('qnote').textContent = q === 'print'
-      ? 'Print: de originele bestanden in volle resolutie, voor drukwerk.' + (missing ? ' Van ' + missing + ' foto’s volgt de printversie nog; die worden overgeslagen in de zip.' : '')
-      : 'Digitaal: 2000 pixels aan de lange kant, voor social, web en presentaties.';
   }
 
   /* ---------- zip ---------- */
@@ -323,26 +352,27 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
   }
 
   /* ---------- viewer ---------- */
-  function open(i){ cur = i; fillViewer(); $('viewer').hidden = false; document.body.style.overflow = 'hidden'; $('v-close').focus(); }
+  function open(i){ cur = i; fillViewer(); $('viewer').hidden = false; document.body.style.overflow = 'hidden'; ($('v-close').offsetParent ? $('v-close') : $('v-mclose')).focus(); }
   function close(){ var id = cur !== -1 && photos[cur].id; cur = -1; $('viewer').hidden = true; document.body.style.overflow = ''; var c = id && document.querySelector('.card[data-id="' + id + '"] .shot'); if (c) c.focus(); }
   function step(d){ cur = (cur + d + photos.length) % photos.length; fillViewer(); }
   function fillViewer(){
     var p = photos[cur];
     $('v-img').src = '/fotoselectie/' + p.digital.file;
-    $('v-img').alt = p.title;
+    $('v-img').alt = p.cat + ': ' + p.title;
+    $('v-count').textContent = String(cur + 1).padStart(2, '0') + ' / ' + photos.length;
     $('v-nr').textContent = p.cat;
     $('v-title').textContent = p.title;
-    $('v-orig').textContent = 'Foto ' + (cur + 1) + ' van ' + photos.length + ' · origineel ' + p.orig;
-    var html =
-      '<div class="opt"><b>Digitaal</b><small>' + p.w + ' × ' + p.h + ' px &middot; ' + mb(p.digital.bytes) + ' &middot; voor social, web en presentaties</small>' +
-      '<a class="btn" data-save href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(digitalName(p)) + '">' + ICON_DL + ' Download digitaal</a></div>' +
-      '<div class="opt" style="margin-top:10px"><b>Print</b>' + (p.print
-        ? '<small>' + p.print.w + ' × ' + p.print.h + ' px &middot; ' + mb(p.print.bytes) + ' &middot; origineel, voor drukwerk</small><a class="btn" href="' + esc(p.print.download) + '">' + ICON_DL + ' Download print</a>'
-        : '<small>De versie in volle resolutie komt nog.</small>') + '</div>';
-    $('v-opts').innerHTML = html;
+    $('v-orig').textContent = 'Origineel ' + p.orig;
+    $('v-opts').innerHTML =
+      '<a class="row" data-save href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(digitalName(p)) + '">' +
+        '<b>Digitaal</b><small>' + p.w + ' × ' + p.h + ' px &middot; ' + mb(p.digital.bytes) + ' &middot; social, web, presentaties</small><span class="go" aria-hidden="true">' + ICON_DL + '</span></a>' +
+      '<a class="row" href="' + esc(p.print.download) + '">' +
+        '<b>Print</b><small>' + p.print.w + ' × ' + p.print.h + ' px &middot; ' + mb(p.print.bytes) + ' &middot; origineel, drukwerk</small><span class="go" aria-hidden="true">' + ICON_DL + '</span></a>';
     var vs = $('v-sel');
-    vs.textContent = isSel(p) ? '✓ Geselecteerd' : 'Selecteer voor zip';
-    vs.classList.toggle('gold', isSel(p));
+    var on = isSel(p);
+    vs.classList.toggle('on', on);
+    vs.setAttribute('aria-pressed', on ? 'true' : 'false');
+    vs.innerHTML = '<span class="check">' + ICON_OK + '</span>' + (on ? 'Geselecteerd voor zip' : 'Selecteer voor zip');
     var vp = $('v-post');
     vp.hidden = !IS_MAKER;
     vp.href = '/posts/?foto=' + encodeURIComponent(p.id);
@@ -371,6 +401,12 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     $('selnone').addEventListener('click', function(){ state.sel = []; keep(); syncSel(); });
     $('zip').addEventListener('click', downloadZip);
     $('v-close').addEventListener('click', close);
+    $('v-mclose').addEventListener('click', close);
+    /* vegen op telefoon: links en rechts bladeren */
+    var tx = null;
+    var vimg = document.querySelector('.vimg');
+    vimg.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; }, { passive: true });
+    vimg.addEventListener('touchend', function(e){ if (tx === null) return; var dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1); });
     $('v-prev').addEventListener('click', function(){ step(-1); });
     $('v-next').addEventListener('click', function(){ step(1); });
     $('v-sel').addEventListener('click', function(){ toggle(photos[cur]); });
