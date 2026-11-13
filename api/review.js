@@ -95,7 +95,7 @@ function sanitizeSelections(raw) {
     const name = typeof sel.name === 'string' ? sel.name.slice(0, 100) : s;
     const updated = typeof sel.updated === 'number' && isFinite(sel.updated) ? sel.updated : 0;
     const ids = Array.isArray(sel.ids)
-      ? [...new Set(sel.ids.filter(id => typeof id === 'string' && /^[\w-]{1,40}$/.test(id)))].slice(0, 40)
+      ? [...new Set(sel.ids.filter(id => typeof id === 'string' && /^[\w-]{1,40}$/.test(id)))].slice(0, 60)  /* ruim boven de 40 in de pagina, zodat een handmatige aanvulling blijft staan */
       : [];
     out[s] = { name, ids, updated };
   }

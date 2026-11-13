@@ -287,7 +287,7 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     <label class="namefield" for="reviewer">Je naam
       <input id="reviewer" type="text" autocomplete="name" placeholder="Bijv. Esmée">
     </label>
-    <p class="seltally" id="seltally" hidden>Selectie van <span id="seltally-naam"></span>: <b id="sel-count">0</b> / 40</p>
+    <p class="seltally" id="seltally" hidden>Selectie van <span id="seltally-naam"></span>: <b id="sel-count">0</b><span id="sel-max"> / 40</span></p>
     <p class="progress"><b id="done-count">0</b> van <b id="total-count">0</b> beoordeeld <span class="savestate" id="savestate" role="status"></span></p>
   </div>
 
@@ -714,6 +714,8 @@ footer.credit{padding-top:26px; font-size:12px; color:var(--muted)}
     if (s){
       $("seltally-naam").textContent = (state.name || "").trim();
       $("sel-count").textContent = String(sel && sel.ids ? sel.ids.length : 0);
+      /* boven het maximum (handmatig aangevuld) geen "41 / 40" tonen */
+      $("sel-max").hidden = !!(sel && sel.ids && sel.ids.length > SEL_MAX);
     }
     var p = pairs[current];
     var btn = $("sel-toggle");
