@@ -530,9 +530,15 @@
    "digital": {
     "file": "img/109.jpg",
     "thumb": "thumb/109.jpg",
-    "bytes": 387653
+    "bytes": 392133
    },
-   "print": null
+   "print": {
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-Scheveningen-print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-Scheveningen-print.jpg?download=1",
+    "bytes": 6442096,
+    "w": 2592,
+    "h": 3888
+   }
   },
   {
    "id": "119",
@@ -544,7 +550,13 @@
     "thumb": "thumb/119.jpg",
     "bytes": 708704
    },
-   "print": null
+   "print": {
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00251-print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00251-print.jpg?download=1",
+    "bytes": 27712158,
+    "w": 6016,
+    "h": 4012
+   }
   },
   {
    "id": "121",
@@ -556,7 +568,13 @@
     "thumb": "thumb/121.jpg",
     "bytes": 553250
    },
-   "print": null
+   "print": {
+    "url": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00257-print.jpg",
+    "download": "https://bjply66uj6qg2dea.public.blob.vercel-storage.com/fotoselectie/print/Skymark-BF_00257-print.jpg?download=1",
+    "bytes": 23071662,
+    "w": 6016,
+    "h": 4012
+   }
   },
   {
    "id": "123",
