@@ -225,7 +225,7 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
       '</button>' +
       '<div class="cap"><span class="cat">' + esc(p.cat) + '</span><span class="name">' + esc(p.title) + '</span>' +
         '<div class="acts">' +
-          '<a class="dl" href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(p.digital.name) + '" title="Digitaal · ' + p.w + ' × ' + p.h + ' px · ' + mb(p.digital.bytes) + '">' + ICON_DL + 'Digitaal</a>' +
+          '<a class="dl" data-save href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(p.digital.name) + '" title="Digitaal · ' + p.w + ' × ' + p.h + ' px · ' + mb(p.digital.bytes) + '">' + ICON_DL + 'Digitaal</a>' +
           '<a class="dl" href="' + esc(p.print.download) + '" title="Print · ' + p.print.w + ' × ' + p.print.h + ' px · ' + mb(p.print.bytes) + '">' + ICON_DL + 'Print</a>' +
           (IS_MAKER ? '<a class="dl post" href="/posts/?foto=' + encodeURIComponent(p.id) + '">Maak post</a>' : '') +
         '</div>' +
@@ -335,7 +335,7 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     $('v-orig').textContent = 'Foto ' + (cur + 1) + ' van ' + photos.length + ' · origineel ' + p.orig;
     var html =
       '<div class="opt"><b>Digitaal</b><small>' + p.w + ' × ' + p.h + ' px &middot; ' + mb(p.digital.bytes) + ' &middot; voor social, web en presentaties</small>' +
-      '<a class="btn" href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(digitalName(p)) + '">' + ICON_DL + ' Download digitaal</a></div>' +
+      '<a class="btn" data-save href="/fotoselectie/' + esc(p.digital.file) + '" download="' + esc(digitalName(p)) + '">' + ICON_DL + ' Download digitaal</a></div>' +
       '<div class="opt" style="margin-top:10px"><b>Print</b>' + (p.print
         ? '<small>' + p.print.w + ' × ' + p.print.h + ' px &middot; ' + mb(p.print.bytes) + ' &middot; origineel, voor drukwerk</small><a class="btn" href="' + esc(p.print.download) + '">' + ICON_DL + ' Download print</a>'
         : '<small>De versie in volle resolutie komt nog.</small>') + '</div>';
@@ -347,6 +347,22 @@ footer{padding:40px 0 60px;font-size:.72rem;letter-spacing:.08em;color:var(--sto
     vp.hidden = !IS_MAKER;
     vp.href = '/posts/?foto=' + encodeURIComponent(p.id);
   }
+
+  /* De server stuurt een eigen bestandsnaam mee ("01.jpg") die de browser voorrang geeft;
+     daarom halen we digitale downloads zelf op en bewaren ze onder de beschrijvende naam. */
+  document.addEventListener('click', async function(e){
+    var a = e.target.closest('a[data-save]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    try {
+      var r = await fetch(a.href);
+      if (!r.ok) throw new Error(r.status);
+      var u = URL.createObjectURL(await r.blob());
+      var t = document.createElement('a'); t.href = u; t.download = a.getAttribute('download');
+      document.body.appendChild(t); t.click(); t.remove();
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 30000);
+    } catch (err) { location.href = a.href; }
+  });
 
   /* ---------- start ---------- */
   function bind(){
