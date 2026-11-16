@@ -1265,6 +1265,13 @@
    "thumb": "thumb/i06.jpg",
    "single": true,
    "group": "impressie"
+  },
+  {
+   "id": "176",
+   "title": "DSCF1601",
+   "before": "img/176.jpg",
+   "thumb": "thumb/176.jpg",
+   "single": true
   }
  ]
 }
