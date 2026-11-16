@@ -57,9 +57,12 @@ const BASE = {
 /* Naam van een set: achtergrond · kopkleur. */
 for (const b of Object.values(BASE)) b.name = `${COLORS[b.bg].name} · ${COLORS[b.head].name}`;
 
-/* Volgorde in de editor: eerst donkere, dan lichte achtergronden. */
-const ORDER = ['donker', 'donker-goud', 'pine', 'plum', 'plum-goud', 'brick', 'moss',
-  'licht', 'licht-pine', 'licht-plum', 'wit', 'wit-pine', 'wit-brick', 'wit-plum', 'cement', 'goud'];
+/* De vaste set van 8 kleurcombinaties, voor elke template dezelfde (afgestemd met Amvest,
+   nov 2026): eerst donkere, dan lichte achtergronden. */
+const ORDER = ['donker', 'donker-goud', 'pine', 'plum', 'brick', 'licht', 'wit', 'licht-pine'];
+/* Uit de set gehaald. Blijven bestaan zodat oudere slides er hetzelfde uitzien,
+   maar zijn niet meer te kiezen. */
+const RETIRED = ['plum-goud', 'moss', 'licht-plum', 'wit-pine', 'wit-brick', 'wit-plum', 'cement', 'goud'];
 
 function pal(id, over) {
   return Object.assign({ id }, BASE[id], over || {});
@@ -396,7 +399,7 @@ export const TEMPLATES = [
   }
 ];
 
-/* Elke template krijgt alle kleurensets. De gecureerde sets van een template
+/* Elke template krijgt de vaste set. De gecureerde sets van een template
    (met eventuele afwijkingen per rol) gaan voor; de rest vult aan in ORDER-volgorde.
    Templates met tekst op beeld krijgen extra tekstkleuren. */
 for (const t of TEMPLATES) {
@@ -407,6 +410,7 @@ for (const t of TEMPLATES) {
   }
   const first = t.palettes[0];
   t.palettes = [first, ...ORDER.filter(id => id !== first.id).map(id => own.get(id) || pal(id))];
+  t.retired = RETIRED.map(id => own.get(id) || pal(id));
 }
 
 export function getTemplate(id) {

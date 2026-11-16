@@ -67,7 +67,7 @@ function applyTemplate(slide, templateId, from) {
   slide.template = tpl.id;
   slide.texts = texts;
   slide.media = media;
-  if (!tpl.palettes.find(p => p.id === src.palette)) slide.palette = tpl.palettes[0].id;
+  if (!tpl.palettes.find(p => p.id === src.palette) && !(tpl.retired || []).find(p => p.id === src.palette)) slide.palette = tpl.palettes[0].id;
   else slide.palette = src.palette;
 }
 
@@ -683,6 +683,14 @@ function renderDesignTab(box) {
       const g = el('div', { class: 'swatches' });
       ps.forEach(p => g.append(swBtn(p)));
       csec.append(el('p', { class: 'sw-group' }, label), g);
+    }
+    /* een oudere slide met een kleur die niet meer in de set zit */
+    const old = (tpl.retired || []).find(p => p.id === s.palette);
+    if (old) {
+      const g = el('div', { class: 'swatches' });
+      g.append(swBtn(old));
+      csec.append(el('p', { class: 'sw-group' }, 'Niet meer in de set'), g,
+        el('p', { class: 'muted', style: 'margin-top:6px;font-size:12px' }, 'Deze kleur is uit de vaste set gehaald. Kies hierboven een andere.'));
     }
   }
   box.append(csec);

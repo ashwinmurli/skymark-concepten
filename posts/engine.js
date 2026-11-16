@@ -61,7 +61,7 @@ export function sizeOf(formatId) {
 }
 
 export function paletteOf(tpl, id) {
-  return tpl.palettes.find(p => p.id === id) || tpl.palettes[0];
+  return tpl.palettes.find(p => p.id === id) || (tpl.retired || []).find(p => p.id === id) || tpl.palettes[0];
 }
 
 function resolve(slide, formatId) {
