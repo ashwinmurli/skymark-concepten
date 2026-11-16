@@ -777,18 +777,27 @@ function openPhotos(slotKey) {
   pickSlot = slotKey;
   const grid = $('#photo-grid');
   if (!grid.childElementCount) {
-    for (const p of pickable()) {
-      grid.append(el('button', { title: p.title, onclick: () => {
-        const s = slide();
-        const prev = s.media[pickSlot];
-        s.media[pickSlot] = { kind: 'image', src: photoSrc(p), ref: { type: 'foto', id: p.id }, zoom: 1, pos: { x: 0, y: 0 } };
-        if (prev && prev.kind === 'image') { s.media[pickSlot].zoom = 1; }
-        $('#m-photos').classList.remove('show');
-        changed(true);
-      } }, el('img', { src: '/fotoselectie/' + p.thumb, loading: 'lazy', alt: p.title }), el('span', {}, p.title)));
+    const impressies = photos.filter(p => p.group === 'impressie');
+    const groups = [['Impressies', impressies], ['Fotografie', pickable().filter(p => p.group !== 'impressie')]];
+    for (const [label, list] of groups) {
+      if (!list.length) continue;
+      grid.append(el('h5', { class: 'photo-group' }, `${label} (${list.length})`));
+      for (const p of list) grid.append(photoButton(p));
     }
   }
   $('#m-photos').classList.add('show');
+}
+
+/* een beeld in de beeldkiezer */
+function photoButton(p) {
+  return el('button', { title: p.title, onclick: () => {
+    const s = slide();
+    const prev = s.media[pickSlot];
+    s.media[pickSlot] = { kind: 'image', src: photoSrc(p), ref: { type: 'foto', id: p.id }, zoom: 1, pos: { x: 0, y: 0 } };
+    if (prev && prev.kind === 'image') { s.media[pickSlot].zoom = 1; }
+    $('#m-photos').classList.remove('show');
+    changed(true);
+  } }, el('img', { src: '/fotoselectie/' + p.thumb, loading: 'lazy', alt: p.title }), el('span', {}, p.title));
 }
 
 function pickFile(slotKey) {

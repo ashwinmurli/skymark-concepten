@@ -1217,6 +1217,54 @@
    "before": "img/175.jpg",
    "thumb": "thumb/175.jpg",
    "single": true
+  },
+  {
+   "id": "i01",
+   "title": "Entree bij avond",
+   "before": "img/i01.jpg",
+   "thumb": "thumb/i01.jpg",
+   "single": true,
+   "group": "impressie"
+  },
+  {
+   "id": "i02",
+   "title": "Plint met arcade",
+   "before": "img/i02.jpg",
+   "thumb": "thumb/i02.jpg",
+   "single": true,
+   "group": "impressie"
+  },
+  {
+   "id": "i03",
+   "title": "Toren vanaf de Poolsterstraat",
+   "before": "img/i03.jpg",
+   "thumb": "thumb/i03.jpg",
+   "single": true,
+   "group": "impressie"
+  },
+  {
+   "id": "i04",
+   "title": "Toren van onderen",
+   "before": "img/i04.jpg",
+   "thumb": "thumb/i04.jpg",
+   "single": true,
+   "group": "impressie"
+  },
+  {
+   "id": "i05",
+   "title": "Toren bij nacht",
+   "before": "img/i05.jpg",
+   "thumb": "thumb/i05.jpg",
+   "single": true,
+   "group": "impressie"
+  },
+  {
+   "id": "i06",
+   "title": "Arcade overdag",
+   "before": "img/i06.jpg",
+   "thumb": "thumb/i06.jpg",
+   "single": true,
+   "group": "impressie"
   }
  ]
 }
