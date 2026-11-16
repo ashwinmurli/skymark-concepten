@@ -84,7 +84,7 @@
   }
  },
  "selections": {},
- "updated": 1794822180230,
+ "updated": 1794822451033,
  "replies": {
   "rmwj2s7cl4py8g": {
    "on": "passe-partout--esmee-ten-hove",
@@ -94,6 +94,106 @@
    "updated": 1794822177333,
    "deleted": false,
    "notified": true
+  },
+  "r1a1e3c12f59glf1u": {
+   "on": "passe-partout--esmee-ten-hove",
+   "by": "Ashwin",
+   "text": "We hebben het nu ook echt beperkt: elke template heeft dezelfde 8 kleurcombinaties, 5 donker en 3 licht.",
+   "at": 1794822451033,
+   "updated": 1794822451033,
+   "deleted": false
+  },
+  "r1a1e3c12f5a96aqs": {
+   "on": "mijlpaal-onder--esmee-ten-hove",
+   "by": "Ashwin",
+   "text": "Goed punt. Elke template heeft nu dezelfde vaste set van 8: 5 donker en 3 licht.",
+   "at": 1794822451034,
+   "updated": 1794822451034,
+   "deleted": false
+  },
+  "r1a1e3c12f5bl5rp1": {
+   "on": "mijlpaal-onder--camille",
+   "by": "Ashwin",
+   "text": "Klopt. Cloud White met Urban Pine is uit de set gehaald.",
+   "at": 1794822451035,
+   "updated": 1794822451035,
+   "deleted": false
+  },
+  "r1a1e3c12f5crvmey": {
+   "on": "quote--esmee-ten-hove",
+   "by": "Ashwin",
+   "text": "Gedaan: nog 3 lichte varianten, en voor alle templates dezelfde 8 combinaties.",
+   "at": 1794822451036,
+   "updated": 1794822451036,
+   "deleted": false
+  },
+  "r1a1e3c12f5dg5ac1": {
+   "on": "outro--esmee-ten-hove",
+   "by": "Ashwin",
+   "text": "Ook hier teruggebracht naar dezelfde 8 combinaties. Dankjewel!",
+   "at": 1794822451037,
+   "updated": 1794822451037,
+   "deleted": false
+  },
+  "r1a1e3c12f5e27a0t": {
+   "on": "hotspot--esmee-ten-hove",
+   "by": "Ashwin",
+   "text": "Ook hier teruggebracht naar dezelfde 8 combinaties. Dankjewel!",
+   "at": 1794822451038,
+   "updated": 1794822451038,
+   "deleted": false
+  },
+  "r1a1e3c12f5fcole8": {
+   "on": "feitje-vraag--esmee-ten-hove",
+   "by": "Ashwin",
+   "text": "Teruggebracht naar dezelfde 8 combinaties, en paars met geel is eruit.",
+   "at": 1794822451039,
+   "updated": 1794822451039,
+   "deleted": false
+  }
+ },
+ "resolved": {
+  "passe-partout--esmee-ten-hove": {
+   "done": true,
+   "by": "Ashwin",
+   "sig": "akkoord|Dit zijn fantastisch veel opties, maar zijn het er niet té veel dat het ook net uit de toon kan vallen als alle kleuren kris kras door elkaar gebruikt worden?",
+   "updated": 1794822451033
+  },
+  "mijlpaal-onder--esmee-ten-hove": {
+   "done": true,
+   "by": "Ashwin",
+   "sig": "aanpassen|Fantastisch veel opties, maar moeten we er niet max 8 kiezen?",
+   "updated": 1794822451034
+  },
+  "mijlpaal-onder--camille": {
+   "done": true,
+   "by": "Ashwin",
+   "sig": "|De Cloud White uban pine is niet helemaal goed zichtbaar.",
+   "updated": 1794822451035
+  },
+  "quote--esmee-ten-hove": {
+   "done": true,
+   "by": "Ashwin",
+   "sig": "aanpassen|Moeten we het aantal met witte achtergrond niet beperken tot 3 om niet te veel variatie te hebben?",
+   "updated": 1794822451036
+  },
+  "outro--esmee-ten-hove": {
+   "done": true,
+   "by": "Ashwin",
+   "sig": "aanpassen|Same. Wel heeeeeel tof zo",
+   "updated": 1794822451037
+  },
+  "hotspot--esmee-ten-hove": {
+   "done": true,
+   "by": "Ashwin",
+   "sig": "aanpassen|Same, wel heel tof!",
+   "updated": 1794822451038
+  },
+  "feitje-vraag--esmee-ten-hove": {
+   "done": true,
+   "by": "Ashwin",
+   "sig": "aanpassen|Same, wel heel tof. Ik weet niet wat ik van kleurcombinatie paarse achtergrond met gele letters vind",
+   "updated": 1794822451039
   }
  }
 }
